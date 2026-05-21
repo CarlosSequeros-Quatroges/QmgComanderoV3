@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    tools:context=".nfc.NfcReceiver"
+    >
+
+    <LinearLayout
+        android:id="@+id/layInformacion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_marginHorizontal="20dp"
+                android:text="@string/dialog_strFirmaFecha"
+                android:textColor="@color/textoAzul"
+                android:textSize="@dimen/text_titulo2"
+                android:textStyle="bold"
+                android:layout_weight="4"/>
+            <TextView
+                android:id="@+id/tvFecha"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_marginHorizontal="20dp"
+                android:text="01/01/1080"
+                android:textColor="@color/textoAzul"
+                android:textSize="@dimen/text_titulo2"
+                android:textStyle="bold"
+                android:layout_weight="8"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_marginHorizontal="20dp"
+                android:text="@string/dialog_strFirmaHabitacion"
+                android:textColor="@color/textoAzul"
+                android:textSize="@dimen/text_titulo2"
+                android:textStyle="bold"
+                android:layout_weight="4"/>
+            <TextView
+                android:id="@+id/tvHabitacion"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_marginHorizontal="20dp"
+                android:text="210"
+                android:textColor="@color/textoAzul"
+                android:textSize="@dimen/text_titulo2"
+                android:textStyle="bold"
+                android:layout_weight="8"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_marginHorizontal="20dp"
+                android:text="@string/dialog_strFirmaNombre"
+                android:textColor="@color/textoAzul"
+                android:textSize="@dimen/text_titulo2"
+                android:textStyle="bold"
+                android:layout_weight="4"/>
+            <TextView
+                android:id="@+id/tvNombre"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_marginHorizontal="20dp"
+                android:text="Mr. Carlos"
+                android:textColor="@color/textoAzul"
+                android:textSize="@dimen/text_titulo2"
+                android:textStyle="bold"
+                android:layout_weight="8"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_marginHorizontal="20dp"
+                android:text="@string/dialog_strFirmaImporte"
+                android:textColor="@color/textoAzul"
+                android:textSize="@dimen/text_titulo2"
+                android:textStyle="bold"
+                android:layout_weight="4"/>
+            <TextView
+                android:id="@+id/tvImporte"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_marginHorizontal="20dp"
+                android:text="12.53 €"
+                android:textColor="@color/textoAzul"
+                android:textSize="@dimen/text_titulo2"
+                android:textStyle="bold"
+                android:layout_weight="8"/>
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/layAcciones"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="right"
+        android:layout_below="@id/layInformacion"
+        >
+
+    <ImageView
+        android:id="@+id/ivAceptar"
+        android:layout_width="@dimen/icon_size"
+        android:layout_height="@dimen/icon_size"
+        app:srcCompat="@drawable/firma_ok"
+        android:layout_margin="15dp"
+        />
+
+        <ImageView
+            android:id="@+id/ivBorrar"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            app:srcCompat="@drawable/firma_borrar"
+            android:layout_margin="15dp"
+            />
+
+        <ImageView
+            android:id="@+id/ivCancelar"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            app:srcCompat="@drawable/firma_cancelar"
+            android:layout_margin="15dp"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_below="@id/layAcciones"
+        android:layout_alignParentBottom="true"
+        android:padding="5dp"
+        android:background="@color/cvBorde">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/cardview_light_background">
+
+        <com.github.gcacace.signaturepad.views.SignaturePad
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/signature_pad"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:penColor="@android:color/black"
+            />
+
+    </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>

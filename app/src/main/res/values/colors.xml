@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#ff5600</color>
+    <color name="categoria">#40D0FF</color>
+    <color name="categoria_sel">#3030FF</color>
+    <color name="rojo">#FF7070</color>
+    <color name="verde">#70FF70</color>
+    <color name="negro">#000000</color>
+
+
+
+
+    <color name="transparente">#00ffffff</color>
+    <color name="elementoSel">#f6ff71</color>
+
+    <color name="fondoFrgUsuarios">#70A0FD</color>
+    <color name="fondoFrgTpvs">#70A0FD</color>
+    <color name="fondoFrgFacturas">#8AB2FF</color>
+    <color name="fondoFrgMesas">#70A0FD</color>
+    <color name="fondoFrgCabeceras">#4070AD</color>
+    <color name="fondoFrgProductos">#70A0FD</color>
+    <color name="fondoFrgLineaVenta">#edeeff</color>
+    <color name="fondoFrgDetalleVenta">#e6e6e6</color>
+    <color name="fondoFrgFormaPago">#E0F0ff</color>
+
+    <color name="fondoFrgDetalleNota1">#70A0FD</color>
+    <color name="fondoFrgDetalleNota2">#f6ff71</color>
+
+    <color name="cvBorde">#3528ba</color>
+    <color name="cvFondo">#cfcddf</color>
+
+    <color name="textoAzul">#2f2fff</color>
+    <color name="fondoTextoEdit">#f6ff71</color>
+    <color name="textoBlanco">#ffffff</color>
+
+    <color name="mesaLibre">#66ba64</color>
+    <color name="mesaOcupada">#ba6664</color>
+    <color name="mesaActual">#2f2fff</color>
+
+    <color name="lineaVenta">#ffffff</color>
+    <color name="lineaVentaSel">#c6c7ff</color>
+
+</resources>

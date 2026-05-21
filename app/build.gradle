@@ -1,0 +1,82 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 36
+    defaultConfig {
+        applicationId "es.quatroges.qgestpv_v3"
+        minSdkVersion 26
+        targetSdkVersion 36
+        versionCode 3
+
+        versionName "QMGComandero_v3.1.3_code2_bd.6_20260505130000"
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    namespace 'es.quatroges.qgestpv_v3'
+    buildFeatures {
+        buildConfig = true
+        aidl true
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'androidx.appcompat:appcompat:1.7.1'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'com.google.android.material:material:1.13.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
+    implementation 'androidx.recyclerview:recyclerview:1.4.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
+
+    //room database
+    implementation 'androidx.room:room-runtime:2.8.4'
+    annotationProcessor 'androidx.room:room-compiler:2.8.4'
+
+    //servicios web
+    implementation 'com.squareup.retrofit2:retrofit:3.0.0'
+    implementation 'com.squareup.retrofit2:converter-gson:3.0.0'
+    implementation 'com.google.code.gson:gson:2.13.2'
+    implementation 'com.squareup.okhttp3:logging-interceptor:5.3.2'
+
+    //firma en pantalla
+    implementation 'com.github.gcacace:signature-pad:1.3.1'
+    implementation 'androidx.viewpager2:viewpager2:1.1.0'
+
+
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.3.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.7.0'
+
+    //generar qr zxing
+  //  implementation 'com.google.zxing:core:3.2.1'
+  //  implementation 'com.journeyapps:zxing-android-embedded:3.2.0@aar'
+
+    //impresora
+    implementation files('libs/btsdk.jar')
+
+    //tratar nodos json
+    implementation 'commons-codec:commons-codec:1.21.0'
+    implementation 'commons-codec:commons-codec:1.21.0'
+    implementation 'org.jsoup:jsoup:1.22.1'
+
+
+
+}
+
+allprojects {
+
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile).tap {
+            configureEach {
+                options.compilerArgs << "-Xlint:unchecked"
+            }
+        }
+    }
+
+    // ...
+}

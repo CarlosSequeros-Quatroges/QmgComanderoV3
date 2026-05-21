@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/laySel"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="5dp"
+    android:background="@color/transparente"
+    >
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/cv"
+        app:cardCornerRadius="5dp"
+        app:cardElevation="5dp"
+        >
+
+
+        <FrameLayout
+            android:id="@+id/fondo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:background="@color/colorPrimary"
+            >
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivOrden_platos"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="bottom|left"
+                android:background="@drawable/navmenu_bebida" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivMax"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:background="@drawable/producto_default"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:rotation="-90"
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:background="@android:color/background_light"
+                android:alpha="0.8"
+                android:layout_gravity="center_vertical"
+                android:padding="5dp"
+                >
+
+                <TextView
+                    android:layout_width="96dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/descripcion"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:text="COCACOLA"
+                    android:textColor="#000000"
+                    android:gravity="center"
+                    />
+                <LinearLayout
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/ivHH"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:background="@drawable/navmenu_happy_hour"
+                        />
+
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/precio"
+                        android:layout_alignEnd="@+id/imagen"
+                        android:layout_below="@+id/descripcion"
+                        android:textStyle="bold"
+                        android:text="1,20€"
+                        android:textColor="#000000"
+                        android:gravity="right"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        />
+                </LinearLayout>
+            </LinearLayout>
+        </FrameLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>

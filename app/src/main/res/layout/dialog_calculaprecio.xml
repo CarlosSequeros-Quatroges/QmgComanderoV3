@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical">
+
+
+
+    <TextView
+        android:id="@+id/tvPrecioOriginal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/textoAzul"
+        android:textSize="@dimen/text_titulo2"
+        android:text="@string/dialog_strCalculaPrecio_preciooriginal"/>
+
+    <TextView
+        android:id="@+id/tvPrecioFinal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="10dp"
+        android:textColor="@color/colorAccent"
+        android:textStyle="bold"
+        android:textSize="@dimen/text_titulo"
+        android:gravity="center_horizontal"
+        android:text="@string/dialog_strCalculaPrecio_preciofinal"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/colorAccent"
+        />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="10dp"
+        android:orientation="vertical">
+
+        <RadioButton
+            android:id="@+id/rbPorcentaje"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/textoAzul"
+            android:text="Aplicar porcentaje de Descuento:"
+            android:textSize="@dimen/text_titulo2"
+            android:checked="true"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingLeft="40dp">
+
+            <EditText
+                android:id="@+id/etPorcentaje"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:paddingHorizontal="5dp"
+                android:background="@color/colorAccent"
+                android:textColor="@color/textoBlanco"
+                android:text="0"
+                android:textSize="@dimen/text_titulo2"
+                android:inputType="number"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:textColor="@color/textoAzul"
+                android:textSize="@dimen/text_titulo2"
+                android:text="%"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/colorAccent"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="5dp"
+        android:orientation="vertical">
+
+        <RadioButton
+            android:id="@+id/rbPeso"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/textoAzul"
+            android:textSize="@dimen/text_titulo2"
+            android:text="Aplicar precio por peso"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="40dp">
+
+
+            <EditText
+                android:id="@+id/etPeso"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="5dp"
+                android:gravity="right"
+                android:background="@color/colorAccent"
+                android:textColor="@color/textoBlanco"
+                android:text="1000"
+                android:textSize="@dimen/text_titulo2"
+                android:inputType="number"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:textColor="@color/textoAzul"
+                android:textSize="@dimen/text_titulo2"
+                android:text="gr"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/colorAccent"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="5dp"
+        android:orientation="vertical">
+
+        <RadioButton
+            android:id="@+id/rbImporte"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/textoAzul"
+            android:textSize="@dimen/text_titulo2"
+            android:text="Aplicar Descuento según importe:"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingLeft="40dp">
+
+            <EditText
+                android:id="@+id/etImporte"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="5dp"
+                android:gravity="right"
+                android:background="@color/colorAccent"
+                android:textColor="@color/textoBlanco"
+                android:text="0"
+                android:textSize="@dimen/text_titulo2"
+                android:inputType="numberDecimal"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:textColor="@color/textoAzul"
+                android:textSize="@dimen/text_titulo2"
+                android:text="€"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/colorAccent"
+        />
+
+</LinearLayout>

@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_margin="10dp">
+
+    <!-- Barra de acciones superior (queda fija) -->
+    <RelativeLayout
+        android:id="@+id/layAcciones"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#7070f0">
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ivEliminar"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@drawable/bar_eliminar"
+            android:layout_alignParentLeft="true"
+            android:layout_margin="10dp" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ivMueveSubmesa"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@drawable/bar_submesa"
+            android:layout_toRightOf="@id/ivEliminar"
+            android:layout_margin="10dp" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ivAceptar"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@drawable/aceptar"
+            android:layout_alignParentRight="true"
+            android:layout_margin="10dp" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ivCancelar"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@drawable/cancelar"
+            android:layout_toLeftOf="@id/ivAceptar"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="20sp" />
+    </RelativeLayout>
+
+    <!-- ScrollView para que el contenido sea desplazable cuando salga el teclado -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:id="@+id/layDatos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:id="@+id/layDatosUds"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:id="@+id/layUds"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginHorizontal="10dp"
+                    android:orientation="horizontal">
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/ivUdMenos"
+                        android:layout_width="@dimen/icon_cv_size"
+                        android:layout_height="@dimen/icon_cv_size"
+                        android:background="@drawable/quitar" />
+
+                    <EditText
+                        android:id="@+id/etUnidades"
+                        android:layout_width="wrap_content"
+                        android:maxWidth="100dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp"
+                        android:background="@color/textoAzul"
+                        android:gravity="right"
+                        android:minWidth="60dp"
+                        android:padding="10dp"
+                        android:text="2"
+                        android:textColor="@color/textoBlanco"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/text_titulo"
+                        android:inputType="number"
+                        android:selectAllOnFocus="true"
+                        android:imeOptions="flagNoExtractUi" />
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/ivUdMas"
+                        android:layout_width="@dimen/icon_cv_size"
+                        android:layout_height="@dimen/icon_cv_size"
+                        android:background="@drawable/anadir" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp"
+                        android:gravity="left"
+                        android:padding="10dp"
+                        android:text="UD"
+                        android:textColor="@color/textoAzul"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/text_titulo" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layOrden"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:layout_below="@id/layUds"
+                    android:layout_marginVertical="5dp">
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/ivBebida"
+                        android:layout_width="@dimen/icon_small_size"
+                        android:layout_height="@dimen/icon_small_size"
+                        android:background="@drawable/bar_bebida_sel"
+                        android:layout_marginRight="10dp" />
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/ivEntrante"
+                        android:layout_width="@dimen/icon_small_size"
+                        android:layout_height="@dimen/icon_small_size"
+                        android:background="@drawable/bar_entrante1"
+                        android:layout_marginRight="10dp" />
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/ivPrimero"
+                        android:layout_width="@dimen/icon_small_size"
+                        android:layout_height="@dimen/icon_small_size"
+                        android:background="@drawable/bar_primero1"
+                        android:layout_marginRight="10dp" />
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/ivSegundo"
+                        android:layout_width="@dimen/icon_small_size"
+                        android:layout_height="@dimen/icon_small_size"
+                        android:background="@drawable/bar_comida1"
+                        android:layout_marginRight="10dp" />
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/ivPostre"
+                        android:layout_width="@dimen/icon_small_size"
+                        android:layout_height="@dimen/icon_small_size"
+                        android:background="@drawable/bar_postre1"
+                        android:layout_marginRight="5dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layDesc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/layOrden"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:orientation="horizontal">
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/ivTipo"
+                        android:layout_width="@dimen/icon_cv_size"
+                        android:layout_height="@dimen/icon_cv_size"
+                        android:background="@drawable/navmenu_bebida"
+                        android:layout_marginHorizontal="10dp" />
+
+                    <TextView
+                        android:id="@+id/tvDescripcion"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_weight="1"
+                        android:background="@color/textoAzul"
+                        android:gravity="center"
+                        android:minWidth="100dp"
+                        android:padding="10dp"
+                        android:text="COCACOLA"
+                        android:textColor="@color/textoBlanco"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/text_titulo" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layPrecio"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/layDesc"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:text="PVP"
+                        android:textColor="@color/textoAzul"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/text_titulo2" />
+
+                    <EditText
+                        android:id="@+id/etPrecio"
+                        android:layout_width="wrap_content"
+                        android:maxWidth="100dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:background="@color/textoAzul"
+                        android:gravity="right"
+                        android:minWidth="60dp"
+                        android:padding="5dp"
+                        android:text="1,20"
+                        android:textColor="@color/textoBlanco"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/text_titulo"
+                        android:enabled="false"
+                        android:inputType="numberDecimal"
+                        android:selectAllOnFocus="true"
+                        android:imeOptions="flagNoExtractUi" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:text="€"
+                        android:textColor="@color/textoAzul"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/text_titulo" />
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/ivCalculaPrecio"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:background="@drawable/bar_calcular"
+                        android:layout_marginLeft="20dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:text="TOT"
+                        android:textColor="@color/textoAzul"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/text_titulo2" />
+
+                    <TextView
+                        android:id="@+id/tvTotal"
+                        android:layout_width="wrap_content"
+                        android:maxWidth="100dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:background="@color/textoAzul"
+                        android:gravity="right"
+                        android:minWidth="60dp"
+                        android:padding="5dp"
+                        android:text="2,80€"
+                        android:textColor="@color/textoBlanco"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/text_titulo" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/layPrecio"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/ivHH"
+                        android:layout_width="@dimen/icon_cv_size"
+                        android:layout_height="@dimen/icon_cv_size"
+                        android:background="@drawable/bar_happy_hour" />
+
+                    <TextView
+                        android:id="@+id/tvHH"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp"
+                        android:paddingHorizontal="10dp"
+                        android:text="HappyHour"
+                        android:textColor="@color/textoAzul"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/text_titulo" />
+                </LinearLayout>
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/layNota"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:background="@color/fondoFrgDetalleNota1"
+                android:orientation="vertical"
+                android:padding="5dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:background="@color/fondoFrgDetalleNota1"
+                    android:orientation="horizontal"
+                    android:padding="5dp">
+
+                    <TextView
+                        android:id="@+id/tvExtraNotas"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp"
+                        android:text="Extras y notas"
+                        android:textColor="@color/textoAzul"
+                        android:textSize="@dimen/text_titulo"
+                        android:textStyle="bold"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
+                        />
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/ivExtras"
+                        android:layout_width="@dimen/icon_cv_size"
+                        android:layout_height="@dimen/icon_cv_size"
+                        android:background="@android:drawable/ic_menu_edit"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        />
+
+                </RelativeLayout>
+
+
+
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvResumenNotas"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="90dp"
+                    android:background="@color/fondoFrgDetalleNota2"
+                    android:padding="6dp"
+                    android:scrollbars="vertical"
+                    android:nestedScrollingEnabled="false"
+                    android:layout_marginBottom="2dp" />
+
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

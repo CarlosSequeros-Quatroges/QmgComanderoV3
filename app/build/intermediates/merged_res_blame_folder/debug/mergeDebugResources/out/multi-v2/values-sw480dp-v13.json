@@ -1,0 +1,113 @@
+{
+    "logs": [
+        {
+            "outputFile": "es.quatroges.qgestpv_v3.app-mergeDebugResources-1:/values-sw480dp-v13/values-sw480dp-v13.xml",
+            "map": [
+                {
+                    "source": "C:\\PROGRAMACION\\PROGRAMACION ANDROID\\qmgcomanderoV3\\app\\src\\main\\res\\values-sw480dp\\dimens.xml",
+                    "from": {
+                        "startLines": "-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1",
+                        "startColumns": "-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1",
+                        "startOffsets": "-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1"
+                    },
+                    "to": {
+                        "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,113,169,213,254,301,351,409,455,506,549,593,642,692,741,791,840,889",
+                        "endColumns": "57,55,43,40,46,49,57,45,50,42,43,48,49,48,49,48,48,48",
+                        "endOffsets": "108,164,208,249,296,346,404,450,501,544,588,637,687,736,786,835,884,933"
+                    }
+                },
+                {
+                    "source": "C:\\PROGRAMACION\\PROGRAMACION ANDROID\\qmgcomanderoV3\\app\\src\\main\\res\\values-sw480dp\\sizedevice.xml",
+                    "from": {
+                        "startLines": "-1,-1",
+                        "startColumns": "-1,-1",
+                        "startOffsets": "-1,-1"
+                    },
+                    "to": {
+                        "startLines": "20,21",
+                        "startColumns": "4,4",
+                        "startOffsets": "938,977",
+                        "endColumns": "38,37",
+                        "endOffsets": "972,1010"
+                    }
+                },
+                {
+                    "source": "C:\\PROGRAMACION\\PROGRAMACION ANDROID\\qmgcomanderoV3\\app\\src\\main\\res\\values-sw480dp\\styles.xml",
+                    "from": {
+                        "startLines": "-1,-1,-1,-1",
+                        "startColumns": "-1,-1,-1,-1",
+                        "startOffsets": "-1,-1,-1,-1"
+                    },
+                    "to": {
+                        "startLines": "22,28,29,33",
+                        "startColumns": "4,4,4,4",
+                        "startOffsets": "1015,1299,1389,1539",
+                        "endLines": "27,28,32,33",
+                        "endColumns": "12,89,12,79",
+                        "endOffsets": "1294,1384,1534,1614"
+                    }
+                }
+            ]
+        },
+        {
+            "outputFile": "C:\\Users\\carlos\\.gradle\\daemon\\9.3.1\\es.quatroges.qgestpv_v3.app-mergeDebugResources-1:\\values-sw480dp-v13\\values-sw480dp-v13.xml",
+            "map": [
+                {
+                    "source": "C:\\PROGRAMACION\\PROGRAMACION ANDROID\\qmgcomanderoV3\\app\\src\\main\\res\\values-sw480dp\\dimens.xml",
+                    "from": {
+                        "startLines": "2,3,6,26,27,25,5,4,12,13,7,9,10,23,21,16,18,15,17,20",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "90,149,316,1003,1048,955,265,206,496,543,359,405,449,903,850,647,747,597,697,800",
+                        "endColumns": "57,55,41,43,40,46,49,57,45,50,42,42,43,48,49,48,49,48,48,48",
+                        "endOffsets": "143,200,353,1042,1084,997,310,259,537,589,397,443,488,947,895,691,792,641,741,844"
+                    },
+                    "to": {
+                        "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,113,169,211,255,296,343,393,451,497,548,591,634,678,727,777,826,876,925,974",
+                        "endColumns": "57,55,41,43,40,46,49,57,45,50,42,42,43,48,49,48,49,48,48,48",
+                        "endOffsets": "108,164,206,250,291,338,388,446,492,543,586,629,673,722,772,821,871,920,969,1018"
+                    }
+                },
+                {
+                    "source": "C:\\PROGRAMACION\\PROGRAMACION ANDROID\\qmgcomanderoV3\\app\\src\\main\\res\\values-sw480dp\\sizedevice.xml",
+                    "from": {
+                        "startLines": "1,2",
+                        "startColumns": "4,4",
+                        "startOffsets": "17,57",
+                        "endColumns": "38,37",
+                        "endOffsets": "51,90"
+                    },
+                    "to": {
+                        "startLines": "22,23",
+                        "startColumns": "4,4",
+                        "startOffsets": "1023,1062",
+                        "endColumns": "38,37",
+                        "endOffsets": "1057,1095"
+                    }
+                },
+                {
+                    "source": "C:\\PROGRAMACION\\PROGRAMACION ANDROID\\qmgcomanderoV3\\app\\src\\main\\res\\values-sw480dp\\styles.xml",
+                    "from": {
+                        "startLines": "3,15,10,17",
+                        "startColumns": "4,4,4,4",
+                        "startOffsets": "57,540,384,634",
+                        "endLines": "8,15,13,17",
+                        "endColumns": "12,90,12,80",
+                        "endOffsets": "376,626,532,710"
+                    },
+                    "to": {
+                        "startLines": "24,30,31,35",
+                        "startColumns": "4,4,4,4",
+                        "startOffsets": "1100,1384,1474,1624",
+                        "endLines": "29,30,34,35",
+                        "endColumns": "12,89,12,79",
+                        "endOffsets": "1379,1469,1619,1699"
+                    }
+                }
+            ]
+        }
+    ]
+}

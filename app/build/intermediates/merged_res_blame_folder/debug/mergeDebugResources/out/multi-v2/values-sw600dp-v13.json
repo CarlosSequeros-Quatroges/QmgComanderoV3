@@ -1,0 +1,173 @@
+{
+    "logs": [
+        {
+            "outputFile": "C:\\Users\\carlos\\.gradle\\daemon\\9.3.1\\es.quatroges.qgestpv_v3.app-mergeDebugResources-1:\\values-sw600dp-v13\\values-sw600dp-v13.xml",
+            "map": [
+                {
+                    "source": "C:\\PROGRAMACION\\PROGRAMACION ANDROID\\qmgcomanderoV3\\app\\src\\main\\res\\values-sw600dp\\sizedevice.xml",
+                    "from": {
+                        "startLines": "1,2",
+                        "startColumns": "4,4",
+                        "startOffsets": "17,57",
+                        "endColumns": "38,37",
+                        "endOffsets": "51,90"
+                    },
+                    "to": {
+                        "startLines": "35,36",
+                        "startColumns": "4,4",
+                        "startOffsets": "1980,2019",
+                        "endColumns": "38,37",
+                        "endOffsets": "2014,2052"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\carlos\\.gradle\\caches\\9.3.1\\transforms\\682b86fba285680e552aa8463d3b5f14\\workspace\\transformed\\appcompat-1.7.1\\res\\values-sw600dp-v13\\values-sw600dp-v13.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8,9",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,124,193,263,337,413,472,543",
+                        "endColumns": "68,68,69,73,75,58,70,67",
+                        "endOffsets": "119,188,258,332,408,467,538,606"
+                    }
+                },
+                {
+                    "source": "C:\\PROGRAMACION\\PROGRAMACION ANDROID\\qmgcomanderoV3\\app\\src\\main\\res\\values-sw600dp\\dimens.xml",
+                    "from": {
+                        "startLines": "2,3,6,13,17,15,5,4,10,11,7,9,14",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "90,149,316,551,696,646,265,206,449,496,359,405,596",
+                        "endColumns": "57,55,41,43,40,46,49,57,45,51,42,42,48",
+                        "endOffsets": "143,200,353,590,732,688,310,259,490,543,397,443,640"
+                    },
+                    "to": {
+                        "startLines": "10,11,21,22,23,24,27,28,29,30,31,32,33",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "611,669,1287,1329,1373,1414,1576,1626,1684,1730,1782,1825,1868",
+                        "endColumns": "57,55,41,43,40,46,49,57,45,51,42,42,48",
+                        "endOffsets": "664,720,1324,1368,1409,1456,1621,1679,1725,1777,1820,1863,1912"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\carlos\\.gradle\\caches\\9.3.1\\transforms\\aaf08136fa957f7e9d021d001ea9101b\\workspace\\transformed\\material-1.13.0\\res\\values-sw600dp-v13\\values-sw600dp-v13.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8,10,11,12,13,14",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,115,185,256,328,386,444,553,617,673,732,795",
+                        "endLines": "2,3,4,5,6,7,9,10,11,12,13,17",
+                        "endColumns": "59,69,70,71,57,57,10,63,55,58,62,10",
+                        "endOffsets": "110,180,251,323,381,439,548,612,668,727,790,962"
+                    },
+                    "to": {
+                        "startLines": "12,13,14,15,16,17,18,20,25,26,34,49",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "725,785,855,926,998,1056,1114,1223,1461,1517,1917,2661",
+                        "endLines": "12,13,14,15,16,17,19,20,25,26,34,52",
+                        "endColumns": "59,69,70,71,57,57,10,63,55,58,62,10",
+                        "endOffsets": "780,850,921,993,1051,1109,1218,1282,1512,1571,1975,2828"
+                    }
+                },
+                {
+                    "source": "C:\\PROGRAMACION\\PROGRAMACION ANDROID\\qmgcomanderoV3\\app\\src\\main\\res\\values-sw600dp\\styles.xml",
+                    "from": {
+                        "startLines": "3,15,10,17",
+                        "startColumns": "4,4,4,4",
+                        "startOffsets": "57,540,384,634",
+                        "endLines": "8,15,13,17",
+                        "endColumns": "12,90,12,80",
+                        "endOffsets": "376,626,532,710"
+                    },
+                    "to": {
+                        "startLines": "37,43,44,48",
+                        "startColumns": "4,4,4,4",
+                        "startOffsets": "2057,2341,2431,2581",
+                        "endLines": "42,43,47,48",
+                        "endColumns": "12,89,12,79",
+                        "endOffsets": "2336,2426,2576,2656"
+                    }
+                }
+            ]
+        },
+        {
+            "outputFile": "es.quatroges.qgestpv_v3.app-mergeDebugResources-1:/values-sw600dp-v13/values-sw600dp-v13.xml",
+            "map": [
+                {
+                    "source": "C:\\PROGRAMACION\\PROGRAMACION ANDROID\\qmgcomanderoV3\\app\\src\\main\\res\\values-sw600dp\\sizedevice.xml",
+                    "from": {
+                        "startLines": "-1,-1",
+                        "startColumns": "-1,-1",
+                        "startOffsets": "-1,-1"
+                    },
+                    "to": {
+                        "startLines": "33,34",
+                        "startColumns": "4,4",
+                        "startOffsets": "1895,1934",
+                        "endColumns": "38,37",
+                        "endOffsets": "1929,1967"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\carlos\\.gradle\\caches\\9.3.1\\transforms\\682b86fba285680e552aa8463d3b5f14\\workspace\\transformed\\appcompat-1.7.1\\res\\values-sw600dp-v13\\values-sw600dp-v13.xml",
+                    "from": {
+                        "startLines": "-1,-1,-1,-1,-1,-1,-1,-1",
+                        "startColumns": "-1,-1,-1,-1,-1,-1,-1,-1",
+                        "startOffsets": "-1,-1,-1,-1,-1,-1,-1,-1"
+                    },
+                    "to": {
+                        "startLines": "2,3,4,5,6,7,8,9",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,124,193,263,337,413,472,543",
+                        "endColumns": "68,68,69,73,75,58,70,67",
+                        "endOffsets": "119,188,258,332,408,467,538,606"
+                    }
+                },
+                {
+                    "source": "C:\\PROGRAMACION\\PROGRAMACION ANDROID\\qmgcomanderoV3\\app\\src\\main\\res\\values-sw600dp\\dimens.xml",
+                    "from": {
+                        "startLines": "-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1",
+                        "startColumns": "-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1",
+                        "startOffsets": "-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1"
+                    },
+                    "to": {
+                        "startLines": "10,11,21,22,23,26,27,28,29,30,31",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "611,669,1287,1331,1372,1534,1584,1642,1688,1740,1783",
+                        "endColumns": "57,55,43,40,46,49,57,45,51,42,48",
+                        "endOffsets": "664,720,1326,1367,1414,1579,1637,1683,1735,1778,1827"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\carlos\\.gradle\\caches\\9.3.1\\transforms\\aaf08136fa957f7e9d021d001ea9101b\\workspace\\transformed\\material-1.13.0\\res\\values-sw600dp-v13\\values-sw600dp-v13.xml",
+                    "from": {
+                        "startLines": "-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1",
+                        "startColumns": "-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1",
+                        "startOffsets": "-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1"
+                    },
+                    "to": {
+                        "startLines": "12,13,14,15,16,17,18,20,24,25,32,47",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "725,785,855,926,998,1056,1114,1223,1419,1475,1832,2576",
+                        "endLines": "12,13,14,15,16,17,19,20,24,25,32,50",
+                        "endColumns": "59,69,70,71,57,57,10,63,55,58,62,10",
+                        "endOffsets": "780,850,921,993,1051,1109,1218,1282,1470,1529,1890,2743"
+                    }
+                },
+                {
+                    "source": "C:\\PROGRAMACION\\PROGRAMACION ANDROID\\qmgcomanderoV3\\app\\src\\main\\res\\values-sw600dp\\styles.xml",
+                    "from": {
+                        "startLines": "-1,-1,-1,-1",
+                        "startColumns": "-1,-1,-1,-1",
+                        "startOffsets": "-1,-1,-1,-1"
+                    },
+                    "to": {
+                        "startLines": "35,41,42,46",
+                        "startColumns": "4,4,4,4",
+                        "startOffsets": "1972,2256,2346,2496",
+                        "endLines": "40,41,45,46",
+                        "endColumns": "12,89,12,79",
+                        "endOffsets": "2251,2341,2491,2571"
+                    }
+                }
+            ]
+        }
+    ]
+}

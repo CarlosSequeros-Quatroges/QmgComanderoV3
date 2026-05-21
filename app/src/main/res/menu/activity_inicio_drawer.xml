@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:showIn="navigation_view"
+    >
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_salir"
+            android:icon="@drawable/navmenu_salir"
+            android:title="@string/menu_Salir"
+            />
+
+        <item
+            android:id="@+id/nav_user"
+            android:icon="@drawable/navmenu_user"
+            android:title="@string/menu_usuarios"
+            />
+
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/navmenu_logout"
+            android:title="@string/menu_logout"
+            />
+
+        <item
+            android:id="@+id/nav_tpv"
+            android:title="@string/menu_tpv"
+            android:icon="@drawable/navmenu_tpv"
+            app:actionLayout="@layout/item_menu_tpv"
+            />
+
+        <item
+            android:id="@+id/nav_facturas"
+            android:title="@string/menu_facturas"
+            android:icon="@drawable/navmenu_tiquet"
+            />
+
+        <item
+            android:id="@+id/nav_mesas"
+            android:icon="@drawable/navmenu_mesa"
+            android:title="Mesas" />
+
+
+        <item
+            android:id="@+id/nav_mesas_acciones"
+            android:title="Operaciones Mesas">
+            <menu>
+                <item
+                    android:id="@+id/nav_mesa_cuenta"
+                    android:icon="@drawable/navmenu_tiquet"
+                    android:title="Pedir cuenta" />
+
+
+                <item
+                    android:id="@+id/nav_mesa_cobrar"
+                    android:icon="@drawable/navmenu_dinero"
+                    android:title="Pagar cuenta"
+                    />
+
+                <item
+                    android:id="@+id/nav_mesa_traspasa"
+                    android:icon="@drawable/navmenu_traspaso"
+                    android:title="Traspasar Mesa"
+                    />
+
+                <item
+                    android:id="@+id/nav_mesa_traspasa_sub"
+                    android:icon="@drawable/navmenu_traspaso"
+                    android:title="Traspasar Submesa"
+                    />
+
+
+            </menu>
+
+        </item>
+
+    </group>
+
+    <item
+        android:id="@+id/nav_acercade"
+        android:icon="@android:drawable/ic_menu_info_details"
+        android:title="Acerca de" />
+</menu>

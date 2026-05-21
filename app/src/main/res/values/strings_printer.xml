@@ -1,0 +1,47 @@
+<resources>
+    <string name="strBTImpresoraBuscando">Buscando impresora...</string>
+    <string name="strBTImpresoraEncontrada">Impresora lista para enlazar</string>
+    <string name="strBTImpresoraNoEncontrada">Impresora no encontrada</string>
+
+    <string name="strConfigBTModel_SM5802BL">SM-5802BL</string>
+    <string name="strConfigBTModel_IPDA045">IPDA-045</string>
+    <string name="strConfigBTModel_SCREEN">PANTALLA</string>
+
+    <string name="strConfigBT">BlueTooth:</string>
+
+
+    <string name="title_paired_devices">Dispositivos asociados</string>
+    <string name="title_other_devices">Otros dispositivos</string>
+    <string name="button_scan">Escanear</string>
+    <string name="strBTScan">Escanear</string>
+    <string name="strBTDetener">Detener</string>
+    <string name="strBTSelectDevice">Seleccione dispositivo</string>
+    <string name="strBTNoEncontrados">no se han encontrado</string>
+    <string name="strBTNoAsociados">ninguno asociado</string>
+    <string name="strBTEscaneando">Escaneando dispositivos</string>
+
+    <string name="strErrorBTNoDisponible">Error conexión BlueTooth no disponible</string>
+    <string name="strBTModelo">Modelo:&#160;</string>
+    <string name="strBTName">Nombre:&#160;</string>
+    <string name="strBTMac">MAC:&#160;</string>
+    <string name="strErrorRecuperaPension">Error consultando pension</string>
+
+    <string name="strConsultaAvisoPermisoBluetooth">Verifique los permisos de la APP para acceso a BlueTooth</string>
+
+    <string name="out_of_paper">The printer is out of paper</string>
+    <string name="exists_paper">The printer paper is ready</string>
+    <string name="printer_is_working">The printer is working</string>
+    <string name="printer_high_temp_alarm">Printer high temperature alarm</string>
+    <string name="motor_high_temp_alarm">Motor high temperature alarm</string>
+    <string name="printer_current_task_print_complete">The print task has been printed</string>
+
+
+    <string name="config_strOpcionesImpresion">Opciones de impresión</string>
+    <string name="config_strImprimeApp">APP</string>
+    <string name="config_strImprimeTPV">TPV</string>
+    <string name="config_strImprimeComanda">Comanda</string>
+    <string name="config_strImprimePedirCuenta">Cuenta pte pago</string>
+    <string name="config_strImprimePagarCuenta">Cuenta pagada</string>
+
+    <string name="strVentasAvisoImpresoraNoDisponible">Impresora no disponible</string>
+</resources>

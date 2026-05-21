@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="2dp"
+    android:background="@color/transparente"
+    >
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/cv"
+        android:divider="@color/colorPrimary"
+        app:cardCornerRadius="15dp"
+        app:cardElevation="15dp"
+        >
+
+        <LinearLayout
+            android:id="@+id/layDatosVenta"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_gravity="center_vertical"
+            android:padding="3dp"
+            >
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="25"
+                >
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/ivTipo"
+                    android:layout_width="@dimen/icon_small_size"
+                    android:layout_height="@dimen/icon_small_size"
+                    android:background="@drawable/navmenu_bebida"
+                    android:alpha="1"
+                    />
+
+
+
+                <FrameLayout
+                    android:layout_width="2dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/textoAzul"
+                    />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/cantidad"
+                    android:textSize="@dimen/text_actionbar_small"
+                    android:textStyle="bold"
+                    android:text="21"
+                    android:gravity="right"
+                    android:layout_gravity="right|center_vertical"
+                    android:paddingRight="2dp"
+                    android:layout_weight="4"
+                    />
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="2dp"
+                android:layout_height="match_parent"
+                android:background="@color/textoAzul"
+                />
+
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivPension"
+                android:layout_width="@dimen/icon_small_size"
+                android:layout_height="@dimen/icon_small_size"
+                android:background="@drawable/navmenu_gratis"
+                android:alpha="1"
+                />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/descripcion"
+                android:textSize="@dimen/text_actionbar_small"
+                android:textStyle="bold"
+                android:text="COCACOLA"
+                android:gravity="left"
+                android:layout_weight="80"
+                android:paddingLeft="5dp"
+                android:layout_gravity="center_vertical"
+                />
+
+
+            <FrameLayout
+                android:layout_width="2dp"
+                android:layout_height="match_parent"
+                android:background="@color/textoAzul"
+                />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/peuros"
+                android:textSize="@dimen/text_actionbar_small"
+                android:textStyle="bold"
+                android:text="1,20"
+                android:gravity="right"
+                android:layout_weight="25"
+                android:layout_gravity="center_vertical"
+                android:paddingRight="5dp"
+                />
+
+
+            <FrameLayout
+                android:layout_width="2dp"
+                android:layout_height="match_parent"
+                android:background="@color/textoAzul"
+                />
+
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/teuros"
+                android:textSize="@dimen/text_actionbar_small"
+                android:textStyle="bold"
+                android:text="2,40"
+                android:gravity="right"
+                android:layout_weight="25"
+                android:layout_gravity="center_vertical"
+                android:paddingRight="5dp"
+
+                />
+
+        </LinearLayout>
+
+
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>

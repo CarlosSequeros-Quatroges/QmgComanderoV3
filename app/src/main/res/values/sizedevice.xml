@@ -1,0 +1,4 @@
+<resources>
+    <string name="device">phone</string>
+    <string name="sw">sw_base</string>
+</resources>

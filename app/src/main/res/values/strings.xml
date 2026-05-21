@@ -1,0 +1,204 @@
+<resources>
+    <string name="app_name">Quatroges Comandero</string>
+    <string name="app_web">www.quatroges.es</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Configuración</string>
+
+    <string name="hint_clave">Clave...</string>
+    <string name="hint_error_clave">Error clave...</string>
+
+    <string name="hint_pax">Pax [0 a 99]...</string>
+    <string name="hint_room">Habitación...</string>
+
+    <string name="bar_user">Usuario...</string>
+    <string name="bar_tpv">TPV...</string>
+    <string name="bar_mesa">Mesa...</string>
+    <string name="bar_pax">Pax...</string>
+    <string name="bar_habitacion">Room...</string>
+
+    <string name="menu_Salir">Cerrar aplicación</string>
+    <string name="menu_usuarios">Usuarios</string>
+    <string name="menu_logout">Cerrar sesión</string>
+    <string name="menu_tpv">TPVs</string>
+    <string name="menu_facturas">Facturas</string>
+
+
+    <string name="svMesas">Buscar mesa ...</string>
+    <string name="svCabecera">Buscar cabecera ...</string>
+    <string name="svProducto">Buscar producto ...</string>
+
+
+    <string name="config_guardar">Guardar</string>
+    <string name="config_cancelar">Cancelar</string>
+
+    <string name="config_strDemo">Demo</string>
+    <string name="config_strEmpresa">Empresa</string>
+    <string name="config_strCodigo">Código</string>
+
+    <string name="config_strCargaLineasVenta">Cargar lineas de venta</string>
+    <string name="config_strMantenerVenta">Mantener venta al enviar comanda</string>
+    <string name="config_strClaveCamareros">Pedir clave camareros</string>
+    <string name="config_strPax">Pedir pax para abrir mesa</string>
+    <string name="config_strFormaPago">Formas de pago activas</string>
+    <string name="config_strPagoMultiple">Efectivo + tarjeta</string>
+    <string name="config_strMostrarProductosAuto">Mostar productos auto</string>
+    <string name="config_strMantenerProductos">Mantener lista productos auto</string>
+    <string name="config_strCompacto">Usar modo compacto</string>
+
+    <string name="config_strEfectivo">Efectivo</string>
+    <string name="config_strTarjeta">Tarjeta</string>
+    <string name="config_strCuentaCasa">Cuenta casa</string>
+    <string name="config_strCredito">Crédito</string>
+    <string name="config_strPension">Pensión</string>
+
+
+    <string name="config_strTimerFragment">Tiempo ampliar listas (sg)</string>
+    <string name="config_strServidorWeb">Servidor web</string>
+    <string name="config_strAPI">Api</string>
+    <string name="config_strTimeout">Timeout</string>
+
+    <string name="config_strSincronizarAuto">Sincronización automática de tablas</string>
+
+
+    <string name="config_strBDBorraTablas">Borrar tablas de datos</string>
+    <string name="config_strBDNoBorraConfig">Mantener configuración</string>
+    <string name="config_strBDCopiarBD">Exportar Base de datos</string>
+    <string name="config_strBDRecuperarBD">Importar Base de datos</string>
+
+
+    <string name="pago_strSelCtaCasas">Seleccione cliente cuenta casa</string>
+
+    <string name="pago_strSelEstablecimiento">Establecimiento</string>
+    <string name="pago_strSelCredito">Seleccione habitación para cargo</string>
+
+    <string name="strAceptar">Aceptar</string>
+    <string name="strCancelar">Cancelar</string>
+    <string name="strReintentar">Reintentar</string>
+    <string name="strSi">Aceptar</string>
+    <string name="strNo">Cancelar</string>
+
+    <string name="alert_strError">Error</string>
+    <string name="alert_strAviso">Aviso</string>
+    <string name="alert_strAcercade">Acerca de</string>
+    <string name="alert_strSalir">¿Desea finalizar sesión y salir?</string>
+    <string name="alert_strAvisoNoSalir">Operaciones pendientes de finalizar</string>
+    <string name="alert_strCambioMesa">Cambio de mesa</string>
+
+
+    <string name="strErrorWsTest">Sin conexión al servidor</string>
+    <string name="strErrorWsErrorAction">Error al procesar petición al servidor</string>
+    <string name="strErrorWsValidar">Error recuperando configuración del comandero</string>
+    <string name="strErrorWsNoValidado">Dispositivo sin acceso al servicio</string>
+
+    <string name="strErrorWsMD5">Error recuperando filas</string>
+    <string name="strErrorWsTabla">Error recuperando registros</string>
+
+    <string name ="strErrorWsDownloadApp">Error descargando actualización!!</string>
+
+    <string name="strErrorWsMesas">Error recuperando mesas</string>
+    <string name="strErrorWsLineasVenta">Error recuperando comanda</string>
+    <string name="strErrorWsGrabaLineasVenta">Error enviando comanda</string>
+    <string name="strErrorPedirCuenta">Error enviando solicitud PEDIR CUENTA</string>
+    <string name="strErrorActualizaPax">Error enviando actualización de PAX</string>
+    <string name="strErrorTraspasaMesa">Error enviando solicitud de traspaso de mesa</string>
+    <string name="strErrorPagaMesa">Error enviando solicitud de pago de mesa</string>
+    <string name="strErrorCredito">Error recuperando crédito de habitación</string>
+    <string name="strErrorSiguePlato">Error enviando aviso de marchar platos</string>
+    <string name="strErrorRecuperaFacturas">Error recuperando listado de facturas</string>
+    <string name="strErrorRecuperaFactura">Error recuperando factura</string>
+    <string name="strErrorImprimeFactura">Error imprimiendo factura</string>
+
+
+    <string name="detalle_strCrearSubmesa">¿Añadir submesa?</string>
+    <string name="detalle_strMueveSubmesa">Unidades a mover:</string>
+    <string name="detalle_strEliminarLinea">¿Desea eliminar la linea seleccionada?</string>
+
+
+    <string name="progress_strRecuperaMesas">Recuperando mesas</string>
+    <string name="progress_strRecuperaLineas">Recuperando comanda</string>
+    <string name="progress_strRecuperaPension">Consultando régimen de pensión</string>
+    <string name="progress_strEnviarLineas">Enviando comanda</string>
+    <string name="progress_strPedirCuenta">Solicitando cuenta</string>
+    <string name="progress_strPagarCuenta">Registrando pago</string>
+    <string name="progress_strActualizaPax">Actualizando pax</string>
+    <string name="progress_strTraspasaMesa">Traspasando mesa</string>
+    <string name="progress_strAvisoSiguePlato">Aviso Marcha [orden]</string>
+    <string name="progress_strRecueperaFacturas">Recuperando listado de Facturas</string>
+    <string name="progress_strRecueperaFactura">Recuperando factura</string>
+
+    <string name="progress_strValidar">Recuperando configuración del terminal...</string>
+    <string name="progress_strSincronizar">Sincronizando bases de datos</string>
+
+
+    <string name="progress_strEspera">Por favor, espere</string>
+
+    <string name="dialog_strUnidades">Unidades:</string>
+    <string name="dialog_strSubmesa">Submesa:</string>
+    <string name="dialog_strHintUnidades">Cantidad a mover...:</string>
+
+    <string name="dialog_strTituloPidePax">Número de Pax</string>
+    <string name="dialog_strPaxAñadir">Nuevos pax:</string>
+    <string name="dialog_strRoomAñadir">Habitación:</string>
+    <string name="dialog_strHintPax">pax...</string>
+    <string name="dialog_strHintHabitacion">habitación...</string>
+    <string name="dialog_strPaxMover">Mover pax:</string>
+    <string name="dialog_strNoAnadeSubmesa">No se puede añadir. Hay submesas vacías</string>
+
+    <string name="dialog_strTituloPideRoom">Número habitación</string>
+
+
+    <string name="dialog_strCodigoAcceso">Código [codigo]</string>
+    <string name="dialog_strClave">Clave acceso:</string>
+    <string name="dialog_strClaveHint">Introduzca clave...</string>
+    <string name="dialog_strErrorCodigoAcceso">Clave incorrecta</string>
+
+    <string name="dialog_strTituloActivarNFC">Lector NFC desactivado</string>
+    <string name="dialog_strMensajeActivarNFC">Active NFC y pulse el botón ATRAS para volvar a la aplicación</string>
+
+    <string name="dialog_strUds">Uds.</string>
+    <string name="dialog_strDescripcion">Descripción</string>
+    <string name="dialog_strPVP">PVP</string>
+    <string name="dialog_strImporte">Imp.</string>
+    <string name="dialog_strTotal">Total:</string>
+
+
+    <string name="dialog_strAlergenos">Alergenos:</string>
+    <string name="dialog_strEtiquetas">Etiquetas:</string>
+    <string name="dialog_strOrdenPlatos">Orden de platos:</string>
+
+
+    <string name="alert_strCambiosPendientes">Hay cambios pendientes de guardar \n ¿Descartar cambios?</string>
+    <string name="alert_strLineasPendienteEnvio">Hay lineas pendientes de enviar \n ¿Descartar cambios?</string>
+    <string name="alert_strNoTraspasoMesa">Traspaso cancelado. Hay lineas pendientes</string>
+    <string name="alert_strNoTraspasoMesa_vacia">Traspaso cancelado. Mesa vacía</string>
+    <string name="alert_strNoTraspasoSubMesa_vacia">Traspaso cancelado. Submesa vacía</string>
+
+    <string name="alert_strCambiosPendientesAviso">Acepte o cancele cambios pendientes</string>
+
+    <string name="alert_strErrorCreditoDipsonible">Error. Saldo insuficiente</string>
+
+
+    <string name="acercade_strMensaje">QMGComandero.\nCódigo de versión:[code]\nVersion:[version]\nAppKey:[appkey]\n\nQUATROGES\nwww.quatroges.es"</string>
+
+    <string name="dialog_strTraspasaMesa">Mover a mesa:</string>
+
+    <string name="dialog_strTituloFirma">Firma cliente</string>
+    <string name="dialog_strFirmaFecha">Fecha:</string>
+    <string name="dialog_strFirmaImporte">Importe:</string>
+    <string name="dialog_strFirmaHabitacion">Habitación:</string>
+    <string name="dialog_strFirmaNombre">Nombre:</string>
+
+
+    <string name="dialog_strSiguePlatos">Seleccione platos para marchar:</string>
+    <string name="dialog_strInfoProducto">Información:</string>
+
+    <string name="dialog_strResumenComanda">Resumen comanda:</string>
+
+    <string name="dialog_strCalculaPrecio_preciooriginal">Precio del producto: [precio_original] €</string>
+    <string name="dialog_strCalculaPrecio_preciofinal">Precio aplicado: [precio_final] €</string>
+
+
+</resources>

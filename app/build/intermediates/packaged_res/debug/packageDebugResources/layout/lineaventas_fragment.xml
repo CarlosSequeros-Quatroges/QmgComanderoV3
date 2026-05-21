@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layCons"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:id="@+id/flMin"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/icon_cv_size"
+        app:layout_constraintTop_toTopOf="parent"
+        >
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ivSetHH"
+            android:layout_width="@dimen/icon_small_size"
+            android:layout_height="@dimen/icon_small_size"
+            android:background="@drawable/bar_happy_hour"
+            android:layout_gravity="left"
+            android:alpha=".5"
+            />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ivMin"
+            android:layout_width="@dimen/icon_small_size"
+            android:layout_height="@dimen/icon_small_size"
+            android:background="@drawable/arrow"
+            android:layout_gravity="center_horizontal"
+            android:rotation="180"
+            android:alpha=".5"
+            />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ivEnviarComanda"
+            android:layout_width="144dp"
+            android:layout_height="@dimen/icon_cv_size"
+            android:background="@drawable/enviar_comanda"
+            android:layout_gravity="right|center_vertical"
+            android:rotation="0"
+            />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ivSync"
+            android:layout_width="144dp"
+            android:layout_height="@dimen/icon_cv_size"
+            android:background="@drawable/recuperar_comanda"
+            android:layout_gravity="left"
+            android:layout_marginLeft="60dp"
+            android:visibility="visible"
+            />
+
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/flOrden"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/flMin"
+        app:layout_constraintBottom_toTopOf="@id/rvLineaVentas"
+        android:paddingVertical="5dp"
+        >
+        <LinearLayout
+            android:id="@+id/layOrdenPlatos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            >
+            <!--
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivBebida"
+                android:layout_width="@dimen/icon_small_size"
+                android:layout_height="@dimen/icon_small_size"
+                android:background="@drawable/bar_bebida_sel"
+                android:layout_gravity="left"
+                android:layout_marginRight="5dp"
+                />
+                -->
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivEntrante"
+                android:layout_width="@dimen/icon_small_size"
+                android:layout_height="@dimen/icon_small_size"
+                android:background="@drawable/bar_entrante"
+                android:layout_gravity="left"
+                android:layout_marginRight="25dp"
+                />
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivPrimero"
+                android:layout_width="@dimen/icon_small_size"
+                android:layout_height="@dimen/icon_small_size"
+                android:background="@drawable/bar_primero1"
+                android:layout_gravity="left"
+                android:layout_marginRight="25dp"
+                />
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivSegundo"
+                android:layout_width="@dimen/icon_small_size"
+                android:layout_height="@dimen/icon_small_size"
+                android:background="@drawable/bar_comida1"
+                android:layout_gravity="left"
+                android:layout_marginRight="25dp"
+                />
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivPostre"
+                android:layout_width="@dimen/icon_small_size"
+                android:layout_height="@dimen/icon_small_size"
+                android:background="@drawable/bar_postre1"
+                android:layout_gravity="left"
+                />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:orientation="horizontal"
+            >
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivSiguePlato1"
+                android:layout_width="@dimen/icon_small_size"
+                android:layout_height="@dimen/icon_small_size"
+                android:background="@drawable/bar_aviso_sel"
+                android:layout_marginHorizontal="10dp"
+                />
+        </LinearLayout>
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/flMax"
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        app:layout_constraintTop_toBottomOf="@id/rvLineaVentas"
+        app:layout_constraintBottom_toBottomOf="@id/layCons"
+        >
+
+
+
+        <TextView
+            android:id="@+id/tvTotal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Total: 12.56€"
+            android:textColor="@color/textoAzul"
+            android:textStyle="bold"
+            android:textSize="@dimen/text_titulo"
+            android:layout_gravity="right|center_vertical"
+            android:layout_marginRight="10dp"
+            />
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ivMax"
+            android:layout_width="@dimen/icon_small_size"
+            android:layout_height="@dimen/icon_small_size"
+            android:background="@drawable/arrow"
+            android:layout_gravity="center_horizontal|center_vertical"
+            android:rotation="0"
+            android:alpha=".5"
+            />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ivVerComanda"
+            android:layout_width="@dimen/icon_small_size"
+            android:layout_height="@dimen/icon_small_size"
+            android:background="@drawable/bar_resumen_comanda"
+            android:layout_gravity="left|center_vertical"
+            android:layout_marginHorizontal="10dp"
+            />
+
+
+    </FrameLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvLineaVentas"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintTop_toBottomOf="@id/flOrden"
+        app:layout_constraintBottom_toTopOf="@id/flMax"
+        tools:itemCount="5"
+        tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/lineaventas_cardview"
+        tools:orientation="vertical"
+        tools:spanCount="2"
+        />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+

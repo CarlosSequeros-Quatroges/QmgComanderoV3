@@ -1,0 +1,215 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    
+    <RelativeLayout
+        android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
+    android:orientation="vertical"
+    >
+
+
+
+     <TextView
+        android:id="@+id/tBT"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/strConfigBT"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textStyle="bold"
+        android:textColor="@color/textoAzul"
+         />
+
+    <TextView
+        android:id="@+id/tvBTModelo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"
+        android:text="@string/strBTModelo"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_below="@id/tBT"
+        android:textStyle="bold" />
+
+     <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/spinBTModelo"
+        android:layout_below="@id/tBT"
+         android:layout_toEndOf="@id/tvBTModelo"
+        />
+
+     <TextView
+        android:id="@+id/tBTName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"
+        android:text="@string/strBTName"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_below="@id/spinBTModelo"
+        android:textStyle="bold" />
+    
+    <TextView
+        android:id="@+id/tBTMac"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"
+        android:text="@string/strBTMac"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_below="@id/tBTName"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/bScan"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_below="@id/spinBTModelo"
+        android:layout_alignParentEnd="true"
+        android:background="@drawable/icon_scan_bt"
+        android:textStyle="bold"/>
+
+
+
+        <TextView
+            android:id="@+id/tvImpresiones"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/config_strOpcionesImpresion"
+            android:textSize="@dimen/text_titulo"
+            android:textColor="@color/textoAzul"
+            android:textStyle="bold"
+            android:layout_below="@id/bScan"
+            android:layout_marginTop="20dp"
+            />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/fondoFrgFormaPago"
+            android:layout_marginEnd="15dp"
+            android:layout_below="@id/tvImpresiones"
+            android:orientation="vertical">
+
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation = "horizontal"
+                >
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:layout_weight="1"
+                    />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/config_strImprimeApp"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/config_strImprimeTPV"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation = "horizontal"
+                android:paddingVertical="10dp"
+                >
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/config_strImprimeComanda"
+                    android:layout_weight="1"
+                    />
+                <CheckBox
+                    android:id="@+id/chkComandaAPP"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:layout_weight="1"
+                    />
+                <CheckBox
+                    android:id="@+id/chkComandaTPV"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:layout_weight="1"
+                    />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation = "horizontal"
+                android:paddingVertical="10dp"
+                >
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/config_strImprimePedirCuenta"
+                    android:layout_weight="1"
+                    />
+                <CheckBox
+                    android:id="@+id/chkCuentaPdteAPP"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:layout_weight="1"
+                    />
+                <CheckBox
+                    android:id="@+id/chkCuentaPdteTPV"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:layout_weight="1"
+                    />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation = "horizontal"
+                android:paddingVertical="10dp"
+                >
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/config_strImprimePagarCuenta"
+                    android:layout_weight="1"
+                    />
+                <CheckBox
+                    android:id="@+id/chkCuentaAPP"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:layout_weight="1"
+                    />
+                <CheckBox
+                    android:id="@+id/chkCuentaTPV"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:layout_weight="1"
+                    />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+        </LinearLayout>
+</RelativeLayout>
+
+
+</ScrollView>

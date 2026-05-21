@@ -1,0 +1,39 @@
+es.quatroges.qgestpv_v3.app-pngs-0 C:\PROGRAMACION\PROGRAMACION ANDROID\qmgcomanderoV3\app\build\generated\res\pngs\debug
+es.quatroges.qgestpv_v3.app-updated_navigation_xml-1 C:\PROGRAMACION\PROGRAMACION ANDROID\qmgcomanderoV3\app\build\generated\updated_navigation_xml\debug
+es.quatroges.qgestpv_v3.app-packageDebugResources-2 C:\PROGRAMACION\PROGRAMACION ANDROID\qmgcomanderoV3\app\build\intermediates\incremental\debug\packageDebugResources\merged.dir
+es.quatroges.qgestpv_v3.app-packageDebugResources-3 C:\PROGRAMACION\PROGRAMACION ANDROID\qmgcomanderoV3\app\build\intermediates\incremental\debug\packageDebugResources\stripped.dir
+es.quatroges.qgestpv_v3.app-debug-4 C:\PROGRAMACION\PROGRAMACION ANDROID\qmgcomanderoV3\app\build\intermediates\merged_res\debug\mergeDebugResources
+es.quatroges.qgestpv_v3.app-debug-5 C:\PROGRAMACION\PROGRAMACION ANDROID\qmgcomanderoV3\app\src\debug\res
+es.quatroges.qgestpv_v3.app-main-6 C:\PROGRAMACION\PROGRAMACION ANDROID\qmgcomanderoV3\app\src\main\res
+es.quatroges.qgestpv_v3.app-lifecycle-livedata-core-2.6.2-7 C:\Users\carlos\.gradle\caches\9.3.1\transforms\0d95e9144e02c248f58f9392ecc3428f\workspace\transformed\lifecycle-livedata-core-2.6.2\res
+es.quatroges.qgestpv_v3.app-constraintlayout-2.2.1-8 C:\Users\carlos\.gradle\caches\9.3.1\transforms\1078f9600a79bb4687d4fa01b43bb3f8\workspace\transformed\constraintlayout-2.2.1\res
+es.quatroges.qgestpv_v3.app-annotation-experimental-1.5.0-9 C:\Users\carlos\.gradle\caches\9.3.1\transforms\1a8b30532fe7c5ca68fc380e9867a102\workspace\transformed\annotation-experimental-1.5.0\res
+es.quatroges.qgestpv_v3.app-fragment-1.5.4-10 C:\Users\carlos\.gradle\caches\9.3.1\transforms\271804868a9f412b6f3c909d1287b85e\workspace\transformed\fragment-1.5.4\res
+es.quatroges.qgestpv_v3.app-savedstate-1.2.1-11 C:\Users\carlos\.gradle\caches\9.3.1\transforms\3338c1b3ebec5acc8ea1bae87f33a57b\workspace\transformed\savedstate-1.2.1\res
+es.quatroges.qgestpv_v3.app-core-ktx-1.13.0-12 C:\Users\carlos\.gradle\caches\9.3.1\transforms\33b29e26b047b2f52f12041212534a4f\workspace\transformed\core-ktx-1.13.0\res
+es.quatroges.qgestpv_v3.app-customview-poolingcontainer-1.0.0-13 C:\Users\carlos\.gradle\caches\9.3.1\transforms\54c026c28dee87eec133f61be0bdc3d8\workspace\transformed\customview-poolingcontainer-1.0.0\res
+es.quatroges.qgestpv_v3.app-lifecycle-viewmodel-2.6.2-14 C:\Users\carlos\.gradle\caches\9.3.1\transforms\645829c60a95038712f59ad96925abdd\workspace\transformed\lifecycle-viewmodel-2.6.2\res
+es.quatroges.qgestpv_v3.app-drawerlayout-1.1.1-15 C:\Users\carlos\.gradle\caches\9.3.1\transforms\64c61a50ea00c3ffd88978d9335434a9\workspace\transformed\drawerlayout-1.1.1\res
+es.quatroges.qgestpv_v3.app-appcompat-1.7.1-16 C:\Users\carlos\.gradle\caches\9.3.1\transforms\682b86fba285680e552aa8463d3b5f14\workspace\transformed\appcompat-1.7.1\res
+es.quatroges.qgestpv_v3.app-transition-1.5.0-17 C:\Users\carlos\.gradle\caches\9.3.1\transforms\6ab74eba62e48207243578ff8c53be3b\workspace\transformed\transition-1.5.0\res
+es.quatroges.qgestpv_v3.app-core-runtime-2.2.0-18 C:\Users\carlos\.gradle\caches\9.3.1\transforms\6c6ef7a61bd66e6712267582b8ad6dc4\workspace\transformed\core-runtime-2.2.0\res
+es.quatroges.qgestpv_v3.app-lifecycle-viewmodel-savedstate-2.6.2-19 C:\Users\carlos\.gradle\caches\9.3.1\transforms\6d447dedee23288b5c844f3142c953c4\workspace\transformed\lifecycle-viewmodel-savedstate-2.6.2\res
+es.quatroges.qgestpv_v3.app-emoji2-views-helper-1.3.0-20 C:\Users\carlos\.gradle\caches\9.3.1\transforms\733297fba74d571d779e53cbfe0c2f3d\workspace\transformed\emoji2-views-helper-1.3.0\res
+es.quatroges.qgestpv_v3.app-viewpager2-1.1.0-21 C:\Users\carlos\.gradle\caches\9.3.1\transforms\74abccf8cb739ebd5f4546fb8eb6b4d7\workspace\transformed\viewpager2-1.1.0\res
+es.quatroges.qgestpv_v3.app-core-1.13.0-22 C:\Users\carlos\.gradle\caches\9.3.1\transforms\7ff7763a1156df6554d0fe107c454b9c\workspace\transformed\core-1.13.0\res
+es.quatroges.qgestpv_v3.app-lifecycle-runtime-2.6.2-23 C:\Users\carlos\.gradle\caches\9.3.1\transforms\80911c141db1cd37e4f8d3074a996947\workspace\transformed\lifecycle-runtime-2.6.2\res
+es.quatroges.qgestpv_v3.app-appcompat-resources-1.7.1-24 C:\Users\carlos\.gradle\caches\9.3.1\transforms\85d82f41d37e6515e9d424773b78679e\workspace\transformed\appcompat-resources-1.7.1\res
+es.quatroges.qgestpv_v3.app-coordinatorlayout-1.1.0-25 C:\Users\carlos\.gradle\caches\9.3.1\transforms\8f2a7d4c5b627044bef8f9839a9462d7\workspace\transformed\coordinatorlayout-1.1.0\res
+es.quatroges.qgestpv_v3.app-recyclerview-1.4.0-26 C:\Users\carlos\.gradle\caches\9.3.1\transforms\9737f7d211b69b9460b3192a08acb2dd\workspace\transformed\recyclerview-1.4.0\res
+es.quatroges.qgestpv_v3.app-cardview-1.0.0-27 C:\Users\carlos\.gradle\caches\9.3.1\transforms\9ae8e288f86322d52d4eab793f832b7d\workspace\transformed\cardview-1.0.0\res
+es.quatroges.qgestpv_v3.app-graphics-shapes-release-28 C:\Users\carlos\.gradle\caches\9.3.1\transforms\9ba744fab1680b64f715b71e61a69270\workspace\transformed\graphics-shapes-release\res
+es.quatroges.qgestpv_v3.app-startup-runtime-1.2.0-29 C:\Users\carlos\.gradle\caches\9.3.1\transforms\9c9aa847428baee4d9a23262a2d29c2d\workspace\transformed\startup-runtime-1.2.0\res
+es.quatroges.qgestpv_v3.app-material-1.13.0-30 C:\Users\carlos\.gradle\caches\9.3.1\transforms\aaf08136fa957f7e9d021d001ea9101b\workspace\transformed\material-1.13.0\res
+es.quatroges.qgestpv_v3.app-dynamicanimation-1.1.0-31 C:\Users\carlos\.gradle\caches\9.3.1\transforms\af3ea91831c7a3e5aea481eb919b766c\workspace\transformed\dynamicanimation-1.1.0\res
+es.quatroges.qgestpv_v3.app-signature-pad-1.3.1-32 C:\Users\carlos\.gradle\caches\9.3.1\transforms\b02368d1430846e8e103cbe09cea7f05\workspace\transformed\signature-pad-1.3.1\res
+es.quatroges.qgestpv_v3.app-activity-1.8.0-33 C:\Users\carlos\.gradle\caches\9.3.1\transforms\b482364a9903d2092551edb4a923c956\workspace\transformed\activity-1.8.0\res
+es.quatroges.qgestpv_v3.app-media-1.0.0-34 C:\Users\carlos\.gradle\caches\9.3.1\transforms\c0cf50ae5bc5f7128971d51cbbf2d55c\workspace\transformed\media-1.0.0\res
+es.quatroges.qgestpv_v3.app-emoji2-1.3.0-35 C:\Users\carlos\.gradle\caches\9.3.1\transforms\c10edcdc2bcbf81915385ccf94d223f4\workspace\transformed\emoji2-1.3.0\res
+es.quatroges.qgestpv_v3.app-lifecycle-livedata-2.6.2-36 C:\Users\carlos\.gradle\caches\9.3.1\transforms\d869693b0741ae266cf4b1663e731b7c\workspace\transformed\lifecycle-livedata-2.6.2\res
+es.quatroges.qgestpv_v3.app-profileinstaller-1.4.0-37 C:\Users\carlos\.gradle\caches\9.3.1\transforms\f1108b74149d26bdd34b69c186992f64\workspace\transformed\profileinstaller-1.4.0\res
+es.quatroges.qgestpv_v3.app-lifecycle-process-2.6.2-38 C:\Users\carlos\.gradle\caches\9.3.1\transforms\fd0d11af89cbcbf5b3423a5133b18458\workspace\transformed\lifecycle-process-2.6.2\res
