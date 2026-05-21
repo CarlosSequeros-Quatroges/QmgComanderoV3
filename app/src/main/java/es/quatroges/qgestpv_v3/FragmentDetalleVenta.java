@@ -41,6 +41,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import es.quatroges.qgestpv_v3.adapters.RvAdapterDetalleNotas;
+import es.quatroges.qgestpv_v3.basedatos.ClaseBaseDatos;
 import es.quatroges.qgestpv_v3.datos.listas.lineaVentas.ClaseLineaVentas;
 import es.quatroges.qgestpv_v3.utils.ClaseItemExtra;
 import es.quatroges.qgestpv_v3.utils.ClaseUtils;
@@ -138,6 +139,8 @@ public class FragmentDetalleVenta extends Fragment {
         ArrayList<Integer> recuperaListaSubmesas();
         boolean añadeSubmesa();
         void mueveLineaSubmesa(ClaseLineaVentas linea, int submesa);
+
+        ArrayList<ClaseItemExtra> recuperaSubfamiliaExtras(ClaseLineaVentas linea);
     }
 
     public static InterfaceDetalleVenta interfaceDetalleVenta;
@@ -575,6 +578,11 @@ public class FragmentDetalleVenta extends Fragment {
 
                     dlgExtras = ClaseUtils.PideExtras.newInstance(context);
                     dlgExtras.setExtras(detalleVenta.extras);
+
+
+                    ArrayList<ClaseItemExtra> extrasDisponibles = interfaceDetalleVenta.recuperaSubfamiliaExtras(detalleVenta);
+                    dlgExtras.setExtrasDisponibles(extrasDisponibles);
+
                     dlgExtras.show(getParentFragmentManager(), "dialog_pide_extras");
                 }
             });
@@ -886,14 +894,8 @@ public class FragmentDetalleVenta extends Fragment {
                 }
                 //extras
                 else {
-                    String textoExtra = extra.nota.trim();
-                    int tipoExtra = TIPO_EXTRA_CON;
-                    if (textoExtra.toUpperCase(Locale.ROOT).startsWith("SIN ")) {
-                        tipoExtra = TIPO_EXTRA_SIN;
-                        textoExtra = textoExtra.substring(4).trim();
-                    } else if (textoExtra.toUpperCase(Locale.ROOT).startsWith("CON ")) {
-                        textoExtra = textoExtra.substring(4).trim();
-                    }
+                    String textoExtra = extra.descripcion;
+                    int tipoExtra = extra.estadoExtra == 1? TIPO_EXTRA_CON:TIPO_EXTRA_SIN;
                     items.add(new RvAdapterDetalleNotas.ItemDetalleNota(
                             tipoExtra,
                             textoExtra,

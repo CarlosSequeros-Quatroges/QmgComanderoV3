@@ -23,6 +23,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -43,6 +44,7 @@ import es.quatroges.qgestpv_v3.datos.Usuarios;
 import es.quatroges.qgestpv_v3.datos.roomRegistrosCRC;
 import es.quatroges.qgestpv_v3.datos.Familias;
 import es.quatroges.qgestpv_v3.datos.Subfamilias;
+import es.quatroges.qgestpv_v3.utils.ClaseItemExtra;
 
 
 @Database(entities = {Configuracion.class, Usuarios.class, Tpvs.class, Nom_Mesas.class,
@@ -842,6 +844,30 @@ public abstract class ClaseBaseDatos extends RoomDatabase {
             }
         };
         Future<List<ClientesCtaCasa>> future = Executors.newSingleThreadExecutor().submit(callable);
+        return future.get();
+    }
+
+
+    public String appGetRecuperaSubFamiliaExtras(int codsub) throws ExecutionException,InterruptedException{
+        Callable<String> callable = new Callable<String>() {
+            @Override
+            public String call() throws Exception {
+                String strExtras= subfamiliasDao().recuperaExtras(codsub);
+                return strExtras;
+            }
+        };
+        Future<String> future = Executors.newSingleThreadExecutor().submit(callable);
+        return future.get();
+    }
+
+    public List<Productos> appGetRecuperaProductosExtras(ArrayList<String> listaCodmenu, int tmenu) throws ExecutionException,InterruptedException{
+        Callable<List<Productos>> callable = new Callable<List<Productos>>() {
+            @Override
+            public List<Productos> call() throws Exception {
+                return productosDAO().recuperaProductosExtra(listaCodmenu,tmenu);
+            }
+        };
+        Future<List<Productos>> future = Executors.newSingleThreadExecutor().submit(callable);
         return future.get();
     }
     //endregion

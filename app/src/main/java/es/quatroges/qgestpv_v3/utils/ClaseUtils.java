@@ -1828,17 +1828,25 @@ public class ClaseUtils {
         public static PideExtras pideExtras;
 
         private static ArrayList<ClaseItemExtra> extras;
+        private static ArrayList<ClaseItemExtra> extrasDisponibles;
 
         public static ArrayList<ClaseItemExtra> getExtras() {
-
-            //return extras;
-            return FragmentDialogNotas.getNotas();
+            ArrayList<ClaseItemExtra> notas =  FragmentDialogNotas.getNotas();
+            ArrayList<ClaseItemExtra> extras = FragmentDialogExtras.getExtras();
+            ArrayList<ClaseItemExtra> total = new ArrayList<>();
+            if (notas != null) total.addAll(notas);
+            if (extras != null) total.addAll(extras);
+            return total;
         }
 
         public void setExtras(ArrayList<ClaseItemExtra> extras) {
             PideExtras.extras = extras;
         }
 
+
+        public static void setExtrasDisponibles(ArrayList<ClaseItemExtra> extrasDisponibles) {
+            PideExtras.extrasDisponibles = extrasDisponibles;
+        }
 
         ImageView ivVolver;
 
@@ -1856,11 +1864,19 @@ public class ClaseUtils {
 
         @Override
         public ArrayList<ClaseItemExtra> exCargaDatosExtras() {
-            if (extras == null) {
+            if (extrasDisponibles == null) {
                 return new ArrayList<>();
             }
 
-            return extras.stream().filter(e -> e.tipo.equalsIgnoreCase("E")).collect(Collectors.toCollection(ArrayList::new));
+            ArrayList<ClaseItemExtra> tExtras =  extras.stream().filter(e -> e.tipo.equalsIgnoreCase("E")).collect(Collectors.toCollection(ArrayList::new));
+            for (ClaseItemExtra tExtra: tExtras){
+                extrasDisponibles.stream().filter(e -> e.codmenu.equalsIgnoreCase(tExtra.codmenu))
+                        .findFirst().get().estadoExtra = tExtra.estadoExtra == 1 ?  ClaseItemExtra.ESTADO_CON: ClaseItemExtra.ESTADO_SIN;
+                extrasDisponibles.stream().filter(e -> e.codmenu.equalsIgnoreCase(tExtra.codmenu))
+                        .findFirst().get().estado = tExtra.estado;
+            }
+
+            return  extrasDisponibles;
 
         }
 

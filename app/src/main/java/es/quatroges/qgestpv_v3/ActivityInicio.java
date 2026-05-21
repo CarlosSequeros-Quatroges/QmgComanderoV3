@@ -67,6 +67,7 @@ import com.google.gson.Gson;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -118,6 +119,7 @@ import es.quatroges.qgestpv_v3.datos.listas.tpvs.ClaseTPVs;
 import es.quatroges.qgestpv_v3.datos.listas.users.ClaseUsers;
 import es.quatroges.qgestpv_v3.nfc.ClaseNFC;
 import es.quatroges.qgestpv_v3.servicios.ServSincronizaBD;
+import es.quatroges.qgestpv_v3.utils.ClaseItemExtra;
 import es.quatroges.qgestpv_v3.utils.ClaseItemFiltro;
 import es.quatroges.qgestpv_v3.utils.ClaseLatencia;
 import es.quatroges.qgestpv_v3.utils.ClaseOnTouch;
@@ -1315,6 +1317,35 @@ public class ActivityInicio extends AppCompatActivity
         return getLineasPendientesEnvio();
     }
 
+    @Override
+    public ArrayList<ClaseItemExtra> recuperaSubfamiliaExtras(ClaseLineaVentas linea) {
+        Productos producto= null;
+        ArrayList<ClaseItemExtra> extras = new ArrayList<>();
+
+        try {
+            producto = baseDatos.getProducto(linea.codmenu,linea.tmenu);
+            if (producto != null && producto.getCodsub() != null && ! producto.getCodsub().isEmpty()){
+                String tExtras = baseDatos.appGetRecuperaSubFamiliaExtras(Integer.parseInt(producto.getCodsub()));
+                if (tExtras != null && ! tExtras.isEmpty() ) {
+                    while (tExtras.startsWith("|")) {
+                        tExtras = tExtras.substring(1);
+                    }
+                    while (tExtras.endsWith("|")) {
+                        tExtras = tExtras.substring(0, tExtras.length() - 1);
+                    }
+                    ArrayList<String> codmenus = new ArrayList<>(Arrays.asList(tExtras.split("\\|")));
+
+                    List<Productos> productos = baseDatos.appGetRecuperaProductosExtras(codmenus,linea.tmenu);
+                    extras =  ClaseItemExtra.fromProductos(productos);
+                }
+            }
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        return extras;
+    }
 
 
     //endregion

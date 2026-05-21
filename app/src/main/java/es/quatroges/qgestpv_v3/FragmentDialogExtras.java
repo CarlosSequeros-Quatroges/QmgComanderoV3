@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 import es.quatroges.qgestpv_v3.adapters.RvAdapterExtras;
 import es.quatroges.qgestpv_v3.utils.ClaseItemExtra;
@@ -24,7 +25,7 @@ public class FragmentDialogExtras extends Fragment {
     private static RvAdapterExtras adapterExtras;
 
     public static ArrayList<ClaseItemExtra> getExtras() {
-        return extras;
+        return extras.stream().filter(e -> e.estadoExtra != 0).collect(Collectors.toCollection(ArrayList::new));
     }
 
     public interface InterfaceFrgDlgExtras {

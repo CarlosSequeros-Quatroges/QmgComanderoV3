@@ -6,6 +6,7 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import es.quatroges.qgestpv_v3.datos.Productos;
@@ -60,6 +61,8 @@ public interface DaoProductos {
     @Query ("select * from Productos where codmenu = :codmenu and tmenu = :tmenu limit 1" )
     Productos recuperaProducto(String codmenu, int tmenu);
 
+    @Query ("select * from Productos where codmenu in (:listaCodmenu) and tmenu = :tmenu " )
+    List<Productos> recuperaProductosExtra(ArrayList<String> listaCodmenu, int tmenu);
 
 
 }

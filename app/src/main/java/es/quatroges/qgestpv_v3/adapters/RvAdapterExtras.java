@@ -12,10 +12,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 import es.quatroges.qgestpv_v3.R;
 import es.quatroges.qgestpv_v3.utils.ClaseItemExtra;
+import es.quatroges.qgestpv_v3.utils.ClaseUtils;
 
 public class RvAdapterExtras extends RecyclerView.Adapter<RvAdapterExtras.CategoriaViewHolder> {
 
@@ -76,6 +78,18 @@ public class RvAdapterExtras extends RecyclerView.Adapter<RvAdapterExtras.Catego
                     item.estadoExtra = ClaseItemExtra.ESTADO_SIN;
                 } else {
                     item.estadoExtra = ClaseItemExtra.ESTADO_NADA;
+                }
+                if (item.codigo == 0 && item.estadoExtra == ClaseItemExtra.ESTADO_NADA) {
+                    item.estado = ClaseUtils.enEstado.transmitida;
+                }
+                else if (item.codigo == 0  && item.estadoExtra != ClaseItemExtra.ESTADO_NADA) {
+                    item.estado = ClaseUtils.enEstado.anadir;
+                }
+                else if (item.codigo != 0 && item.estadoExtra == ClaseItemExtra.ESTADO_NADA) {
+                    item.estado = ClaseUtils.enEstado.eliminar;
+                }
+                else {
+                    item.estado = ClaseUtils.enEstado.actualizar;
                 }
             }
         });

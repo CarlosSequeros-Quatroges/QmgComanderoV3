@@ -44,4 +44,9 @@ public interface DaoSubfamilias {
     @Query("delete from  subfamilias where codsub between :min and :max")
     void borraRango(int min, int max);
 
+    @Query ("select extras from subfamilias where codsub = :codsub")
+    String recuperaExtras(int codsub);
+
+
+
     }

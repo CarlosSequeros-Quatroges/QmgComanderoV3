@@ -6,6 +6,11 @@ import android.os.Parcelable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import es.quatroges.qgestpv_v3.datos.Productos;
+
 public class ClaseItemExtra implements Parcelable {
     public static final int ESTADO_NADA = 0;
     public static final int ESTADO_CON = 1;
@@ -27,8 +32,18 @@ public class ClaseItemExtra implements Parcelable {
     @Expose
     public String tipo;
 
+
+    @SerializedName("descripcion")
+    @Expose
     public transient String descripcion;
+    @SerializedName("peuros")
+    @Expose
     public transient String precio;
+
+    @SerializedName("codmenu")
+    @Expose
+    public transient String codmenu;
+
     public transient int estadoExtra;  //con sin....
     public ClaseUtils.enEstado estado;
 
@@ -41,13 +56,31 @@ public class ClaseItemExtra implements Parcelable {
         this.precio = "";
         this.estadoExtra = ESTADO_NADA;
         this.estado = ClaseUtils.enEstado.transmitida;
+
+        this.descripcion = "";
+        this.precio = "";
+        this.codmenu = "";
     }
 
+    //para añadir una nota
     public ClaseItemExtra(int codigo,String tipo,  String nota, String hora, ClaseUtils.enEstado estado) {
         this();
         this.codigo = codigo;
         this.tipo = tipo;
         this.nota = nota;
+        this.hora = hora;
+        this.estado = estado;
+
+    }
+
+    //para añadir un extra
+    public ClaseItemExtra(int codigo,String tipo,  String codmenu, String precio, String descripcion, String hora, ClaseUtils.enEstado estado) {
+        this();
+        this.codigo = codigo;
+        this.tipo = tipo;
+        this.codmenu = codmenu;
+        this.precio = precio;
+        this.descripcion = descripcion;
         this.hora = hora;
         this.estado = estado;
 
@@ -91,6 +124,30 @@ public class ClaseItemExtra implements Parcelable {
         this.estado = other != null && other.estado != null ? other.estado : ClaseUtils.enEstado.transmitida;
     }
 
+    public static ClaseItemExtra fromProducto(Productos producto) {
+        if (producto == null) {
+            return null;
+        }
+
+        ClaseItemExtra item = new ClaseItemExtra(0,"E", producto.getCodmenu(),producto.getEuros(),producto.getDescripcion(),ClaseUtils.now("HH:mm:ss"), ClaseUtils.enEstado.transmitida);
+        return item;
+    }
+
+    public static ArrayList<ClaseItemExtra> fromProductos(List<Productos> productos) {
+        ArrayList<ClaseItemExtra> items = new ArrayList<>();
+        if (productos == null || productos.isEmpty()) {
+            return items;
+        }
+
+        for (Productos producto : productos) {
+            ClaseItemExtra item = fromProducto(producto);
+            if (item != null) {
+                items.add(item);
+            }
+        }
+        return items;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -106,6 +163,10 @@ public class ClaseItemExtra implements Parcelable {
         dest.writeString(this.precio);
         dest.writeInt(this.estadoExtra);
         dest.writeString(this.estado != null ? this.estado.name() : ClaseUtils.enEstado.transmitida.name());
+
+        dest.writeString(this.descripcion);
+        dest.writeString(this.precio);
+        dest.writeString(this.codmenu);
     }
 
     public void readFromParcel(Parcel in) {
@@ -122,6 +183,10 @@ public class ClaseItemExtra implements Parcelable {
         } catch (Exception e) {
             this.estado = ClaseUtils.enEstado.transmitida;
         }
+
+        this.descripcion = in.readString();
+        this.precio = in.readString();
+        this.codmenu = in.readString();
     }
 
     protected ClaseItemExtra(Parcel in) {
