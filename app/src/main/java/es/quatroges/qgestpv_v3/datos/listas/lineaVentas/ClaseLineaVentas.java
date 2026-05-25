@@ -3,6 +3,7 @@ package es.quatroges.qgestpv_v3.datos.listas.lineaVentas;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import es.quatroges.qgestpv_v3.utils.ClaseItemExtra;
@@ -262,6 +263,7 @@ public class ClaseLineaVentas implements Parcelable, Cloneable, Comparable<Clase
         double tTCoste = 0;
         double tTEurosOrden = 0;
         String tpension = "";
+        ArrayList<ClaseItemExtra> tExtras = new ArrayList<>();
 
 
         ClaseLineaVentas tmp;
@@ -278,9 +280,10 @@ public class ClaseLineaVentas implements Parcelable, Cloneable, Comparable<Clase
                 tmp.orden_platos = xorden_plato;
                 tmp.descripcion = xdescripcion;
                 tmp.cantidad = cantidad;
-                tmp.peuros = tPeuros;
-                tmp.teuros = tTeuros;
                 tmp.pension = tpension;
+                tmp.extras = tExtras;
+                tmp.peuros = tPeuros+ costeExtras(1,tExtras);
+                tmp.teuros = tTeuros+ costeExtras(cantidad, tExtras);
 
                 gLineasVentas.add(tmp);
 
@@ -307,6 +310,7 @@ public class ClaseLineaVentas implements Parcelable, Cloneable, Comparable<Clase
                 tPCoste = 0;
                 tTCoste = 0;
                 tpension = "";
+                tExtras = new ArrayList<>();
 
 
             }
@@ -318,8 +322,10 @@ public class ClaseLineaVentas implements Parcelable, Cloneable, Comparable<Clase
             tPCoste = linea.pcoste;
             tTeuros += linea.teuros;
             tTCoste += linea.tcoste;
-            tTEurosOrden += linea.teuros;
+            tTEurosOrden += linea.teuros+ costeExtras(linea.cantidad, linea.extras);
+
             tpension = linea.pension;
+            tExtras = linea.extras;
 
         }
 
@@ -328,9 +334,10 @@ public class ClaseLineaVentas implements Parcelable, Cloneable, Comparable<Clase
              tmp.orden_platos = xorden_plato;
              tmp.descripcion = xdescripcion;
              tmp.cantidad = cantidad;
-             tmp.peuros = tPeuros;
-             tmp.teuros = tTeuros;
              tmp.pension = tpension;
+             tmp.extras = tExtras;
+             tmp.peuros = tPeuros+ costeExtras(1,tExtras);
+             tmp.teuros = tTeuros+ costeExtras(cantidad,tExtras);
              gLineasVentas.add(tmp);
 
              tmp = new ClaseLineaVentas();
@@ -362,5 +369,15 @@ public class ClaseLineaVentas implements Parcelable, Cloneable, Comparable<Clase
 
     public boolean tieneExtras() {
         return extras != null && !extras.isEmpty();
+    }
+
+    public static  double costeExtras(int cantidad, ArrayList<ClaseItemExtra> extras) {
+        double pExtras = 0.00;
+        for (ClaseItemExtra extra: extras){
+            if (extra.tipo.equalsIgnoreCase("E") && extra.estadoExtra == ClaseItemExtra.ESTADO_CON){
+                pExtras += Double.parseDouble(extra.precio);
+            }
+        }
+        return  cantidad* pExtras;
     }
 }

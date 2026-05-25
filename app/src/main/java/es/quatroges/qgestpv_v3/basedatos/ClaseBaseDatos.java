@@ -681,11 +681,11 @@ public abstract class ClaseBaseDatos extends RoomDatabase {
         return future.get();
     }
 
-    public <T> Integer borraRango(final T roomTabla, final int min, final int max) throws ExecutionException,InterruptedException{
+    public  Integer borraRango(String tabla, final int min, final int max) throws ExecutionException,InterruptedException{
         Callable<Integer> callable = new Callable<Integer>() {
             @Override
             public Integer call() throws Exception {
-                String clase =  roomTabla.getClass().getSimpleName();
+                String clase =  tabla.toLowerCase();
                 switch (clase.toLowerCase()){
                     case "usuarios":
                         usuariosDao().borraRango(min,max);

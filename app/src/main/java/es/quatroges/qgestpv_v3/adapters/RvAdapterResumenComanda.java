@@ -24,6 +24,7 @@ import java.util.Collections;
 
 import es.quatroges.qgestpv_v3.R;
 import es.quatroges.qgestpv_v3.datos.listas.lineaVentas.ClaseLineaVentas;
+import es.quatroges.qgestpv_v3.utils.ClaseItemExtra;
 import es.quatroges.qgestpv_v3.utils.ClaseUtils;
 
 public class RvAdapterResumenComanda extends RecyclerView.Adapter<RvAdapterResumenComanda.CategoriaViewHolder> {
@@ -65,11 +66,30 @@ public class RvAdapterResumenComanda extends RecyclerView.Adapter<RvAdapterResum
     @Override
     public void onBindViewHolder(@NonNull CategoriaViewHolder categoriaViewHolder,final  int i) {
         categoriaViewHolder.cantidad.setText(Integer.toString(listaLineaVentas.get(i).cantidad));
-        categoriaViewHolder.descripcion.setText(listaLineaVentas.get(i).descripcion);
+        StringBuilder desc = new StringBuilder(listaLineaVentas.get(i).descripcion);
         categoriaViewHolder.descripcion.setTypeface(Typeface.DEFAULT);
-        categoriaViewHolder.peuros.setText(ClaseUtils.double2string(listaLineaVentas.get(i).peuros,2));
+                categoriaViewHolder.peuros.setText(ClaseUtils.double2string(listaLineaVentas.get(i).peuros,2));
+
+        for (ClaseItemExtra extra: listaLineaVentas.get(i).extras){
+            desc.append("\r\n\t");
+            if (extra.tipo.equalsIgnoreCase("E") && extra.estadoExtra == ClaseItemExtra.ESTADO_CON) {
+                desc.append("CON ");
+            }
+            else if (extra.tipo.equalsIgnoreCase("E") && extra.estadoExtra == ClaseItemExtra.ESTADO_SIN) {
+                desc.append("SIN ");
+            }
+            if (extra.tipo.equalsIgnoreCase("E")){
+                desc.append(extra.descripcion);
+            }
+            else {
+                desc.append(extra.nota);
+            }
+
+        }
         categoriaViewHolder.teuros.setText(ClaseUtils.double2string(listaLineaVentas.get(i).teuros,2));
         categoriaViewHolder.teuros.setTypeface(Typeface.DEFAULT);
+
+        categoriaViewHolder.descripcion.setText(desc.toString());
 
         categoriaViewHolder.cv.setCardBackgroundColor(Color.WHITE);
 

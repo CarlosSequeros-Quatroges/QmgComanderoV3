@@ -928,7 +928,7 @@ public class ActivityInicio extends AppCompatActivity
                 for (ClaseItemExtra extra: linea.extras){
                     if (extra.tipo.equalsIgnoreCase("E") && extra.estadoExtra == ClaseItemExtra.ESTADO_CON){
                         double precio = Double.parseDouble(extra.precio);
-                        importeExtras += precio;
+                        importeExtras += linea.cantidad*precio;
                     }
                 }
             }

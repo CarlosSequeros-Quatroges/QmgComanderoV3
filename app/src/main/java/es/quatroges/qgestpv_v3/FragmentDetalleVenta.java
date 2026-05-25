@@ -258,7 +258,7 @@ public class FragmentDetalleVenta extends Fragment {
                         }
                         detalleVenta.extras = dlgExtras.getExtras();
 
-                        refrescaResumenExtras(detalleVenta.extras);
+                        refrescaResumenExtras(detalleVenta.extras, false);
                     }
                 }
         );
@@ -347,9 +347,9 @@ public class FragmentDetalleVenta extends Fragment {
                     tvDescripcion.setText(detalleVenta.descripcion);
                     etPrecio.setText(ClaseUtils.double2string(detalleVenta.peuros,2));
                     tvTotal.setText(ClaseUtils.double2string(detalleVenta.teuros,2));
-                    if (detalleVenta.tieneExtras()) {
-                        refrescaResumenExtras(detalleVenta.extras);
-                    }
+                    //if (detalleVenta.tieneExtras()) {
+                        refrescaResumenExtras(detalleVenta.extras, true);
+                    //}
                     if (detalleVenta.happyhour.toLowerCase().equals("s")) {
                         ivHH.setVisibility(View.VISIBLE);
                         tvHH.setVisibility(View.VISIBLE);
@@ -553,6 +553,8 @@ public class FragmentDetalleVenta extends Fragment {
             public void onClick(View v) {
                 mostrarTeclado(false,null);
                 rlyDatosUds.setVisibility(View.VISIBLE);
+                //pepe - probar
+                cambiosPendientes = false;
                 oculto = false;
                 if (interfaceDetalleVenta != null) {
                     detalleVenta.imprimir = "S";
@@ -875,7 +877,7 @@ public class FragmentDetalleVenta extends Fragment {
 
 
 
-    private void refrescaResumenExtras(ArrayList<ClaseItemExtra> extrasLinea) {
+    private void refrescaResumenExtras(ArrayList<ClaseItemExtra> extrasLinea, boolean inicio) {
         ArrayList<RvAdapterDetalleNotas.ItemDetalleNota> items = new ArrayList<>();
         double importeExtras = 0.00;
 
@@ -898,17 +900,20 @@ public class FragmentDetalleVenta extends Fragment {
                 else {
                     String textoExtra = extra.descripcion;
                     int tipoExtra = extra.estadoExtra ==  ClaseItemExtra.ESTADO_CON ? TIPO_EXTRA_CON:TIPO_EXTRA_SIN;
+
+                    if (extra.estadoExtra == ClaseItemExtra.ESTADO_CON) {
+                        if (extra.precio != null && !extra.precio.isEmpty()) {
+                            importeExtras += Double.parseDouble(extra.precio);
+                            textoExtra += " "+extra.precio+"€";
+                        }
+                    }
+
                     items.add(new RvAdapterDetalleNotas.ItemDetalleNota(
                             tipoExtra,
                             textoExtra,
                             extra.estado
                     ));
 
-                    if (extra.estadoExtra == ClaseItemExtra.ESTADO_CON) {
-                        if (extra.precio != null && !extra.precio.isEmpty()) {
-                            importeExtras += Double.parseDouble(extra.precio);
-                        }
-                    }
                 }
             }
         }
@@ -927,7 +932,7 @@ public class FragmentDetalleVenta extends Fragment {
             ivCancelar.setVisibility(VISIBLE);
             ivCancelar.setBackground(context.getDrawable(R.drawable.cancelar));
             ivCancelar.setRotation((float) 0);
-            cambiosPendientes = true;
+            cambiosPendientes = !inicio;
         }
     }
 

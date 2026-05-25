@@ -77,14 +77,15 @@ public class RvAdapterLineaVentas extends RecyclerView.Adapter<RvAdapterLineaVen
         categoriaViewHolder.cantidad.setText(Integer.toString(lineaVenta.cantidad));
         categoriaViewHolder.descripcion.setText(lineaVenta.descripcion);
         categoriaViewHolder.peuros.setText(ClaseUtils.double2string(lineaVenta.peuros,2));
-        categoriaViewHolder.teuros.setText(ClaseUtils.double2string(lineaVenta.teuros,2));
         double importeExtras = calculaImporteExtras(lineaVenta);
         if (importeExtras > 0) {
-            categoriaViewHolder.textras.setVisibility(View.VISIBLE);
-            categoriaViewHolder.textras.setText(ClaseUtils.double2string(importeExtras,2));
+            categoriaViewHolder.pextras.setVisibility(View.VISIBLE);
+            categoriaViewHolder.pextras.setText(ClaseUtils.double2string(importeExtras,2));
         } else {
-            categoriaViewHolder.textras.setVisibility(View.GONE);
+            categoriaViewHolder.pextras.setVisibility(View.GONE);
         }
+
+        categoriaViewHolder.teuros.setText(ClaseUtils.double2string(lineaVenta.teuros+ lineaVenta.cantidad* importeExtras,2));
 
         if (esInicioGrupo(i)) {
             categoriaViewHolder.tvOrdenGrupo.setVisibility(View.VISIBLE);
@@ -220,7 +221,7 @@ public class RvAdapterLineaVentas extends RecyclerView.Adapter<RvAdapterLineaVen
         TextView descripcion;
         TextView peuros;
         TextView teuros;
-        TextView textras;
+        TextView pextras;
 
         androidx.appcompat.widget.AppCompatImageView ivHappyHour, ivObservaciones, ivEstado, ivTipo, ivErrTransmision, ivPension;
 
@@ -235,7 +236,7 @@ public class RvAdapterLineaVentas extends RecyclerView.Adapter<RvAdapterLineaVen
             descripcion = itemView.findViewById(R.id.descripcion);
             peuros = itemView.findViewById(R.id.peuros);
             teuros = itemView.findViewById(R.id.teuros);
-            textras = itemView.findViewById(R.id.textras);
+            pextras = itemView.findViewById(R.id.pextras);
 
             ivHappyHour = itemView.findViewById(R.id.ivHH);
             ivObservaciones= itemView.findViewById(R.id.ivObs);
@@ -440,7 +441,9 @@ public class RvAdapterLineaVentas extends RecyclerView.Adapter<RvAdapterLineaVen
             }
 
             try {
-                totalExtras += Double.parseDouble(extra.precio.replace(",", ".").trim());
+                double pExtra =  Double.parseDouble(extra.precio.replace(",", ".").trim());
+                totalExtras +=pExtra;
+
             } catch (NumberFormatException ignored) {
             }
         }

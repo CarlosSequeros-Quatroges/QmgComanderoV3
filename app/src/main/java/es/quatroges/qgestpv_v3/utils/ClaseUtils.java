@@ -1641,7 +1641,7 @@ public class ClaseUtils {
             double suma = 0;
             for (ClaseLineaVentas linea: listaLineaVentas){
                 uds += linea.cantidad;
-                suma += linea.teuros;
+                suma += linea.teuros+ ClaseLineaVentas.costeExtras(uds,linea.extras);
             }
             tvTotal.setText(ClaseUtils.double2string(suma,2));
             tvUds.setText(String.valueOf(uds));

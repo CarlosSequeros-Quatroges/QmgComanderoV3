@@ -143,27 +143,6 @@
                 android:background="@color/textoAzul"
                 />
 
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:id="@+id/peuros"
-                android:textSize="@dimen/text_titulo2"
-                android:textStyle="bold"
-                android:text="1,20"
-                android:gravity="right"
-                android:layout_weight="3"
-                android:layout_marginRight="3dp"
-                android:layout_gravity="center_vertical"
-                />
-
-
-            <FrameLayout
-                android:layout_width="2dp"
-                android:layout_height="match_parent"
-                android:background="@color/textoAzul"
-                />
-
-
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -172,24 +151,44 @@
                 android:layout_gravity="center_vertical"
                 android:orientation="vertical">
 
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/teuros"
+                    android:id="@+id/peuros"
                     android:textSize="@dimen/text_titulo2"
                     android:textStyle="bold"
                     android:text="2,40"
                     android:gravity="right" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/textras"
-                    android:textSize="@dimen/text_subtitulo"
-                    android:text="0,00"
-                    android:gravity="right" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/pextras"
+                        android:textSize="@dimen/text_subtitulo"
+                        android:text="0,00"
+                        android:gravity="right" />
 
-            </LinearLayout>
+                </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="2dp"
+                android:layout_height="match_parent"
+                android:background="@color/textoAzul"
+                />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/teuros"
+                android:textSize="@dimen/text_titulo2"
+                android:textStyle="bold"
+                android:text="1,20"
+                android:gravity="right"
+                android:layout_weight="3"
+                android:layout_marginRight="3dp"
+                android:layout_gravity="center_vertical"
+                />
 
             </LinearLayout>
         </LinearLayout>
