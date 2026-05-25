@@ -3,6 +3,7 @@ package es.quatroges.qgestpv_v3;
 import static android.view.View.VISIBLE;
 import static es.quatroges.qgestpv_v3.adapters.RvAdapterDetalleNotas.TIPO_EXTRA_CON;
 import static es.quatroges.qgestpv_v3.adapters.RvAdapterDetalleNotas.TIPO_EXTRA_SIN;
+import static es.quatroges.qgestpv_v3.adapters.RvAdapterDetalleNotas.TIPO_NOTA;
 import static es.quatroges.qgestpv_v3.utils.ClaseItemExtra.ESTADO_NADA;
 
 import android.app.Activity;
@@ -779,7 +780,7 @@ public class FragmentDetalleVenta extends Fragment {
 
         ivExtras = rootView.findViewById(R.id.ivExtras);
         tvExtraNotas = rootView.findViewById(R.id.tvExtraNotas);
-        tvExtraNotas.setText("Extras / Notas ( 0 )");
+        tvExtraNotas.setText("Extras ( 0 ) / Notas ( 0 )");
 
 
         twPrecio =  new TextWatcher() {
@@ -876,6 +877,7 @@ public class FragmentDetalleVenta extends Fragment {
 
     private void refrescaResumenExtras(ArrayList<ClaseItemExtra> extrasLinea) {
         ArrayList<RvAdapterDetalleNotas.ItemDetalleNota> items = new ArrayList<>();
+        double importeExtras = 0.00;
 
         if (extrasLinea != null) {
             for (ClaseItemExtra extra : extrasLinea) {
@@ -895,12 +897,18 @@ public class FragmentDetalleVenta extends Fragment {
                 //extras
                 else {
                     String textoExtra = extra.descripcion;
-                    int tipoExtra = extra.estadoExtra == 1? TIPO_EXTRA_CON:TIPO_EXTRA_SIN;
+                    int tipoExtra = extra.estadoExtra ==  ClaseItemExtra.ESTADO_CON ? TIPO_EXTRA_CON:TIPO_EXTRA_SIN;
                     items.add(new RvAdapterDetalleNotas.ItemDetalleNota(
                             tipoExtra,
                             textoExtra,
                             extra.estado
                     ));
+
+                    if (extra.estadoExtra == ClaseItemExtra.ESTADO_CON) {
+                        if (extra.precio != null && !extra.precio.isEmpty()) {
+                            importeExtras += Double.parseDouble(extra.precio);
+                        }
+                    }
                 }
             }
         }
@@ -910,10 +918,11 @@ public class FragmentDetalleVenta extends Fragment {
         }
         ajustaAltoResumenNotas(items.size());
 
-        int n = items.size();
-        tvExtraNotas.setText("Extras / Notas ( "+String.valueOf(n)+" )");
+        long n =  items.stream().filter(i -> i.tipo == TIPO_NOTA).count() ;
+        long e =  items.stream().filter(i -> i.tipo != TIPO_NOTA).count() ;
+        tvExtraNotas.setText("Extras ("+String.valueOf(e)+" - "+ClaseUtils.double2string(importeExtras,2)+"€ ) / Notas ("+String.valueOf(n)+")");
 
-        if ( extrasLinea.stream().anyMatch(e -> e.estado != ClaseUtils.enEstado.transmitida) ) {
+        if ( extrasLinea.stream().anyMatch(ex -> ex.estado != ClaseUtils.enEstado.transmitida) ) {
             ivAceptar.setVisibility(View.VISIBLE);
             ivCancelar.setVisibility(VISIBLE);
             ivCancelar.setBackground(context.getDrawable(R.drawable.cancelar));

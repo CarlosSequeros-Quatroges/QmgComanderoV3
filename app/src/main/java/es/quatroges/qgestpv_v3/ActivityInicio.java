@@ -917,11 +917,20 @@ public class ActivityInicio extends AppCompatActivity
         }
 
         double importe = 0.00;
+        double importeExtras = 0.00;
         double coste = 0.00;
         if (listaLineaVentas != null) {
             for (ClaseLineaVentas linea : listaLineaVentas) {
                 importe += linea.teuros;
                 coste += linea.tcoste;
+
+
+                for (ClaseItemExtra extra: linea.extras){
+                    if (extra.tipo.equalsIgnoreCase("E") && extra.estadoExtra == ClaseItemExtra.ESTADO_CON){
+                        double precio = Double.parseDouble(extra.precio);
+                        importeExtras += precio;
+                    }
+                }
             }
         }
         if (submesa != null) {
@@ -937,6 +946,7 @@ public class ActivityInicio extends AppCompatActivity
         Bundle bundle = new Bundle();
         bundle.putInt("lineaSel", lineaSel);
         bundle.putDouble("importe", importe);
+        bundle.putDouble("importeExtras", importeExtras);
         bundle.putDouble("coste", coste);
         bundle.putParcelableArrayList("lineaVentas", listaLineaVentas);
         bundle.putString("ordenplatos", ClaseCondicionesVenta.orden_platos);

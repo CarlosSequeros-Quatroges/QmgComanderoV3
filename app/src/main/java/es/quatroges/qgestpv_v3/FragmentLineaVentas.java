@@ -42,6 +42,8 @@ public class FragmentLineaVentas extends Fragment {
     private static ArrayList<ClaseLineaVentas> listaLineaVentas;
     public static int lineaSel;
     public static double importe;
+    public static double importeExtras;
+
     public static double coste;
     public static boolean isHH;
     private static int ordenSel;
@@ -98,13 +100,15 @@ public class FragmentLineaVentas extends Fragment {
             lineaSel = bundle.getInt("lineaSel",1);
             listaLineaVentas = bundle.getParcelableArrayList("lineaVentas");
             importe = bundle.getDouble("importe");
+            importeExtras = bundle.getDouble("importeExtras");
+
             coste = bundle.getDouble("coste");
 
             rvLineaVentas.setAdapter(null);
             adapterLineaVentas = new RvAdapterLineaVentas(context,listaLineaVentas,this) ;
 
             rvLineaVentas.setAdapter(adapterLineaVentas);
-            tvTotal.setText("Total: "+ClaseUtils.double2string(importe,2)+" € ");
+            tvTotal.setText("Total: "+ClaseUtils.double2string((importe+importeExtras),2)+" € ");
             if (! ClaseCondicionesVenta.tipo_cuentacasa.toUpperCase().equals("G"))
                 tvTotal.setText(tvTotal.getText().toString()+ " ("+ClaseUtils.double2string(coste,2)+"€)");
 

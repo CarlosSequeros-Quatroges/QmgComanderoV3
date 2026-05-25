@@ -25,6 +25,7 @@ import java.util.Comparator;
 
 import es.quatroges.qgestpv_v3.FragmentLineaVentas;
 import es.quatroges.qgestpv_v3.R;
+import es.quatroges.qgestpv_v3.utils.ClaseItemExtra;
 import es.quatroges.qgestpv_v3.utils.ClaseUtils;
 
 public class RvAdapterLineaVentas extends RecyclerView.Adapter<RvAdapterLineaVentas.CategoriaViewHolder> {
@@ -77,6 +78,13 @@ public class RvAdapterLineaVentas extends RecyclerView.Adapter<RvAdapterLineaVen
         categoriaViewHolder.descripcion.setText(lineaVenta.descripcion);
         categoriaViewHolder.peuros.setText(ClaseUtils.double2string(lineaVenta.peuros,2));
         categoriaViewHolder.teuros.setText(ClaseUtils.double2string(lineaVenta.teuros,2));
+        double importeExtras = calculaImporteExtras(lineaVenta);
+        if (importeExtras > 0) {
+            categoriaViewHolder.textras.setVisibility(View.VISIBLE);
+            categoriaViewHolder.textras.setText(ClaseUtils.double2string(importeExtras,2));
+        } else {
+            categoriaViewHolder.textras.setVisibility(View.GONE);
+        }
 
         if (esInicioGrupo(i)) {
             categoriaViewHolder.tvOrdenGrupo.setVisibility(View.VISIBLE);
@@ -212,6 +220,7 @@ public class RvAdapterLineaVentas extends RecyclerView.Adapter<RvAdapterLineaVen
         TextView descripcion;
         TextView peuros;
         TextView teuros;
+        TextView textras;
 
         androidx.appcompat.widget.AppCompatImageView ivHappyHour, ivObservaciones, ivEstado, ivTipo, ivErrTransmision, ivPension;
 
@@ -226,6 +235,7 @@ public class RvAdapterLineaVentas extends RecyclerView.Adapter<RvAdapterLineaVen
             descripcion = itemView.findViewById(R.id.descripcion);
             peuros = itemView.findViewById(R.id.peuros);
             teuros = itemView.findViewById(R.id.teuros);
+            textras = itemView.findViewById(R.id.textras);
 
             ivHappyHour = itemView.findViewById(R.id.ivHH);
             ivObservaciones= itemView.findViewById(R.id.ivObs);
@@ -416,6 +426,25 @@ public class RvAdapterLineaVentas extends RecyclerView.Adapter<RvAdapterLineaVen
             default:
                 return "Otros";
         }
+    }
+
+    private double calculaImporteExtras(ClaseLineaVentas lineaVenta) {
+        if (lineaVenta == null || lineaVenta.extras == null || lineaVenta.extras.isEmpty()) {
+            return 0;
+        }
+
+        double totalExtras = 0;
+        for (es.quatroges.qgestpv_v3.utils.ClaseItemExtra extra : lineaVenta.extras) {
+            if (extra == null || extra.precio == null || extra.precio.trim().isEmpty() || extra.estadoExtra != ClaseItemExtra.ESTADO_CON) {
+                continue;
+            }
+
+            try {
+                totalExtras += Double.parseDouble(extra.precio.replace(",", ".").trim());
+            } catch (NumberFormatException ignored) {
+            }
+        }
+        return totalExtras;
     }
 
 }

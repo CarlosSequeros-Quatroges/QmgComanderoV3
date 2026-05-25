@@ -7,6 +7,8 @@
 
     <dimen name="text_titulo">15sp</dimen>
     <dimen name="text_titulo2">12sp</dimen>
+    <dimen name="text_subtitulo">9sp</dimen>
+
 
     <dimen name="text_actionbar">11sp</dimen>
     <dimen name="text_actionbar_small">10sp</dimen>

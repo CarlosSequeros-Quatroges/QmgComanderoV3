@@ -122,6 +122,7 @@ public class ClaseItemExtra implements Parcelable {
         this.precio = other != null && other.precio != null ? other.precio : "";
         this.estadoExtra = other != null ? other.estadoExtra : ESTADO_NADA;
         this.estado = other != null && other.estado != null ? other.estado : ClaseUtils.enEstado.transmitida;
+        this.codmenu = other !=  null   && other.codmenu != null  ? other.codmenu:"";
     }
 
     public static ClaseItemExtra fromProducto(Productos producto) {
