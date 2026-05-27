@@ -3,6 +3,10 @@ package es.quatroges.qgestpv_v3.datos.listas.lineaVentas;
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import es.quatroges.qgestpv_v3.datos.GrabaLineasVenta;
 import es.quatroges.qgestpv_v3.datos.LineasVenta;
@@ -75,7 +79,8 @@ public final class LineaVentaMapper {
         tlinea.setPcoste(ClaseUtils.double2string(linea.pcoste, 2));
         tlinea.setTcoste(ClaseUtils.double2string(linea.tcoste, 2));
         tlinea.setPension(linea.pension);
-        tlinea.setExtras(copyExtras(linea.extras));
+
+        tlinea.setExtras(copyExtras(linea.extras.stream().filter(e -> e.estado != ClaseUtils.enEstado.transmitida).collect(Collectors.toCollection(ArrayList::new))));
         return tlinea;
     }
 

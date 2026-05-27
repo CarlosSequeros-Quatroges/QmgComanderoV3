@@ -1219,10 +1219,9 @@ public class ServSincronizaBD extends IntentService {
         requestGrabaLineasWS.setCamarero(camarero);
 
 
-        Log.d("ServSincronizaBD","descuento: "+lineasVentas.get(0).getDescuento());
         final Long timeini = Calendar.getInstance().getTimeInMillis();
 
-        apiService.grabaLineas(requestGrabaLineasWS).enqueue(new Callback<RespuestaGrabaLineasWS>() {
+          apiService.grabaLineas(requestGrabaLineasWS).enqueue(new Callback<RespuestaGrabaLineasWS>() {
 
             @Override
             public void onResponse(Call<RespuestaGrabaLineasWS> call, Response<RespuestaGrabaLineasWS> response) {

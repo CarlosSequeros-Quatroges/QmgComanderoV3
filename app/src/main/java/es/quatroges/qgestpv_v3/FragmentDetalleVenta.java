@@ -79,7 +79,7 @@ public class FragmentDetalleVenta extends Fragment {
         nota, precio, cantidad;
     }
     private enCampo campo;
-    private static boolean cambiosPendientes;
+    private static boolean cambiosPendientes, actualizaPlato;
 
     private static View tecladoView;
 
@@ -123,6 +123,7 @@ public class FragmentDetalleVenta extends Fragment {
             ivCancelar.setRotation((float)90);
             cargaDatos(detalleVenta, editar);
             cambiosPendientes = false;
+            actualizaPlato = false;
         }
     }
 
@@ -135,7 +136,7 @@ public class FragmentDetalleVenta extends Fragment {
         Bundle cargaDetalleVenta();
         boolean isHappyHour();
         void eliminaLinea(boolean borrar, ClaseLineaVentas item);
-        void actualizaLinea(ClaseLineaVentas detalleVenta);
+        void actualizaLinea(ClaseLineaVentas detalleVenta, boolean actualizaPlato);
         void ocultaElementos(boolean visible);
         ArrayList<Integer> recuperaListaSubmesas();
         boolean añadeSubmesa();
@@ -248,15 +249,14 @@ public class FragmentDetalleVenta extends Fragment {
                     if (cerrado && dlgExtras != null) {
 
                         ArrayList<ClaseItemExtra> extras = new ArrayList<>();
-                        ArrayList<ClaseItemExtra> extrasDialogo = dlgExtras.getExtras();
-                        if (extrasDialogo != null) {
-                            for (ClaseItemExtra extra : extrasDialogo) {
-                                if (extra != null && extra.estadoExtra != ESTADO_NADA) {
-                                    extras.add(extra);
-                                }
+                        ArrayList<ClaseItemExtra> extrasDialogo = ClaseUtils.PideExtras.getExtras();
+                        for (ClaseItemExtra extra : extrasDialogo) {
+                            if (extra != null && extra.estadoExtra != ESTADO_NADA) {
+                                extras.add(extra);
                             }
                         }
-                        detalleVenta.extras = dlgExtras.getExtras();
+
+                        detalleVenta.extras = ClaseUtils.PideExtras.getExtras();
 
                         refrescaResumenExtras(detalleVenta.extras, false);
                     }
@@ -482,6 +482,7 @@ public class FragmentDetalleVenta extends Fragment {
                     ivCancelar.setRotation((float)0);
 
                     cambiosPendientes = true;
+                    actualizaPlato = true;
                 }
 
             }
@@ -517,6 +518,7 @@ public class FragmentDetalleVenta extends Fragment {
                     ivCancelar.setRotation((float)0);
 
                     cambiosPendientes = true;
+                    actualizaPlato = true;
                 }
             }
         });
@@ -529,7 +531,7 @@ public class FragmentDetalleVenta extends Fragment {
                 oculto = false;
                 cambiosPendientes = false;
                 moviendoArticulo = false;
-
+                actualizaPlato = false;
 
                 if (interfaceDetalleVenta != null) {
                     detalleVenta = null;
@@ -555,14 +557,16 @@ public class FragmentDetalleVenta extends Fragment {
                 rlyDatosUds.setVisibility(View.VISIBLE);
                 //pepe - probar
                 cambiosPendientes = false;
+
                 oculto = false;
                 if (interfaceDetalleVenta != null) {
                     detalleVenta.imprimir = "S";
-                    interfaceDetalleVenta.actualizaLinea(detalleVenta);
+                    interfaceDetalleVenta.actualizaLinea(detalleVenta, actualizaPlato);
                     ivCancelar.setBackground(context.getDrawable(R.drawable.arrow));
                     ivCancelar.setRotation((float)90);
                     ivAceptar.setVisibility(View.INVISIBLE);
                 }
+                actualizaPlato = false;
             }
         });
 
@@ -737,6 +741,7 @@ public class FragmentDetalleVenta extends Fragment {
             ivCancelar.setBackground(context.getDrawable(R.drawable.cancelar));
             ivCancelar.setRotation((float) 0);
             cambiosPendientes = true;
+            actualizaPlato = true;
 
         }
 
@@ -822,6 +827,7 @@ public class FragmentDetalleVenta extends Fragment {
                 ivCancelar.setRotation((float)0);
 
                 cambiosPendientes = true;
+                actualizaPlato = true;
 
             }
         };
@@ -868,6 +874,7 @@ public class FragmentDetalleVenta extends Fragment {
                     ivCancelar.setRotation((float)0);
 
                     cambiosPendientes = true;
+                    actualizaPlato = true;
                 }
 
             }
@@ -1079,7 +1086,7 @@ public class FragmentDetalleVenta extends Fragment {
 
 
 
-                    interfaceDetalleVenta.actualizaLinea(detalleVenta);
+                    interfaceDetalleVenta.actualizaLinea(detalleVenta,actualizaPlato);
                     interfaceDetalleVenta.mueveLineaSubmesa(nuevaLinea,submesa);
                 }
                 else

@@ -995,14 +995,9 @@ public class ActivityInicio extends AppCompatActivity
             int nlinea = 0;
             for (ClaseLineaVentas linea : submesa.lineasVentas) {
 
-                if (linea.estado.equals(ClaseUtils.enEstado.actualizar) ||
-                        linea.estado.equals(ClaseUtils.enEstado.anadir) ||
-                        linea.estado.equals(ClaseUtils.enEstado.eliminar)) {
-
+                if (linea.estado != ClaseUtils.enEstado.transmitida ||  linea.extras.stream().anyMatch(e -> e.estado != ClaseUtils.enEstado.transmitida )) {
                     GrabaLineasVenta tlinea = LineaVentaMapper.toGraba(linea);
-
                     lineasVentas.add(tlinea);
-
                 }
                 nlinea += 1;
 
@@ -1178,7 +1173,7 @@ public class ActivityInicio extends AppCompatActivity
     }
 
     @Override
-    public void actualizaLinea(ClaseLineaVentas detalleVenta) {
+    public void actualizaLinea(ClaseLineaVentas detalleVenta, boolean actualizaPlato) {
         ClaseLineaVentas item = listaLineaVentas.get(lineaSel);
 
         item.cantidad = detalleVenta.cantidad;
@@ -1194,8 +1189,11 @@ public class ActivityInicio extends AppCompatActivity
         item.descuento = detalleVenta.descuento;
 
         item.orden_platos = detalleVenta.orden_platos;
-        if (item.estado == ClaseUtils.enEstado.transmitida)
+
+
+        if (actualizaPlato &&  item.estado == ClaseUtils.enEstado.transmitida) {
             item.estado = ClaseUtils.enEstado.actualizar;
+        }
 
 
         if (fragmentLineaVentas != null) fragmentLineaVentas.actualizaLineaVentas(true);
@@ -5045,15 +5043,19 @@ public class ActivityInicio extends AppCompatActivity
 
     private static boolean getLineasPendientesEnvio() {
         if (mesa != null && mesa.submesas != null) {
-            for (ClaseSubMesas tSubMesas : mesa.submesas) {
-                for (ClaseLineaVentas linea : tSubMesas.lineasVentas) {
-                    if (linea.estado == ClaseUtils.enEstado.anadir || linea.estado == ClaseUtils.enEstado.actualizar ||
-                            linea.estado == ClaseUtils.enEstado.eliminar) {
-                        return true;
-                    }
 
-                }
+            if (mesa.submesas.stream().anyMatch(
+                    sub ->  sub.lineasVentas.stream().anyMatch(
+                            l -> l.estado != ClaseUtils.enEstado.transmitida))) {
+                return true;
             }
+            if (mesa.submesas.stream().anyMatch(
+                    sub ->  sub.lineasVentas.stream().anyMatch(
+                            l -> l.extras.stream().anyMatch(
+                                    e -> e.estado != ClaseUtils.enEstado.transmitida)))) {
+                return true;
+            }
+
         }
         return false;
     }

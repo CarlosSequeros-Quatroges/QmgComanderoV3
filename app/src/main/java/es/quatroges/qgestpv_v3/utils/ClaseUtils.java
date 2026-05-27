@@ -1871,9 +1871,10 @@ public class ClaseUtils {
             ArrayList<ClaseItemExtra> tExtras =  extras.stream().filter(e -> e.tipo.equalsIgnoreCase("E")).collect(Collectors.toCollection(ArrayList::new));
             for (ClaseItemExtra tExtra: tExtras){
                 extrasDisponibles.stream().filter(e -> e.codmenu.equalsIgnoreCase(tExtra.codmenu))
-                        .findFirst().get().estadoExtra = tExtra.estadoExtra == 1 ?  ClaseItemExtra.ESTADO_CON: ClaseItemExtra.ESTADO_SIN;
-                extrasDisponibles.stream().filter(e -> e.codmenu.equalsIgnoreCase(tExtra.codmenu))
-                        .findFirst().get().estado = tExtra.estado;
+                        .findFirst().ifPresent( e-> {
+                            e.estadoExtra = tExtra.estadoExtra;
+                            e.estado = tExtra.estado;
+                            e.codigo = tExtra.codigo;});
             }
 
             return  extrasDisponibles;

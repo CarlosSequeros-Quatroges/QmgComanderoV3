@@ -105,8 +105,12 @@ public class RvAdapterLineaVentas extends RecyclerView.Adapter<RvAdapterLineaVen
             categoriaViewHolder.cv.setEnabled(false);
             categoriaViewHolder.cv.setAlpha((float) 0.4);
         }
-        else
+        else if (lineaVenta.extras.stream().anyMatch(e -> e.estado != ClaseUtils.enEstado.transmitida)) {
+            categoriaViewHolder.ivEstado.setBackgroundDrawable(context.getDrawable(R.drawable.sync));
+        }
+        else {
             categoriaViewHolder.ivEstado.setBackgroundDrawable(context.getDrawable(R.drawable.aceptar));
+        }
 
         if (lineaVenta.resultadoEnvio == ClaseUtils.enEstado.error) {
             categoriaViewHolder.ivErrTransmision.setVisibility(View.VISIBLE);

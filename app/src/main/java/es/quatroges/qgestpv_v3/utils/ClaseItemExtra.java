@@ -35,16 +35,19 @@ public class ClaseItemExtra implements Parcelable {
 
     @SerializedName("descripcion")
     @Expose
-    public transient String descripcion;
+    public String descripcion;
     @SerializedName("peuros")
     @Expose
-    public transient String precio;
+    public  String precio;
 
     @SerializedName("codmenu")
     @Expose
-    public transient String codmenu;
+    public  String codmenu;
 
-    public transient int estadoExtra;  //con sin....
+    @SerializedName("estadoextra")
+    @Expose
+    public  int estadoExtra;  //con sin....
+
     public ClaseUtils.enEstado estado;
 
     public ClaseItemExtra() {
