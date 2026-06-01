@@ -75,7 +75,7 @@ public class FragmentDialogFacturaLineas extends Fragment {
         double suma = 0;
         for (ClaseLineaVentas linea: lineas){
             uds += linea.cantidad;
-            suma += linea.teuros;
+            suma += linea.teuros+ ClaseLineaVentas.costeExtras(linea.cantidad,linea.extras);
         }
         tvTotal.setText(ClaseUtils.double2string(suma,2));
         tvUds.setText(String.valueOf(uds));

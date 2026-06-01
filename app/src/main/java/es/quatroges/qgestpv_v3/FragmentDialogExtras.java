@@ -25,7 +25,7 @@ public class FragmentDialogExtras extends Fragment {
     private static RvAdapterExtras adapterExtras;
 
     public static ArrayList<ClaseItemExtra> getExtras() {
-        return extras.stream().filter(e -> e.estadoExtra != 0).collect(Collectors.toCollection(ArrayList::new));
+        return extras.stream().filter(e -> e.estadoExtra != 0 || (e.estadoExtra == 0 && e.codigo > 0 ) ).collect(Collectors.toCollection(ArrayList::new));
     }
 
     public interface InterfaceFrgDlgExtras {

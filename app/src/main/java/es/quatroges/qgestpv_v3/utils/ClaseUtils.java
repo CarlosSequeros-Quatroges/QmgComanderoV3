@@ -1641,7 +1641,7 @@ public class ClaseUtils {
             double suma = 0;
             for (ClaseLineaVentas linea: listaLineaVentas){
                 uds += linea.cantidad;
-                suma += linea.teuros+ ClaseLineaVentas.costeExtras(uds,linea.extras);
+                suma += linea.teuros+ ClaseLineaVentas.costeExtras(linea.cantidad,linea.extras);
             }
             tvTotal.setText(ClaseUtils.double2string(suma,2));
             tvUds.setText(String.valueOf(uds));
@@ -1833,6 +1833,8 @@ public class ClaseUtils {
         public static ArrayList<ClaseItemExtra> getExtras() {
             ArrayList<ClaseItemExtra> notas =  FragmentDialogNotas.getNotas();
             ArrayList<ClaseItemExtra> extras = FragmentDialogExtras.getExtras();
+
+
             ArrayList<ClaseItemExtra> total = new ArrayList<>();
             if (notas != null) total.addAll(notas);
             if (extras != null) total.addAll(extras);

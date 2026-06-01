@@ -54,19 +54,22 @@ public class RvAdapterDetalleNotas extends RecyclerView.Adapter<RvAdapterDetalle
     public void onBindViewHolder(@NonNull NotaViewHolder holder, int position) {
         ItemDetalleNota item = items.get(position);
         holder.tvTextoNota.setText(item.texto);
+        holder.tvTextoNota.setPaintFlags( holder.tvTextoNota.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+
         if (item.tipo == TIPO_EXTRA_CON ) {
             holder.ivTipoNota.setImageResource(R.drawable.bar_extras_con);
             holder.tvTextoNota.setText("CON "+item.texto);
-            holder.tvTextoNota.setPaintFlags( holder.tvTextoNota.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
         }
         else if (item.tipo == TIPO_EXTRA_SIN) {
             holder.ivTipoNota.setImageResource(R.drawable.bar_extras_sin);
             holder.tvTextoNota.setText("SIN "+item.texto);
-            holder.tvTextoNota.setPaintFlags( holder.tvTextoNota.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         }
         else {
             holder.ivTipoNota.setImageResource(android.R.drawable.ic_menu_edit);
-            holder.tvTextoNota.setPaintFlags( holder.tvTextoNota.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+        }
+
+        if (item.estado == ClaseUtils.enEstado.eliminar) {
+            holder.tvTextoNota.setPaintFlags( holder.tvTextoNota.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         }
 
         if (item.estado == ClaseUtils.enEstado.actualizar) {

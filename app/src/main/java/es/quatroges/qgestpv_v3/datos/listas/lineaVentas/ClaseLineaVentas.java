@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
 
 import es.quatroges.qgestpv_v3.utils.ClaseItemExtra;
 import es.quatroges.qgestpv_v3.utils.ClaseUtils;
@@ -252,6 +253,135 @@ public class ClaseLineaVentas implements Parcelable, Cloneable, Comparable<Clase
         }
     }
 
+
+    // Método auxiliar para construir una línea de extra
+    private static ClaseLineaVentas buildLineaExtra(int ordenPlato, ClaseItemExtra extra, int nPlato) {
+        ClaseLineaVentas linea = new ClaseLineaVentas();
+        String signo = " + ";
+        linea.peuros       = Double.parseDouble(extra.precio);
+
+        if (extra.estadoExtra == ClaseItemExtra.ESTADO_SIN ) {
+            signo = " - ";
+            linea.peuros = 0;
+        }
+        linea.orden_platos = ordenPlato;
+        linea.descripcion  = "("+String.valueOf(nPlato)+")"+signo +  extra.descripcion;
+        linea.cantidad     = 1;
+        linea.teuros = linea.peuros;
+        linea.linea_total  = false;
+        return linea;
+    }
+
+    // Método auxiliar para volcar un grupo completo
+    private static void flushGrupo(
+            ArrayList<ClaseLineaVentas> result,
+            int ordenPlato, String descripcion,
+            int cantidad, String pension,
+            ArrayList<ClaseItemExtra> extras,
+            double peuros, double teuros,
+            List<ClaseLineaVentas> lineasDelGrupo) {  // ← las líneas originales del grupo
+
+        // 1. Línea agrupada del plato
+        ClaseLineaVentas tmp = new ClaseLineaVentas();
+        tmp.orden_platos = ordenPlato;
+        tmp.descripcion  = descripcion;
+        tmp.cantidad     = cantidad;
+        tmp.pension      = pension;
+        tmp.extras       = extras;
+        tmp.peuros       = peuros; // + costeExtras(1, extras);
+        tmp.teuros       = teuros; // + costeExtras(cantidad, extras);
+        result.add(tmp);
+
+        // 2. Una línea por cada extra de cada línea original del grupo
+        int nplato = 0;
+        for (ClaseLineaVentas linea : lineasDelGrupo) {
+            ++nplato;
+            for (ClaseItemExtra extra : linea.extras) {
+                result.add(buildLineaExtra(ordenPlato, extra, nplato));
+            }
+        }
+    }
+
+    // Extrae la construcción de la línea total a un método auxiliar
+    private static ClaseLineaVentas buildLineaTotal(int ordenPlato, int cantidad, double teuros) {
+        ClaseLineaVentas total = new ClaseLineaVentas();
+        total.orden_platos  = ordenPlato;
+        total.descripcion   = "Total " + ClaseLineaVentas.ordenPlato2Desc(ordenPlato) + ": " + cantidad;
+        total.cantidad      = cantidad;
+        total.peuros        = 0;
+        total.teuros        = teuros;
+        total.linea_total   = true;
+        return total;
+    }
+
+    public static ArrayList<ClaseLineaVentas> agrupa(ArrayList<ClaseLineaVentas> lineasVentas) {
+        int xorden_plato = -1;
+        String xdescripcion = "";
+        int cantidad = 0;
+        int tCantidadOrden = 0;
+        double tPeuros = 0;
+        double tTeuros = 0;
+        double tTEurosOrden = 0;
+        String tpension = "";
+        ArrayList<ClaseItemExtra> tExtras = new ArrayList<>();
+        List<ClaseLineaVentas> lineasDelGrupo = new ArrayList<>();  // ← nuevo
+
+        ArrayList<ClaseLineaVentas> gLineasVentas = new ArrayList<>();
+
+        for (ClaseLineaVentas linea : lineasVentas) {
+            if (xorden_plato == -1)       xorden_plato = linea.orden_platos;
+            if (xdescripcion.isEmpty())   xdescripcion = linea.descripcion;
+
+            if (linea.orden_platos != xorden_plato || !linea.descripcion.equals(xdescripcion)) {
+
+                // Vuelca el grupo acumulado (con sus extras individuales)
+                flushGrupo(gLineasVentas, xorden_plato, xdescripcion,
+                        cantidad, tpension, tExtras, tPeuros, tTeuros,
+                        lineasDelGrupo);
+
+                // Subtotal de orden si cambiamos de curso
+                if (linea.orden_platos != xorden_plato) {
+                    gLineasVentas.add(buildLineaTotal(xorden_plato, tCantidadOrden, tTEurosOrden));
+                    tCantidadOrden = 0;
+                    tTEurosOrden   = 0;
+                }
+
+                // Reset acumuladores
+                xorden_plato  = linea.orden_platos;
+                xdescripcion  = linea.descripcion;
+                cantidad      = 0;
+                tPeuros       = 0;
+                tTeuros       = 0;
+                tpension      = "";
+                tExtras       = new ArrayList<>();
+                lineasDelGrupo = new ArrayList<>();  // ← reset
+            }
+
+            cantidad       += linea.cantidad;
+            tCantidadOrden += linea.cantidad;
+            tPeuros         = linea.peuros;
+            tTeuros        += linea.teuros;
+            tTEurosOrden   += linea.teuros + costeExtras(linea.cantidad, linea.extras);
+            tpension        = linea.pension;
+            tExtras         = linea.extras;
+            lineasDelGrupo.add(linea);  // ← acumulamos la línea completa
+        }
+
+        // Flush del último grupo
+        if (cantidad > 0) {
+            flushGrupo(gLineasVentas, xorden_plato, xdescripcion,
+                    cantidad, tpension, tExtras, tPeuros, tTeuros,
+                    lineasDelGrupo);
+            gLineasVentas.add(buildLineaTotal(xorden_plato, tCantidadOrden, tTEurosOrden));
+        }
+
+        return gLineasVentas;
+    }
+
+
+
+
+    /*
     public static ArrayList<ClaseLineaVentas> agrupa(ArrayList<ClaseLineaVentas> lineasVentas) {
         int xorden_plato = -1;
         String xdescripcion = "";
@@ -352,6 +482,10 @@ public class ClaseLineaVentas implements Parcelable, Cloneable, Comparable<Clase
         }
         return  gLineasVentas;
     }
+
+     */
+
+
 
     private static String ordenPlato2Desc(int orden){
         if (orden == 1) return "Entrantes";

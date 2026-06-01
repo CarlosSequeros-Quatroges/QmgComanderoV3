@@ -86,6 +86,7 @@ public class RvAdapterResumenComanda extends RecyclerView.Adapter<RvAdapterResum
             }
 
         }
+
         categoriaViewHolder.teuros.setText(ClaseUtils.double2string(listaLineaVentas.get(i).teuros,2));
         categoriaViewHolder.teuros.setTypeface(Typeface.DEFAULT);
 

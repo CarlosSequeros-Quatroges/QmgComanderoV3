@@ -935,8 +935,8 @@ public class ActivityInicio extends AppCompatActivity
         }
         if (submesa != null) {
             submesa.lineasVentas = listaLineaVentas;
-            if (submesa.importe != importe)
-                submesa.importe = importe;
+            if (submesa.importe !=(importe+importeExtras))
+                submesa.importe = importe+importeExtras;
             if (submesa.coste != coste)
                 submesa.coste = coste;
         }

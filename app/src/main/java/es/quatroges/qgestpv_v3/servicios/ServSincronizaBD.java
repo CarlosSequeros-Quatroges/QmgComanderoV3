@@ -1227,6 +1227,7 @@ public class ServSincronizaBD extends IntentService {
             public void onResponse(Call<RespuestaGrabaLineasWS> call, Response<RespuestaGrabaLineasWS> response) {
                 ActivityInicio.latenciaEnviaComanda.add(response.raw().sentRequestAtMillis(),response.raw().receivedResponseAtMillis(),true);
 
+
                 List<ResGrabaLineasSubmesas> tsubmesas = response.body().getSubmesas();
                 ArrayList<ResGrabaLineasSubmesas> submesas  = new ArrayList<>();
                 submesas.clear();
