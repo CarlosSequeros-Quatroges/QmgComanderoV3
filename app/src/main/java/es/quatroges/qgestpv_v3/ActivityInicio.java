@@ -6315,6 +6315,9 @@ public class ActivityInicio extends AppCompatActivity
     }
 
     private static void calculaAplicaPension(ClaseSubMesas submesa) {
+
+
+
         List<Hora_Comidas> horarios = null;
         try {
             horarios = baseDatos.getHoraComidasTPV(Integer.valueOf(tpv.codtpv));
@@ -6328,7 +6331,14 @@ public class ActivityInicio extends AppCompatActivity
         submesa.tipoPensionAplicada = "";
         submesa.horarioPensionAplicado = "";
         if (horarios != null) {
+
+            ArrayList<String> tiposValidos = new ArrayList<>();
+
             for (Hora_Comidas horario : horarios) {
+
+                //esto esta mal. horario gettipo puede ser D A C (DESAYUNO - ALMUERZO - CENA)
+                //LAS PENSIONES TIPOPENSION PUEDE SER: SD SA  SC  DA AC MP  PC TI
+                /*
                 if (submesa.tipoPension.contains(horario.getTipo())) {
                     if (submesa.horaApertura.compareTo(horario.getDesde_hora())> 0  && submesa.horaApertura.compareTo(horario.getHasta_hora()) <0) {
                         submesa.aplicaPension = true;
@@ -6337,6 +6347,39 @@ public class ActivityInicio extends AppCompatActivity
                         break;
                     }
                 }
+                */
+                tiposValidos.clear();
+                if (horario.getTipo().equalsIgnoreCase("D")) {
+                    tiposValidos.add("SD");
+                    tiposValidos.add("DA");
+                    tiposValidos.add("MP");
+                    tiposValidos.add("PC");
+                    tiposValidos.add("TI");
+                }
+                else if (horario.getTipo().equalsIgnoreCase("A")) {
+                    tiposValidos.add("SA");
+                    tiposValidos.add("DA");
+                    tiposValidos.add("AC");
+                    tiposValidos.add("PC");
+                    tiposValidos.add("TI");
+                }
+                else if (horario.getTipo().equalsIgnoreCase("C")) {
+                    tiposValidos.add("SC");
+                    tiposValidos.add("AC");
+                    tiposValidos.add("MP");
+                    tiposValidos.add("PC");
+                    tiposValidos.add("TI");
+                }
+
+                if (tiposValidos.contains(submesa.tipoPension)) {
+                    if (submesa.horaApertura.compareTo(horario.getDesde_hora())> 0  && submesa.horaApertura.compareTo(horario.getHasta_hora()) <0) {
+                        submesa.aplicaPension = true;
+                        submesa.tipoPensionAplicada = horario.getTipo();
+                        submesa.horarioPensionAplicado = horario.getDesde_hora() + " - "+ horario.getHasta_hora();
+                        break;
+                    }
+                }
+
             }
         }
 
