@@ -2007,6 +2007,13 @@ public class ActivityInicio extends AppCompatActivity
         }
     }
 
+    /** Etiqueta e identificador del dispositivo para mostrarlos en los avisos de bloqueo y poder verificarlo en el backend. */
+    private static String identificacionDispositivo() {
+        String etiqueta = configuracion != null && configuracion.empresa != null ? configuracion.empresa : "";
+        String id = configuracion != null && configuracion.deviceID != null ? configuracion.deviceID : "";
+        return "Dispositivo: " + etiqueta + "\r\nID: " + id;
+    }
+
     private static void validarWS(final boolean aviso, final boolean force) {
         try {
             ClaseUtils.ProgressDialogo.mostrarDialogo(true, context.getResources().getString(R.string.progress_strValidar), context.getResources().getString(R.string.progress_strEspera), context);
@@ -2054,7 +2061,8 @@ public class ActivityInicio extends AppCompatActivity
                         ClaseUtils.ProgressDialogo.cerrarDialogo();
                         ClaseUtils.AvisoResultado aviso1 = new ClaseUtils.AvisoResultado();
                         aviso1.setTitulo(context.getResources().getString(R.string.alert_strAviso));
-                        aviso1.setMensaje(context.getResources().getString(R.string.strErrorWsNoValidado) + "\r\n" + response.body().getErrdesc());
+                        aviso1.setMensaje(context.getResources().getString(R.string.strErrorWsNoValidado) + "\r\n" + response.body().getErrdesc())
+                                + "\r\n" + identificacionDispositivo());
                         aviso1.setBotonTrue(context.getResources().getString(R.string.strAceptar));
                         aviso1.setBotonFalse("");
                         aviso1.setOnclick(dlgOnclickSalir);
@@ -2376,7 +2384,8 @@ public class ActivityInicio extends AppCompatActivity
                 resultadoWS = 4;
                 cerrar = true;
             } else if (intent.getAction().equals(ServSincronizaBD.ACTION_ERROR_BLOQUEADO)) {
-                mensaje = context.getString(R.string.strErrorWsNoValidado) + "\r\n" + intent.getExtras().getString("mensaje");
+                mensaje = context.getString(R.string.strErrorWsNoValidado) + "\r\n" + intent.getExtras().getString("mensaje")
+                        + "\r\n" + identificacionDispositivo();
                 resultadoWS = 3;
                 cerrar = true;
             } else if (intent.getAction().equals(ServSincronizaBD.ACTION_ERROR_MD5)) {
