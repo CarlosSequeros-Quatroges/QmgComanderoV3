@@ -1,19 +1,17 @@
 package es.quatroges.qgestpv_v3.bluetooth;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import androidx.core.app.ActivityCompat;
 
 import com.zj.btsdk.PrintPic;
 
@@ -58,6 +56,9 @@ public class BTDriverSM5802 {
 
     private static int mState;
 
+    /** true desde stop() hasta el siguiente connect(): el hilo de lectura no debe reconectar al cerrarse el socket */
+    private static volatile boolean deteniendo = false;
+
     @SuppressLint({"NewApi"})
     public BTDriverSM5802(Context context, Handler handler) {
         mState = 0;
@@ -75,9 +76,19 @@ public class BTDriverSM5802 {
         return mState;
     }
 
+    /**
+     * true si el socket RFCOMM esta abierto y el hilo de conexion ha terminado.
+     * El paso a STATE_CONNECTED depende del broadcast ACL_CONNECTED, que el sistema no envia
+     * cuando el enlace con la impresora ya existia (p.ej. reconexion inmediata tras un stop()).
+     */
+    public synchronized boolean isSocketConectado() {
+        return mmSocket != null && mmSocket.isConnected() && mConnectThread == null;
+    }
+
 
     public synchronized boolean connect(BluetoothDevice device) {
         Log.d(TAG, "connect to: " + device);
+        deteniendo = false;
         if (mState == ClaseBluetoothPrintConstantes.STATE_CONNECTING && this.mConnectThread != null) {
             this.mConnectThread.cancel();
             this.mConnectThread = null;
@@ -117,7 +128,22 @@ public class BTDriverSM5802 {
 
     }
 
-    public synchronized void connectSocket() {
+    public void connectSocket() {
+        // Si el hilo de conexion sigue vivo (connect() solo espera 1 s), esperamos a que termine
+        // fuera del monitor: cancelarlo cerraria un socket que puede estar recien conectado.
+        ConnectThread enCurso = mConnectThread;
+        if (enCurso != null && enCurso.isAlive()) {
+            Log.d(TAG, "connectSocket: esperando a que termine la conexion en curso");
+            try {
+                enCurso.join(5000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+        connectSocketInterno();
+    }
+
+    private synchronized void connectSocketInterno() {
 
         Log.d(TAG, "connectSocket");
         if (this.mConnectThread != null) {
@@ -130,7 +156,7 @@ public class BTDriverSM5802 {
             mConnectedThread.start();
             Message msg = this.mHandler.obtainMessage(4);
             Bundle bundle = new Bundle();
-            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            if (!PermisosBluetooth.tienePermisoConectar(context)) {
                 //pepe aviso bt
                 return;
             }
@@ -159,6 +185,14 @@ public class BTDriverSM5802 {
 
     public synchronized void stop() {
         Log.d(TAG, "stop");
+        // Parada deliberada: el cierre del socket no debe disparar la reconexion automatica de ConnectedThread
+        deteniendo = true;
+
+        if (mConnectThread != null) {
+            mConnectThread.cancel();
+            mConnectThread = null;
+        }
+        mConnectedThread = null;
 
         try {
             if (mmInStream != null) {
@@ -220,6 +254,10 @@ public class BTDriverSM5802 {
     }
 
     private void connectionLost() {
+        if (deteniendo) {
+            Log.d(TAG, "connectionLost ignorado: parada solicitada");
+            return;
+        }
         this.setState(ClaseBluetoothPrintConstantes.STATE_CONNECTED);
         Message msg = this.mHandler.obtainMessage(5);
         Bundle bundle = new Bundle();
@@ -306,7 +344,7 @@ public class BTDriverSM5802 {
 
 
             try {
-                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                if (!PermisosBluetooth.tienePermisoConectar(context)) {
                     //pepe aviso bt
                     return;
                 }
@@ -321,7 +359,7 @@ public class BTDriverSM5802 {
         public synchronized void run() {
             Log.i(TAG, "BEGIN mConnectThread");
             this.setName("ConnectThread");
-            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            if (!PermisosBluetooth.tienePermisoConectar(context)) {
                 //pepe aviso bt
                 return;
             }
@@ -360,8 +398,10 @@ public class BTDriverSM5802 {
             try {
                 if (mmSocket != null )mmSocket.close();
                 mmSocket = null;
-                if (mmSocketException  && ClaseBluetooth.is_primeraConexion()){
-                    if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                // Reinicio del adaptador tras el primer fallo: desde Android 13 enable()/disable() no hacen nada, se omite
+                if (mmSocketException  && ClaseBluetooth.is_primeraConexion()
+                        && Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU){
+                    if (!PermisosBluetooth.tienePermisoConectar(context)) {
                         //pepe aviso bt
                         return;
                     }
@@ -519,6 +559,14 @@ public class BTDriverSM5802 {
 
         public void cancel() {
             Log.e(TAG, "BT cancelo ThreadConnected ");
+            if (deteniendo) {
+                Log.d(TAG, "BT parada solicitada: no se reintenta la conexion");
+                try { if (mmInStream != null) mmInStream.close(); } catch (IOException e) {}
+                try { if (mmOutStream != null) mmOutStream.close(); } catch (IOException e) {}
+                mmInStream = null;
+                mmOutStream = null;
+                return;
+            }
             try {
                 if (mmInStream != null )    mmInStream.close();
                 if (mmOutStream != null )    mmOutStream.close();
@@ -526,6 +574,10 @@ public class BTDriverSM5802 {
                     mmSocket.close();
                     int intentos = 3;
                     do {
+                        if (deteniendo) {
+                            Log.d(TAG, "BT parada solicitada durante la reconexion: se aborta");
+                            break;
+                        }
                         try {
                             Thread.sleep(400);
                             mConnectThread = new BTDriverSM5802.ConnectThread();
@@ -538,7 +590,12 @@ public class BTDriverSM5802 {
                                     mConnectThread.join(2000);
 
                                     Log.d(TAG, "BT fin intento reconectar");
-                                    if (mmSocket != null) {
+                                    if (deteniendo) {
+                                        Log.d(TAG, "BT parada solicitada: se cierra el socket reconectado");
+                                        try { if (mmSocket != null) mmSocket.close(); } catch (IOException e) {}
+                                        mmSocket = null;
+                                        intentos = 0;
+                                    } else if (mmSocket != null) {
                                         setState(ClaseBluetoothPrintConstantes.STATE_CONNECTED);
                                         intentos = 0;
                                     } else intentos--;

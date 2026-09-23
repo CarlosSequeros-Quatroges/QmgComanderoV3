@@ -12,7 +12,6 @@ import static es.quatroges.qgestpv_v3.bluetooth.ClaseBluetoothPrintConstantes.MO
 import static es.quatroges.qgestpv_v3.bluetooth.ClaseBluetoothPrintConstantes.MODEL_SCREEN;
 import static es.quatroges.qgestpv_v3.bluetooth.ClaseBluetoothPrintConstantes.STATE_CONNECTED_SOCKET;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -21,7 +20,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
@@ -33,7 +31,6 @@ import android.os.SystemClock;
 import android.util.Base64;
 import android.util.Log;
 
-import androidx.core.app.ActivityCompat;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -46,6 +43,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -221,7 +219,8 @@ public class ClaseBluetooth {
 	}
 
 	public static void setRemoteDevice(String remoteDevice) {
-		_remoteDevice = remoteDevice;
+		// BluetoothAdapter.getRemoteDevice exige la MAC en mayusculas; la configuracion puede guardarla en minusculas
+		_remoteDevice = remoteDevice == null ? "" : remoteDevice.trim().toUpperCase(Locale.ROOT);
 	}
 
 	public static int get_ultimoEstadoBT() {
@@ -521,6 +520,8 @@ public class ClaseBluetooth {
 			switch (_modelo) {
 				case ClaseBluetoothPrintConstantes.MODEL_SM5802:
 					_BTdriverSM5802.connect(device);
+					// si el enlace ya existia no llega ACL_CONNECTED: se confirma por el propio socket
+					confirmaEnlaceSiSocketAbierto();
 					break;
 				case ClaseBluetoothPrintConstantes.MODEL_SCREEN:
 					_BTdriverSCREEN.connect(device);
@@ -654,23 +655,26 @@ public class ClaseBluetooth {
 							}
 							if (_BluetoothAdapter != null) {
 
-								if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+								if (!PermisosBluetooth.tienePermisoConectar(context)) {
 									//dialog comprobar permisos BT
 									return;
 								}
-								_BluetoothAdapter.disable();
+								// Desde Android 13 disable() no hace nada para apps normales: se reintenta la conexion sin reiniciar el adaptador
+								final boolean reiniciarAdaptador = Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU;
+								if (reiniciarAdaptador) _BluetoothAdapter.disable();
 
 								Handler h = new Handler();
 								h.postDelayed(new Runnable() {
 									@Override
 									public void run() {
-										if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+										if (!PermisosBluetooth.tienePermisoConectar(context)) {
 											//dialog comprobar permisos BT
 											return;
 										}
-										_BluetoothAdapter.disable();
-
-										SystemClock.sleep(500);
+										if (reiniciarAdaptador) {
+											_BluetoothAdapter.disable();
+											SystemClock.sleep(500);
+										}
 										conectarImpresoraBT();
 									}
 								}, 100);
@@ -737,6 +741,28 @@ public class ClaseBluetooth {
 		}
 	};
 
+
+	/**
+	 * Si el driver SM5802 tiene el socket abierto pero sigue en STATE_CONNECTING (no llego ACL_CONNECTED
+	 * porque el enlace ya existia), lo marca como STATE_CONNECTED para que se pueda abrir el socket de datos.
+	 * @return true si se ha promovido el estado.
+	 */
+	/** true si el driver SM5802 tiene el socket RFCOMM abierto ahora mismo. */
+	public static boolean socketSM5802Conectado() {
+		return _modelo == ClaseBluetoothPrintConstantes.MODEL_SM5802
+				&& _BTdriverSM5802 != null && _BTdriverSM5802.isSocketConectado();
+	}
+
+	public static boolean confirmaEnlaceSiSocketAbierto() {
+		if (_modelo == ClaseBluetoothPrintConstantes.MODEL_SM5802 && _BTdriverSM5802 != null
+				&& _BTdriverSM5802.getState() == ClaseBluetoothPrintConstantes.STATE_CONNECTING
+				&& _BTdriverSM5802.isSocketConectado()) {
+			addLog("socket ya abierto sin ACL_CONNECTED: se marca la impresora como conectada");
+			_BTdriverSM5802.setState(ClaseBluetoothPrintConstantes.STATE_CONNECTED);
+			return true;
+		}
+		return false;
+	}
 
 	public static void conectarImpresoraBT() {
 
@@ -1612,6 +1638,11 @@ public class ClaseBluetooth {
 
 
 	public static String imprimeTiquetTest(Context context) {
+		return imprimeTiquetTest(context, "Prueba de impresion");
+	}
+
+	/** Imprime un tiquet de prueba con el texto indicado en negrita seguido de la fecha y hora. */
+	public static String imprimeTiquetTest(Context context, String titulo) {
 		log("imprimiendo");
 
 		if (checkPrinterConectado() == false) {
@@ -1626,7 +1657,7 @@ public class ClaseBluetooth {
 
 		try {
 
-			sb.append("<b>Prueba de impresion</b><br>");
+			sb.append("<b>" + titulo + "</b><br>");
 			sb.append(ClaseUtils.now("dd/MM/yyyy HH:mm:ss"));
 
 			buscaCaracteresControl(sb,false);
@@ -1720,8 +1751,9 @@ public class ClaseBluetooth {
 
 			switch (_modelo) {
 				case ClaseBluetoothPrintConstantes.MODEL_SM5802:
-
-					conectarImpresoraBT();
+					if (!confirmaEnlaceSiSocketAbierto()) {
+						conectarImpresoraBT();
+					}
 					break;
 				case ClaseBluetoothPrintConstantes.MODEL_SCREEN:
 					if (_BTdriverSCREEN == null) {
@@ -1809,6 +1841,11 @@ public class ClaseBluetooth {
 
 	// funciones para volver a buscar el dispositivo//
 	public static final void buscarBT() {
+		if (!PermisosBluetooth.tienePermisos(context)) {
+			ClaseUtils.Aviso.mostrarAviso("Aviso...",context.getResources().getText(R.string.strConsultaAvisoPermisoBluetooth).toString(),context);
+			new ClaseBluetooth().enableTimer(10000, true);
+			return;
+		}
 		new ClaseBluetooth().detenerTimer();
 
 		ClaseUtils.AvisoToast.mostrarAviso("BlueTooth",context.getResources().getText(R.string.strBTImpresoraBuscando).toString(),context,1000);
@@ -1831,7 +1868,7 @@ public class ClaseBluetooth {
 		// Get a set of currently paired devices
 		Set<BluetoothDevice> pairedDevices = null;
 
-		if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R && ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+		if (!PermisosBluetooth.tienePermisoConectar(context)) {
 			ClaseUtils.Aviso.mostrarAviso("Aviso...",context.getResources().getText(R.string.strConsultaAvisoPermisoBluetooth).toString(),context);
 		} else {
 			pairedDevices = getBlueToothAdapter().getBondedDevices();
@@ -1844,7 +1881,7 @@ public class ClaseBluetooth {
 		mNewDevicesArrayAdapter.clear();
 
 		// If there are paired devices, add each one to the ArrayAdapter
-		if (pairedDevices.size() > 0) {
+		if (pairedDevices != null && pairedDevices.size() > 0) {
 			for (BluetoothDevice device : pairedDevices) {
 				mPairedDevicesArrayAdapter.add(device.getAddress());
 			}
@@ -1857,7 +1894,7 @@ public class ClaseBluetooth {
 		addLog("doDiscovery()");
 
 
-		if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R && ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+		if (!PermisosBluetooth.tienePermisoEscanear(context)) {
 			ClaseUtils.Aviso.mostrarAviso("Aviso...",context.getResources().getText(R.string.strConsultaAvisoPermisoBluetooth).toString(),context);
 			return;
 		}
@@ -1879,7 +1916,7 @@ public class ClaseBluetooth {
 
 	private static void stopDiscovery(String texto) {
 
-		if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R && ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+		if (!PermisosBluetooth.tienePermisoEscanear(context)) {
 			ClaseUtils.Aviso.mostrarAviso("Aviso...",context.getResources().getText(R.string.strConsultaAvisoPermisoBluetooth).toString(),context);
 			return;
 		}
@@ -1902,12 +1939,9 @@ public class ClaseBluetooth {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 
-			if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
-				ClaseUtils.Aviso.mostrarAviso("Aviso...",context.getResources().getText(R.string.strConsultaAvisoPermisoBluetooth).toString(),context);
+			if (!PermisosBluetooth.tienePermisoConectar(context)) {
 				return;
 			}
-
-
 
 			String action = intent.getAction();
 			addLog("Discovery BroadcastReceiver()");
@@ -1959,13 +1993,17 @@ public class ClaseBluetooth {
 
 				} else if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
 					Log.d(TAG, "BT desconectado");
-					if (!_noDesconectarBT)
+					if (socketSM5802Conectado())
+						Log.d(TAG, "BT desconectado: aviso tardio del enlace anterior, el socket actual sigue abierto");
+					else if (!_noDesconectarBT)
 						setPrinterStatus(ClaseBluetoothPrintConstantes.STATE_DISCONNECTED);
 
 
 				} else if (BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED.equals(action)) {
 					Log.d(TAG, "BT pide desconectar");
-					if (!_noDesconectarBT)
+					if (socketSM5802Conectado())
+						Log.d(TAG, "BT pide desconectar: aviso tardio del enlace anterior, el socket actual sigue abierto");
+					else if (!_noDesconectarBT)
 						setPrinterStatus(ClaseBluetoothPrintConstantes.STATE_DISCONNECTED);
 
 				} else {
@@ -1982,6 +2020,10 @@ public class ClaseBluetooth {
 
 	public static void registraBTReceiver(Context applicationContext){
 		Log.d(TAG,"BT registrar BTBroadcastReceiver");
+			if (_btBroadcasReceiverRegistrado) {
+				Log.d(TAG,"BT registrar BTBroadcastReceiver. Ya estaba registrado");
+				return;
+			}
 
 			IntentFilter filter = new IntentFilter();
 			filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);

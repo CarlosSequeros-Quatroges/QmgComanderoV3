@@ -7,7 +7,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -20,11 +19,12 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import androidx.core.app.ActivityCompat;
+import androidx.annotation.NonNull;
 
 import java.util.Set;
 
 import es.quatroges.qgestpv_v3.bluetooth.ClaseBluetooth;
+import es.quatroges.qgestpv_v3.bluetooth.PermisosBluetooth;
 import es.quatroges.qgestpv_v3.configuracion.ClaseConfiguracion;
 import es.quatroges.qgestpv_v3.utils.ClaseUtils;
 
@@ -94,7 +94,10 @@ public class ActivityBTDeviceList extends Activity {
         BT = new ClaseBluetooth(this, getApplicationContext(), null, ClaseConfiguracion.btModelo);
         BT.iniciaBlueToothAdapter(true);
 
-        initDeviceList();
+        // Pide los permisos de ejecución que falten; si ya están, lista directamente
+        if (PermisosBluetooth.solicitarSiFaltan(this)) {
+            initDeviceList();
+        }
 
         // Initialize the button to perform device discovery
         scanButton = findViewById(R.id.button_scan);
@@ -116,16 +119,34 @@ public class ActivityBTDeviceList extends Activity {
         addLog("+++OnDestroy+++");
 
         // Make sure we're not doing discovery anymore
-        if (ClaseBluetooth.getBlueToothAdapter() != null) {
-            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
-                ClaseUtils.Aviso.mostrarAviso("Aviso...",context.getResources().getText(R.string.strConsultaAvisoPermisoBluetooth).toString(),context);
-                return;
+        if (ClaseBluetooth.getBlueToothAdapter() != null && PermisosBluetooth.tienePermisoEscanear(this)) {
+            try {
+                ClaseBluetooth.getBlueToothAdapter().cancelDiscovery();
+            } catch (SecurityException e) {
+                Log.w(TAG, "cancelDiscovery sin permiso", e);
             }
-            ClaseBluetooth.getBlueToothAdapter().cancelDiscovery();
         }
 
         // Unregister broadcast listeners
-        this.unregisterReceiver(mReceiver);
+        try {
+            this.unregisterReceiver(mReceiver);
+        } catch (IllegalArgumentException e) {
+            Log.w(TAG, "receiver no registrado", e);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode != PermisosBluetooth.REQUEST_PERMISOS_BT) return;
+
+        if (PermisosBluetooth.todosConcedidos(grantResults)) {
+            addLog("permisos Bluetooth concedidos");
+            initDeviceList();
+        } else {
+            addLog("permisos Bluetooth denegados");
+            ClaseUtils.Aviso.mostrarAviso("Aviso...", context.getResources().getText(R.string.strConsultaAvisoPermisoBluetooth).toString(), context);
+        }
     }
 
     void initDeviceList() {
@@ -136,11 +157,18 @@ public class ActivityBTDeviceList extends Activity {
             mNewDevicesArrayAdapter.clear();
 
         // Get a set of currently paired devices
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+        if (!PermisosBluetooth.tienePermisoConectar(this)) {
             ClaseUtils.Aviso.mostrarAviso("Aviso...",context.getResources().getText(R.string.strConsultaAvisoPermisoBluetooth).toString(),context);
             return;
         }
-        Set<BluetoothDevice> pairedDevices = ClaseBluetooth.getBlueToothAdapter().getBondedDevices();
+        Set<BluetoothDevice> pairedDevices;
+        try {
+            pairedDevices = ClaseBluetooth.getBlueToothAdapter().getBondedDevices();
+        } catch (SecurityException e) {
+            Log.w(TAG, "getBondedDevices sin permiso", e);
+            ClaseUtils.Aviso.mostrarAviso("Aviso...",context.getResources().getText(R.string.strConsultaAvisoPermisoBluetooth).toString(),context);
+            return;
+        }
 
         // If there are paired devices, add each one to the ArrayAdapter
         if (pairedDevices.size() > 0) {
@@ -159,15 +187,16 @@ public class ActivityBTDeviceList extends Activity {
      */
     private void doDiscovery() {
         addLog("doDiscovery()");
+
+        // Sin permisos no se puede ni listar ni escanear: se piden y se reintenta desde onRequestPermissionsResult
+        if (!PermisosBluetooth.solicitarSiFaltan(this)) {
+            return;
+        }
         initDeviceList();
 
         if (scanButton.getText().toString().equals(getResources().getText(R.string.strBTDetener))) {
             if (BT.getBlueToothAdapter() != null) {
 
-                if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
-                    ClaseUtils.Aviso.mostrarAviso("Aviso...",context.getResources().getText(R.string.strConsultaAvisoPermisoBluetooth).toString(),context);
-                    return;
-                }
                 if (BT.getBlueToothAdapter().isDiscovering()) {
                     addLog("stop discovery requested");
                     BT.getBlueToothAdapter().cancelDiscovery();
@@ -199,11 +228,9 @@ public class ActivityBTDeviceList extends Activity {
         public void onItemClick(AdapterView<?> av, View v, int arg2, long arg3) {
             addLog("OnItemClickListener()");
             // Cancel discovery because it's costly and we're about to connect
-            if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
-                ClaseUtils.Aviso.mostrarAviso("Aviso...",context.getResources().getText(R.string.strConsultaAvisoPermisoBluetooth).toString(),context);
-                return;
+            if (PermisosBluetooth.tienePermisoEscanear(context)) {
+                BT.getBlueToothAdapter().cancelDiscovery();
             }
-            BT.getBlueToothAdapter().cancelDiscovery();
 
             // Get the device MAC address, which is the last 17 chars in the View
             String info = ((TextView) v).getText().toString();
@@ -238,8 +265,7 @@ public class ActivityBTDeviceList extends Activity {
 
                 // If it's already paired, skip it, because it's been listed already
 
-                if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-                    ClaseUtils.Aviso.mostrarAviso("Aviso...",context.getResources().getText(R.string.strConsultaAvisoPermisoBluetooth).toString(),context);
+                if (device == null || !PermisosBluetooth.tienePermisoConectar(context)) {
                     return;
                 }
                 if (device.getBondState() != BluetoothDevice.BOND_BONDED) {

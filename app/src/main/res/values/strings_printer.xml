@@ -44,4 +44,12 @@
     <string name="config_strImprimePagarCuenta">Cuenta pagada</string>
 
     <string name="strVentasAvisoImpresoraNoDisponible">Impresora no disponible</string>
+
+    <string name="strBTTestImprimir">Prueba de impresión</string>
+    <string name="strBTTestHolaMundo">Hola mundo...</string>
+    <string name="strBTTestConectando">Conectando con la impresora...</string>
+    <string name="strBTTestEnviado">Prueba enviada a la impresora</string>
+    <string name="strBTTestSinImpresora">Seleccione primero una impresora con el botón de escaneo</string>
+    <string name="strBTTestSoloImpresora">La prueba solo está disponible para impresoras</string>
+    <string name="strBTTestBluetoothApagado">Active el Bluetooth del dispositivo</string>
 </resources>

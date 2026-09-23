@@ -49,10 +49,10 @@ import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -60,7 +60,6 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.github.gcacace.signaturepad.BuildConfig;
 import com.google.android.material.navigation.NavigationView;
 import com.google.gson.Gson;
 
@@ -83,6 +82,7 @@ import es.quatroges.qgestpv_v3.basedatos.ClaseBaseDatos;
 import es.quatroges.qgestpv_v3.bluetooth.ClaseBluetooth;
 import es.quatroges.qgestpv_v3.bluetooth.ClaseBluetoothMsgTypes;
 import es.quatroges.qgestpv_v3.bluetooth.ClaseBluetoothPrintConstantes;
+import es.quatroges.qgestpv_v3.bluetooth.PermisosBluetooth;
 import es.quatroges.qgestpv_v3.configuracion.ClaseCondicionesVenta;
 import es.quatroges.qgestpv_v3.configuracion.ClaseConfiguracion;
 import es.quatroges.qgestpv_v3.configuracion.ClaseUltimoEstadoApp;
@@ -153,6 +153,10 @@ public class ActivityInicio extends AppCompatActivity
     private static final String TAG = "ActivityInicio";
 
     private static boolean nofinalizar;
+    /** true mientras esta abierto el dialogo del sistema para activar Bluetooth */
+    private static boolean solicitandoActivarBT;
+    /** true mientras esta abierta la configuracion: la impresora se desconecta y se reconecta al volver */
+    private static boolean enConfiguracion;
     private enum enAccionesWS {
         test, validar, sincronizar, sincronizarbg,
         getEstadoMesas, getLineasMesa, enviaLineasMesa,
@@ -356,6 +360,10 @@ public class ActivityInicio extends AppCompatActivity
     }
 
     private void seleccionaTPV(int i){
+        if (listaTPVs.size() == 0) {
+            tpv = null;
+            return;
+        }
         tpvSel = i;
         tpv = listaTPVs.get(i);
         ultimoEstado = estado;
@@ -1954,6 +1962,51 @@ public class ActivityInicio extends AppCompatActivity
         estado = ultimoEstado;
     }
 
+    /**
+     * Aplica los timeouts recibidos de la API: con_timeout (conexion) y rw_timeout ([rwTO1..rwTO5]), en segundos.
+     * Solo se tocan los valores que llegan, son mayores que cero y difieren de la configuracion actual;
+     * cada cambio se guarda en la tabla de configuracion (claves tocon y torw1..torw5).
+     */
+    private static void aplicaTimeoutsDesdeApi(Integer conTimeout, List<Integer> rwTimeouts) {
+        if (configuracion == null) return;
+
+        StringBuilder cambios = new StringBuilder();
+
+        if (conTimeout != null && conTimeout > 0 && conTimeout != configuracion.connectionTO) {
+            cambios.append(" tocon: ").append(configuracion.connectionTO).append(" -> ").append(conTimeout);
+            configuracion.connectionTO = conTimeout;
+            if (baseDatos != null) {
+                baseDatos.guardaParametroConfiguracion("tocon", String.valueOf(conTimeout));
+            }
+        }
+
+        if (rwTimeouts == null) rwTimeouts = new ArrayList<>();
+        int[] actuales = {configuracion.rwTO1, configuracion.rwTO2, configuracion.rwTO3, configuracion.rwTO4, configuracion.rwTO5};
+
+        for (int i = 0; i < Math.min(rwTimeouts.size(), actuales.length); i++) {
+            Integer nuevo = rwTimeouts.get(i);
+            if (nuevo == null || nuevo <= 0 || nuevo == actuales[i]) continue;
+
+            switch (i) {
+                case 0: configuracion.rwTO1 = nuevo; break;
+                case 1: configuracion.rwTO2 = nuevo; break;
+                case 2: configuracion.rwTO3 = nuevo; break;
+                case 3: configuracion.rwTO4 = nuevo; break;
+                case 4: configuracion.rwTO5 = nuevo; break;
+            }
+            if (baseDatos != null) {
+                baseDatos.guardaParametroConfiguracion("torw" + (i + 1), String.valueOf(nuevo));
+            }
+            cambios.append(" torw").append(i + 1).append(": ").append(actuales[i]).append(" -> ").append(nuevo);
+        }
+
+        if (cambios.length() > 0) {
+            // el servicio comparte la misma instancia de configuracion; se reasigna por claridad
+            ServSincronizaBD.setConfig(configuracion);
+            Log.i(TAG, "Timeouts actualizados desde la API:" + cambios);
+        }
+    }
+
     private static void validarWS(final boolean aviso, final boolean force) {
         try {
             ClaseUtils.ProgressDialogo.mostrarDialogo(true, context.getResources().getString(R.string.progress_strValidar), context.getResources().getString(R.string.progress_strEspera), context);
@@ -2047,6 +2100,9 @@ public class ActivityInicio extends AppCompatActivity
                     }
 
                     ClaseCondicionesVenta.guardarPreferencias(context);
+
+                    // timeouts enviados por la API: si difieren de los configurados se aplican y se guardan
+                    aplicaTimeoutsDesdeApi(response.body().getCon_timeout(), response.body().getRw_timeout());
 
                     // verifica actualiziaciones
                     String new_appfile = response.body().getAppfile();
@@ -2383,7 +2439,13 @@ public class ActivityInicio extends AppCompatActivity
                 }
             } else if (intent.getAction().equals(ServSincronizaBD.ACTION_ERROR_PAGAMESA)) {
                 mensaje = context.getString(R.string.strErrorPagaMesa);
-                if (Integer.parseInt(intent.getStringExtra("errnum"))>=10000){
+                int errnumPago = 0;
+                try {
+                    errnumPago = Integer.parseInt(String.valueOf(intent.getStringExtra("errnum")));
+                } catch (NumberFormatException e) {
+                    // fallo de red o timeout: el aviso llega sin numero de error
+                }
+                if (errnumPago >= 10000){
                     mensaje = "No es posible facturar \r\n"+intent.getStringExtra("errdesc");
                 }
                 cerrar = true;
@@ -2821,6 +2883,7 @@ public class ActivityInicio extends AppCompatActivity
                 aviso.execute();
             }
             else if (resultadoWS == 1) {
+                ServSincronizaBD.restableceTimeoutReintento();
                 hSyncDatos.postDelayed(checkConexion, delay);
             }
             else if (resultadoWS == 2) {
@@ -2988,6 +3051,11 @@ public class ActivityInicio extends AppCompatActivity
         super.onRestart();
         ClaseBluetooth.setHandlerNotificaBT(handlerNotificaBT);
 
+        if (enConfiguracion) {
+            // volvemos de configuracion: la reconexion la hace reiniciaBluetooth() en onActivityResult
+            return;
+        }
+
         if (hndDesconectaSocket != null) hndDesconectaSocket = null;
         hndDesconectaSocket = new Handler();
         hndDesconectaSocket.postDelayed(new Runnable() {
@@ -3061,24 +3129,31 @@ public class ActivityInicio extends AppCompatActivity
 
         //recupera ultimo estado
         recuperaUltimoEstadoApp();
-        if (ultimoEstadoApp.getEstado() == enEstado.user || ultimoEstadoApp.getEstado() == enEstado.tpv){
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    estado = enEstado.user;
-                    seleccionaUsuario(ultimoEstadoApp.getUsuario());
 
-                    if (ultimoEstadoApp.getEstado() == enEstado.tpv) {
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                estado = enEstado.tpv;
-                                seleccionaTPV(ultimoEstadoApp.getTpv());
-                            }
-                        }, 200);
+        if (ultimoEstadoApp.getEstado() == enEstado.user || ultimoEstadoApp.getEstado() == enEstado.tpv){
+            if (listaTPVs.size() == 0 || listaUsers.size() == 0 ) {
+                ultimoEstadoApp.setEstado(enEstado.iniciando);
+            }
+            else {
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        estado = enEstado.user;
+                        seleccionaUsuario(ultimoEstadoApp.getUsuario());
+
+                        if (ultimoEstadoApp.getEstado() == enEstado.tpv) {
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    estado = enEstado.tpv;
+                                    seleccionaTPV(ultimoEstadoApp.getTpv());
+                                }
+                            }, 200);
+                        }
                     }
-                }
-            }, 200);
+                }, 200);
+            }
         }
 
 
@@ -3456,23 +3531,38 @@ public class ActivityInicio extends AppCompatActivity
         }, 1000);
 
 
+        // Permisos Bluetooth de ejecución (Android 12+: SCAN/CONNECT; Android 8-11: ubicación para escanear).
+        // Si faltan se piden aquí; la conexión se reintenta desde onRequestPermissionsResult.
+        PermisosBluetooth.solicitarSiFaltan(this);
+
         if (ClaseBluetooth.getApplicationContext() == null) {
-
-            if (configuracion.btMac.equalsIgnoreCase("00:00:00:00:00:00")
-                    && !configuracion.btModelo.equalsIgnoreCase(getResources().getString(R.string.strConfigBTModel_IPDA045))) {
-                configuracion.btModelo = getResources().getString(R.string.strConfigBTModel_SCREEN);
-            }
-
-            new ClaseBluetooth(this, getApplicationContext(), handlerNotificaBT, configuracion.btModelo);
-
-            if (ClaseBluetooth.iniciaBlueToothAdapter(true) == null) {
-                ClaseUtils.AvisoToast.mostrarAviso("Aviso",context.getResources().getText(R.string.strErrorBTNoDisponible).toString(),context,2000);
-            } else
-                ClaseBluetooth.setRemoteDevice(configuracion.btMac);
+            reiniciaBluetooth();
         }
         setIconoBT(ClaseBluetooth.checkPrinterStatus(), ClaseBluetooth.getPrinterError());
         estadoBT = ClaseBluetooth.checkPrinterStatus();
 
+    }
+
+    /**
+     * (Re)configura la capa Bluetooth con los datos de configuracion actuales y esta actividad como contexto.
+     * Se usa al arrancar y al volver de la configuracion, donde el usuario puede haber cambiado la impresora
+     * o haber lanzado una prueba de impresion contra otro dispositivo.
+     */
+    private void reiniciaBluetooth() {
+        if (configuracion.btMac.equalsIgnoreCase("00:00:00:00:00:00")
+                && !configuracion.btModelo.equalsIgnoreCase(getResources().getString(R.string.strConfigBTModel_IPDA045))) {
+            configuracion.btModelo = getResources().getString(R.string.strConfigBTModel_SCREEN);
+        }
+
+        new ClaseBluetooth(this, getApplicationContext(), handlerNotificaBT, configuracion.btModelo);
+
+        if (ClaseBluetooth.iniciaBlueToothAdapter(true) == null) {
+            ClaseUtils.AvisoToast.mostrarAviso("Aviso",context.getResources().getText(R.string.strErrorBTNoDisponible).toString(),context,2000);
+        } else {
+            ClaseBluetooth.setRemoteDevice(configuracion.btMac);
+            // primera comprobacion de conexion en 1 s (sustituye cualquier temporizador previo mas largo)
+            ClaseBluetooth.restartTimer();
+        }
     }
 
 
@@ -4483,9 +4573,32 @@ public class ActivityInicio extends AppCompatActivity
     private static void iniciarConfiguracion() {
 
         ClaseBluetooth.set_ultimoEstadoBT(estadoBT);
+        // Se desconecta la impresora al salir de inicio: la configuracion conecta por su cuenta para la prueba
+        // y al volver se reinicia la conexion desde cero con los datos guardados (reiniciaBluetooth)
+        if (hndDesconectaSocket != null) {
+            hndDesconectaSocket.removeCallbacksAndMessages(null);
+            hndDesconectaSocket = null;
+        }
+        ClaseBluetooth.set_imprimiendo(false);
+        ClaseBluetooth.detener();
+        enConfiguracion = true;
         Intent inten = new Intent(context, ActivityConfig.class);
         ((Activity) context).startActivityForResult(inten, REQUEST_APP_CONFIGURE);
         nofinalizar = true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode != PermisosBluetooth.REQUEST_PERMISOS_BT) return;
+
+        if (PermisosBluetooth.todosConcedidos(grantResults)) {
+            Log.i(TAG, "permisos Bluetooth concedidos: reintentando conexion con la impresora");
+            new ClaseBluetooth().enableTimer(2000, true);
+        } else {
+            Log.w(TAG, "permisos Bluetooth denegados");
+            ClaseUtils.Aviso.mostrarAviso("Aviso...", context.getResources().getText(R.string.strConsultaAvisoPermisoBluetooth).toString(), context);
+        }
     }
 
     public void onActivityResult(int requestCode, final int resultCode, Intent data) {
@@ -4493,6 +4606,7 @@ public class ActivityInicio extends AppCompatActivity
         switch (requestCode) {
 
             case ClaseBluetooth.REQUEST_ENABLE_BT:
+                solicitandoActivarBT = false;
                 if (resultCode == Activity.RESULT_OK) {
                     Log.i(TAG, "onActivityResult: resultCode==OK");
                     Log.i(TAG, "onActivityResult: starting setupComm()...");
@@ -4503,6 +4617,7 @@ public class ActivityInicio extends AppCompatActivity
                 break;
 
             case REQUEST_APP_CONFIGURE:
+                enConfiguracion = false;
                 if (resultCode == 1 || resultCode == 2) {
                     new Handler().postDelayed(new Runnable() {
                         @Override
@@ -4513,6 +4628,8 @@ public class ActivityInicio extends AppCompatActivity
                                 grabaFechaSincronizacion("200101000000");
                             }
                             cargaConfiguracion();
+                            // aplica el modelo y la MAC de impresora recien guardados
+                            reiniciaBluetooth();
 
 
                             Log.v("result mostrarAuto", String.valueOf(configuracion.mostrarProductosAuto));
@@ -4575,8 +4692,10 @@ public class ActivityInicio extends AppCompatActivity
                         ;
                     }, 500);
 
+                } else {
+                    // configuracion cancelada: restaura la impresora configurada por si la prueba de impresion la cambio
+                    reiniciaBluetooth();
                 }
-                ;
 
                 break;
             case FragmentFormaPago.REQUEST_NFC_ENABLE:
@@ -5127,6 +5246,8 @@ public class ActivityInicio extends AppCompatActivity
         public void onClick(DialogInterface dialog, int which) {
             if (which == DialogInterface.BUTTON_POSITIVE) {
                 reintentosWS = 0;
+                // el usuario reintenta: normalmente el fallo es por tiempo de la API en base de datos, se dobla el timeout
+                ServSincronizaBD.ampliaTimeoutReintento();
                 switch (ultimaAccionWs) {
                     case test:
                     case validar:
@@ -5167,6 +5288,7 @@ public class ActivityInicio extends AppCompatActivity
                         break;
                 }
             } else {
+                ServSincronizaBD.restableceTimeoutReintento();
                 if (ultimaAccionWs.equals(enAccionesWS.sincronizar) || ultimaAccionWs.equals(enAccionesWS.sincronizarbg)) {
                     layProgress.setVisibility(View.GONE);
                 } else if (ultimaAccionWs.equals(enAccionesWS.creditoRoom) || ultimaAccionWs.equals(enAccionesWS.creditoTagID)) {
@@ -6091,17 +6213,28 @@ public class ActivityInicio extends AppCompatActivity
 
                 case ClaseBluetoothMsgTypes.MESSAGE_REQUEST_ENABLE_BT:
                     if (boolOnCreate) {
+                        solicitandoActivarBT = true;
                         Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                         ((Activity) context).startActivityForResult(enableIntent, ClaseBluetooth.REQUEST_ENABLE_BT);
                         nofinalizar = true;
                     } else {
                         if (ClaseBluetooth.get_modelo() != MODEL_SCREEN && !ClaseBluetooth.getBlueToothAdapter().isEnabled()) {
 
-                            if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                            if (!PermisosBluetooth.tienePermisoConectar(context)) {
                                 ClaseUtils.Aviso.mostrarAviso("Aviso...",context.getResources().getText(R.string.strConsultaAvisoPermisoBluetooth).toString(),context);
                                 return;
                             }
-                            ClaseBluetooth.getBlueToothAdapter().enable();
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                // Desde Android 13 enable() no hace nada: hay que pedirlo al usuario con el dialogo del sistema (una sola vez)
+                                if (!solicitandoActivarBT) {
+                                    solicitandoActivarBT = true;
+                                    Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                                    ((Activity) context).startActivityForResult(enableIntent, ClaseBluetooth.REQUEST_ENABLE_BT);
+                                    return;
+                                }
+                            } else {
+                                ClaseBluetooth.getBlueToothAdapter().enable();
+                            }
                         }
                         new ClaseBluetooth().enableTimer(2000, false);
                     }

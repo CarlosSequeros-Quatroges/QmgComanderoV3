@@ -38,6 +38,16 @@ public class RespuestaValidarUpdateWS extends RespuestaBaseWS {
     @Expose
     private ArrayList<ClaseEstablecimientos> hoteles_aux;
 
+    /** Timeouts de lectura/escritura en segundos, en orden rwTO1..rwTO5. Opcional. */
+    @SerializedName("rw_timeout")
+    @Expose
+    private ArrayList<Integer> rw_timeout;
+
+    /** Timeout de conexion en segundos. Opcional. */
+    @SerializedName("con_timeout")
+    @Expose
+    private Integer con_timeout;
+
 
 
     public String getPedirclave() {
@@ -102,5 +112,21 @@ public class RespuestaValidarUpdateWS extends RespuestaBaseWS {
 
     public void setHoteles_aux(ArrayList<ClaseEstablecimientos> hoteles_aux) {
         this.hoteles_aux = hoteles_aux;
+    }
+
+    public ArrayList<Integer> getRw_timeout() {
+        return rw_timeout;
+    }
+
+    public void setRw_timeout(ArrayList<Integer> rw_timeout) {
+        this.rw_timeout = rw_timeout;
+    }
+
+    public Integer getCon_timeout() {
+        return con_timeout;
+    }
+
+    public void setCon_timeout(Integer con_timeout) {
+        this.con_timeout = con_timeout;
     }
 }

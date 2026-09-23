@@ -14,3 +14,6 @@ local.properties
 .DS_Store
 Thumbs.db
 captures/
+
+# Paquetes generados por Android Studio (release)
+app/release/

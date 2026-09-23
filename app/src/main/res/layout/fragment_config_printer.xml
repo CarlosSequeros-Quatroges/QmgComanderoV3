@@ -73,6 +73,16 @@
         android:background="@drawable/icon_scan_bt"
         android:textStyle="bold"/>
 
+    <Button
+        android:id="@+id/bTestPrint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/bScan"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="10dp"
+        android:text="@string/strBTTestImprimir"
+        android:textStyle="bold"/>
+
 
 
         <TextView
@@ -83,7 +93,7 @@
             android:textSize="@dimen/text_titulo"
             android:textColor="@color/textoAzul"
             android:textStyle="bold"
-            android:layout_below="@id/bScan"
+            android:layout_below="@id/bTestPrint"
             android:layout_marginTop="20dp"
             />
 

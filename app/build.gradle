@@ -6,9 +6,9 @@ android {
         applicationId "es.quatroges.qgestpv_v3"
         minSdkVersion 26
         targetSdkVersion 37
-        versionCode 5
+        versionCode 6
 
-        versionName "QMGComandero_v3.2.1_code5_bd.6_20260731104700"
+        versionName "QMGComandero_v3.2.2_code6_bd.6_20260922124500"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     buildTypes {
@@ -26,25 +26,25 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:1.7.1'
+    implementation 'androidx.appcompat:appcompat:1.8.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'com.google.android.material:material:1.14.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.2'
     implementation 'androidx.recyclerview:recyclerview:1.4.0'
     implementation 'androidx.cardview:cardview:1.0.0'
 
     //room database
-    implementation 'androidx.room:room-runtime:2.8.4'
-    annotationProcessor 'androidx.room:room-compiler:2.8.4'
+    implementation 'androidx.room:room-runtime:2.8.5'
+    annotationProcessor 'androidx.room:room-compiler:2.8.5'
 
     //servicios web
     implementation 'com.squareup.retrofit2:retrofit:3.0.0'
     implementation 'com.squareup.retrofit2:converter-gson:3.0.0'
     implementation 'com.google.code.gson:gson:2.14.0'
-    implementation 'com.squareup.okhttp3:logging-interceptor:5.4.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:5.5.0'
 
     //firma en pantalla
-    implementation 'com.github.gcacace:signature-pad:1.3.1'
+    implementation 'com.github.gcacace:signature-pad:1.4.0'
     implementation 'androidx.viewpager2:viewpager2:1.1.0'
 
 
@@ -60,9 +60,9 @@ dependencies {
     implementation files('libs/btsdk.jar')
 
     //tratar nodos json
-    implementation 'commons-codec:commons-codec:1.22.0'
-    implementation 'commons-codec:commons-codec:1.22.0'
-    implementation 'org.jsoup:jsoup:1.22.2'
+    implementation 'commons-codec:commons-codec:1.22.1'
+    implementation 'commons-codec:commons-codec:1.22.1'
+    implementation 'org.jsoup:jsoup:1.23.2'
 
 
 

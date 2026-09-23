@@ -23,6 +23,8 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.core.content.ContextCompat;
+
 import com.iposprinter.iposprinterservice.IPosPrinterCallback;
 import com.iposprinter.iposprinterservice.IPosPrinterService;
 
@@ -155,27 +157,13 @@ public class BTDriverIPDA045 {
 
         Log.i(TAG, "registro listener");
         try {
-            _context.registerReceiver(IPosPrinterStatusListener,printerStatusFilter);
+            // Los broadcasts los envia el servicio de impresora del fabricante (otra app):
+            // desde Android 14 hay que declarar el receptor como exportado o el registro falla
+            ContextCompat.registerReceiver(_context, IPosPrinterStatusListener, printerStatusFilter,
+                    ContextCompat.RECEIVER_EXPORTED);
         }
         catch(Exception e){
-            Log.i(TAG, "Excepcion registro listener");
-            Log.i(TAG, "registro null");
-            try {
-                _context.registerReceiver(null, null);
-                Log.i(TAG, "registro listener");
-                try {
-                    _context.registerReceiver(IPosPrinterStatusListener,printerStatusFilter);
-                }
-                catch(Exception e1){
-                    Log.i(TAG, "Excepcion registro listener");
-
-                }
-            }
-            catch(Exception e2){
-                Log.i(TAG, "Excepcion registro null");
-
-            }
-
+            Log.i(TAG, "Excepcion registro listener: " + e);
         }
 
     }

@@ -233,6 +233,31 @@ public class ServSincronizaBD extends IntentService {
 
     private static ClaseConfiguracion config;
 
+    /** Multiplicador del timeout de lectura/escritura. Vale 1 en la primera llamada y se dobla en cada reintento del usuario. */
+    private static int factorTimeoutReintento = 1;
+    private static final int FACTOR_TIMEOUT_MAXIMO = 4;
+
+    /** Dobla el timeout para el siguiente intento (maximo x4). Se llama cuando el usuario pulsa Reintentar. */
+    public static void ampliaTimeoutReintento() {
+        if (factorTimeoutReintento < FACTOR_TIMEOUT_MAXIMO) factorTimeoutReintento *= 2;
+        Log.i("ServSincronizaBD", "Reintento: timeout de lectura/escritura x" + factorTimeoutReintento);
+    }
+
+    /** Vuelve al timeout configurado. Se llama cuando una operacion termina bien o el usuario cancela. */
+    public static void restableceTimeoutReintento() {
+        if (factorTimeoutReintento != 1) Log.i("ServSincronizaBD", "Timeout de lectura/escritura restablecido (x1)");
+        factorTimeoutReintento = 1;
+    }
+
+    public static int getFactorTimeoutReintento() {
+        return factorTimeoutReintento;
+    }
+
+    /** Timeout efectivo en segundos para esta llamada: el configurado por el factor de reintento. */
+    private static int rwTO(int segundosConfigurados) {
+        return segundosConfigurados * factorTimeoutReintento;
+    }
+
     public static void setConfig(ClaseConfiguracion config) {
         ServSincronizaBD.config = config;
     }
@@ -822,7 +847,7 @@ public class ServSincronizaBD extends IntentService {
             }
         });
 
-        APIService apiService = ClaseServicioWeb.getAPIService(false, config.connectionTO,config.rwTO2,config.rwTO2, ActivityInicio.latenciaTest.getUltima());
+        APIService apiService = ClaseServicioWeb.getAPIService(false, config.connectionTO,rwTO(config.rwTO2), rwTO(config.rwTO2), ActivityInicio.latenciaTest.getUltima());
 
         apiService.recuperaRegistrosMD5(dispositivo,codemp,tabla,ultimaSync.offset).enqueue(new Callback<RespuestaRegistrosMD5WS>() {
             @Override
@@ -985,7 +1010,7 @@ public class ServSincronizaBD extends IntentService {
 
     //region FUNCIONES ONLINE
     private void recuperaTestJsonWS(){
-        APIService apiService = ClaseServicioWeb.getAPIService(false, config.connectionTO, config.rwTO1, config.rwTO1, ActivityInicio.latenciaTest.getUltima());
+        APIService apiService = ClaseServicioWeb.getAPIService(false, config.connectionTO, rwTO(config.rwTO1), rwTO(config.rwTO1), ActivityInicio.latenciaTest.getUltima());
         apiService.recuperaTestJSON ().enqueue(new Callback<RespuestaTestjsonWS>() {
             @Override
             public void onResponse(Call<RespuestaTestjsonWS> call, Response<RespuestaTestjsonWS> response) {
@@ -1010,7 +1035,7 @@ public class ServSincronizaBD extends IntentService {
     }
 
     private void recuperaEstadoMesas(String codemp, String idTtablet, String tpv){
-        APIService apiService = ClaseServicioWeb.getAPIService(false, config.connectionTO, config.rwTO2, config.rwTO2, ActivityInicio.latenciaTest.getUltima());
+        APIService apiService = ClaseServicioWeb.getAPIService(false, config.connectionTO, rwTO(config.rwTO2), rwTO(config.rwTO2), ActivityInicio.latenciaTest.getUltima());
 
         final Long timeini = Calendar.getInstance().getTimeInMillis();
         apiService.recuperaEstadoMesas(codemp,idTtablet, tpv).enqueue(new Callback<RespuestaEstadoMesasWS>() {
@@ -1075,7 +1100,7 @@ public class ServSincronizaBD extends IntentService {
     }
 
     private void recuperaLineasMesa(String codemp, String idTtablet, String tpv,String mesa, String room){
-        APIService apiService = ClaseServicioWeb.getAPIService(false, config.connectionTO, config.rwTO4, config.rwTO4, ActivityInicio.latenciaTest.getUltima());
+        APIService apiService = ClaseServicioWeb.getAPIService(false, config.connectionTO, rwTO(config.rwTO4), rwTO(config.rwTO4), ActivityInicio.latenciaTest.getUltima());
 
         final Long timeini = Calendar.getInstance().getTimeInMillis();
 
@@ -1147,7 +1172,7 @@ public class ServSincronizaBD extends IntentService {
     }
 
     private void recuperaPension(String codemp, String idTtablet, String room, String codenl){
-        APIService apiService = ClaseServicioWeb.getAPIService(false, config.connectionTO, config.rwTO4, config.rwTO4, ActivityInicio.latenciaTest.getUltima());
+        APIService apiService = ClaseServicioWeb.getAPIService(false, config.connectionTO, rwTO(config.rwTO4), rwTO(config.rwTO4), ActivityInicio.latenciaTest.getUltima());
 
         final Long timeini = Calendar.getInstance().getTimeInMillis();
 
@@ -1207,7 +1232,7 @@ public class ServSincronizaBD extends IntentService {
 
 
     private void grabaLineasMesa(String codemp, String idTtablet, String tpv,String mesa, ArrayList<ActualizaPax> submesas, ArrayList<GrabaLineasVenta> lineasVentas, String imprimir, String camarero){
-        APIService apiService = ClaseServicioWeb.getAPIService(false, config.connectionTO, config.rwTO5, config.rwTO5, ActivityInicio.latenciaTest.getUltima());
+        APIService apiService = ClaseServicioWeb.getAPIService(false, config.connectionTO, rwTO(config.rwTO5), rwTO(config.rwTO5), ActivityInicio.latenciaTest.getUltima());
         RequestGrabaLineasWS requestGrabaLineasWS = new RequestGrabaLineasWS();
         requestGrabaLineasWS.setCodigoEmpresa(codemp);
         requestGrabaLineasWS.setIdTablet(idTtablet);
@@ -1270,7 +1295,7 @@ public class ServSincronizaBD extends IntentService {
     }
 
     private void actualizarPax(String codemp, String idTtablet, ArrayList<ActualizaPax> submesas) {
-        APIService apiService = ClaseServicioWeb.getAPIService(false, config.connectionTO, config.rwTO2, config.rwTO2, ActivityInicio.latenciaTest.getUltima());
+        APIService apiService = ClaseServicioWeb.getAPIService(false, config.connectionTO, rwTO(config.rwTO2), rwTO(config.rwTO2), ActivityInicio.latenciaTest.getUltima());
         RequestActualizaPaxWS requestActualizaPaxWS = new RequestActualizaPaxWS();
         requestActualizaPaxWS.setCodigoEmpresa(codemp);
         requestActualizaPaxWS.setIdTablet(idTtablet);
@@ -1306,7 +1331,7 @@ public class ServSincronizaBD extends IntentService {
     }
 
     private void avisoSeguirPlato(String codemp, String idTtablet, String tpv,String mesa,String  orden, String pax){
-        APIService apiService = ClaseServicioWeb.getAPIService(false, config.connectionTO, config.rwTO2, config.rwTO2, ActivityInicio.latenciaTest.getUltima());
+        APIService apiService = ClaseServicioWeb.getAPIService(false, config.connectionTO, rwTO(config.rwTO2), rwTO(config.rwTO2), ActivityInicio.latenciaTest.getUltima());
         apiService.avisoSeguirPlato(codemp,idTtablet, tpv,mesa,orden, pax).enqueue(new Callback<RespuestaBaseWS>() {
             @Override
             public void onResponse(Call<RespuestaBaseWS> call, Response<RespuestaBaseWS> response) {
@@ -1333,7 +1358,7 @@ public class ServSincronizaBD extends IntentService {
     }
 
     private void traspasaMesa(String codemp, String idTtablet,String tpv, String mesa, ArrayList<String> submesas, String mesadest) {
-        APIService apiService = ClaseServicioWeb.getAPIService(false, config.connectionTO, config.rwTO2, config.rwTO2, ActivityInicio.latenciaTest.getUltima());
+        APIService apiService = ClaseServicioWeb.getAPIService(false, config.connectionTO, rwTO(config.rwTO2), rwTO(config.rwTO2), ActivityInicio.latenciaTest.getUltima());
         RequestTraspasaMesaWS requestTraspasaMesaWS = new RequestTraspasaMesaWS();
         requestTraspasaMesaWS.setCodigoEmpresa(codemp);
         requestTraspasaMesaWS.setIdTablet(idTtablet);
@@ -1373,7 +1398,7 @@ public class ServSincronizaBD extends IntentService {
     }
 
     private void pedirCuenta(String codemp, String idTtablet, String tpv,String mesa, String submesa,String nfactura, String codusu, String imprimir){
-        APIService apiService = ClaseServicioWeb.getAPIService(false, config.connectionTO, config.rwTO5, config.rwTO5, ActivityInicio.latenciaTest.getUltima());
+        APIService apiService = ClaseServicioWeb.getAPIService(false, config.connectionTO, rwTO(config.rwTO5), rwTO(config.rwTO5), ActivityInicio.latenciaTest.getUltima());
 
         final Long timeini = Calendar.getInstance().getTimeInMillis();
 
@@ -1416,7 +1441,7 @@ public class ServSincronizaBD extends IntentService {
     }
 
     private void recuperaCredigoTagID(String codemp, String idTtablet, final String tagID, String codemp_ext){
-        APIService apiService = ClaseServicioWeb.getAPIService(false, config.connectionTO, config.rwTO3, config.rwTO3, ActivityInicio.latenciaTest.getUltima());
+        APIService apiService = ClaseServicioWeb.getAPIService(false, config.connectionTO, rwTO(config.rwTO3), rwTO(config.rwTO3), ActivityInicio.latenciaTest.getUltima());
         apiService.recuperaCreditoTagID(codemp,idTtablet, tagID,codemp_ext).enqueue(new Callback<RespuestaCreditoWS>() {
             @Override
             public void onResponse(Call<RespuestaCreditoWS> call, Response<RespuestaCreditoWS> response) {
@@ -1477,7 +1502,7 @@ public class ServSincronizaBD extends IntentService {
     }
 
     private void recuperaCredigoRoom(String codemp, String idTtablet, String room, String codemp_ext){
-        APIService apiService = ClaseServicioWeb.getAPIService(false, config.connectionTO, config.rwTO3, config.rwTO3, ActivityInicio.latenciaTest.getUltima());
+        APIService apiService = ClaseServicioWeb.getAPIService(false, config.connectionTO, rwTO(config.rwTO3), rwTO(config.rwTO3), ActivityInicio.latenciaTest.getUltima());
         apiService.recuperaCreditoRoom(codemp,idTtablet, room,codemp_ext).enqueue(new Callback<RespuestaCreditoWS>() {
             @Override
             public void onResponse(Call<RespuestaCreditoWS> call, Response<RespuestaCreditoWS> response) {
@@ -1542,7 +1567,7 @@ public class ServSincronizaBD extends IntentService {
                           String efectivo, String tarjeta, String cuentacasa, String credito, String nfactura, String codclicasa, String codusu, String entregado,
                           String cambio, String firma,String apto, String imprimir) {
 
-        APIService apiService = ClaseServicioWeb.getAPIService(false, config.connectionTO, config.rwTO5, config.rwTO5, ActivityInicio.latenciaTest.getUltima());
+        APIService apiService = ClaseServicioWeb.getAPIService(false, config.connectionTO, rwTO(config.rwTO5), rwTO(config.rwTO5), ActivityInicio.latenciaTest.getUltima());
         RequestPagaMesaWS requestPagaMesaWS = new RequestPagaMesaWS();
         requestPagaMesaWS.setCodigoEmpresa(codemp);
         requestPagaMesaWS.setIdTablet(idTtablet);
@@ -1615,13 +1640,15 @@ public class ServSincronizaBD extends IntentService {
                 bcIntent.setPackage(context.getPackageName());
 
                 bcIntent.setAction(ACTION_ERROR_PAGAMESA);
+                bcIntent.putExtra("errnum", "0");
+                bcIntent.putExtra("errdesc", String.valueOf(t.getMessage()));
                 context.sendBroadcast(bcIntent);
             }
         });
     }
 
     private void recuperaFacturas(String codemp, String idTtablet, String tpv){
-        APIService apiService = ClaseServicioWeb.getAPIService(false, config.connectionTO, config.rwTO2, config.rwTO2, ActivityInicio.latenciaTest.getUltima());
+        APIService apiService = ClaseServicioWeb.getAPIService(false, config.connectionTO, rwTO(config.rwTO2), rwTO(config.rwTO2), ActivityInicio.latenciaTest.getUltima());
         apiService.recuperaFacturas(codemp,idTtablet, tpv).enqueue(new Callback<RespuestaFacturasWS>() {
             @Override
             public void onResponse(Call<RespuestaFacturasWS> call, Response<RespuestaFacturasWS> response) {
@@ -1658,7 +1685,7 @@ public class ServSincronizaBD extends IntentService {
 
         final String fCodenl = codenl;
 
-        APIService apiService = ClaseServicioWeb.getAPIService(false, config.connectionTO, config.rwTO3, config.rwTO3, ActivityInicio.latenciaTest.getUltima());
+        APIService apiService = ClaseServicioWeb.getAPIService(false, config.connectionTO, rwTO(config.rwTO3), rwTO(config.rwTO3), ActivityInicio.latenciaTest.getUltima());
         apiService.recuperaFactura(codemp,idTtablet, codenl).enqueue(new Callback<RespuestaFacturaWS>() {
             @Override
             public void onResponse(Call<RespuestaFacturaWS> call, Response<RespuestaFacturaWS> response) {
@@ -1704,7 +1731,7 @@ public class ServSincronizaBD extends IntentService {
     }
 
     private void imprimeFactura(String codemp, String idTtablet, String codenl){
-        APIService apiService = ClaseServicioWeb.getAPIService(false, config.connectionTO, config.rwTO3, config.rwTO3, ActivityInicio.latenciaTest.getUltima());
+        APIService apiService = ClaseServicioWeb.getAPIService(false, config.connectionTO, rwTO(config.rwTO3), rwTO(config.rwTO3), ActivityInicio.latenciaTest.getUltima());
         apiService.imprimeFactura(codemp,idTtablet, codenl).enqueue(new Callback<RespuestaBaseWS>() {
             @Override
             public void onResponse(Call<RespuestaBaseWS> call, Response<RespuestaBaseWS> response) {
@@ -1873,7 +1900,11 @@ public class ServSincronizaBD extends IntentService {
                 InputStream input = new BufferedInputStream(conUrl.openStream(), 8192);
 
                 // Output stream to write file
-                filePath = new File( Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) ,file[0]);
+                // Directorio propio de la app: no necesita permisos de almacenamiento en Android 10+
+                File dirDescargas = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
+                if (dirDescargas == null) dirDescargas = context.getFilesDir();
+                if (!dirDescargas.exists()) dirDescargas.mkdirs();
+                filePath = new File(dirDescargas, file[0]);
 
                 if (filePath.exists()){
                     return filePath.getAbsolutePath();
@@ -1938,9 +1969,9 @@ public class ServSincronizaBD extends IntentService {
                     try {
                         //uri = FileProvider.getUriForFile(context,context.getApplicationContext().getPackageName()+".fileprovider",new File(result));
                         uri = FileProvider.getUriForFile(context,context.getApplicationContext().getPackageName() + ".fileprovider", file);
-                        Intent intent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
-                        intent.setData(uri);
-                        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                        intent.setDataAndType(uri, "application/vnd.android.package-archive");
+                        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
                         context.startActivity(intent);
                     }
                     catch (Exception e){
@@ -1973,7 +2004,7 @@ public class ServSincronizaBD extends IntentService {
 
 
     private <T> Call<T> getResponseApiService(RequestRecuperaRegistrosWS request ) {
-        APIService apiService = ClaseServicioWeb.getAPIService(false, config.connectionTO, config.rwTO2, config.rwTO2, ActivityInicio.latenciaTest.getUltima());
+        APIService apiService = ClaseServicioWeb.getAPIService(false, config.connectionTO, rwTO(config.rwTO2), rwTO(config.rwTO2), ActivityInicio.latenciaTest.getUltima());
         switch (request.getTabla()) {
             case "usuarios":  return (Call<T>) apiService.recuperaUsuarios(request);
             case "tpvs":  return (Call<T>) apiService.recuperaTPVS(request);

@@ -1834,7 +1834,6 @@ public class ClaseUtils {
             ArrayList<ClaseItemExtra> notas =  FragmentDialogNotas.getNotas();
             ArrayList<ClaseItemExtra> extras = FragmentDialogExtras.getExtras();
 
-
             ArrayList<ClaseItemExtra> total = new ArrayList<>();
             if (notas != null) total.addAll(notas);
             if (extras != null) total.addAll(extras);

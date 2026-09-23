@@ -157,6 +157,18 @@ public abstract class ClaseBaseDatos extends RoomDatabase {
         }.execute();
     }
 
+    /** Graba (o actualiza) un parametro de configuracion en segundo plano, sin notificar progreso a la UI. */
+    public void guardaParametroConfiguracion(final String clave, final String valor) {
+        Executors.newSingleThreadExecutor().submit(new Runnable() {
+            @Override
+            public void run() {
+                Configuracion parametro = new Configuracion(clave, valor);
+                long id = configuracionDAO().insertConfiguracion(parametro);
+                if (id == -1) configuracionDAO().updateConfiguracion(parametro);
+            }
+        });
+    }
+
     public  void borraTablaConfiguracion() throws ExecutionException,InterruptedException{
         Callable<String> callable = new Callable<String>() {
             @Override
