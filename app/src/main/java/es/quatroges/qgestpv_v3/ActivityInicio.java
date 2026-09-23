@@ -2061,7 +2061,7 @@ public class ActivityInicio extends AppCompatActivity
                         ClaseUtils.ProgressDialogo.cerrarDialogo();
                         ClaseUtils.AvisoResultado aviso1 = new ClaseUtils.AvisoResultado();
                         aviso1.setTitulo(context.getResources().getString(R.string.alert_strAviso));
-                        aviso1.setMensaje(context.getResources().getString(R.string.strErrorWsNoValidado) + "\r\n" + response.body().getErrdesc())
+                        aviso1.setMensaje(context.getResources().getString(R.string.strErrorWsNoValidado) + "\r\n" + response.body().getErrdesc()
                                 + "\r\n" + identificacionDispositivo());
                         aviso1.setBotonTrue(context.getResources().getString(R.string.strAceptar));
                         aviso1.setBotonFalse("");
