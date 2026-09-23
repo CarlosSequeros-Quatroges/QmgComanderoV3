@@ -14,7 +14,8 @@ public interface APIService {
     Call<RespuestaValidarWS> validar(@Query("codigoEmpresa") String codigoEmpresa, @Query("IDTablet") String idTablet);
 
     @POST("comanderoV3/validarUpdate?")
-    Call<RespuestaValidarUpdateWS> validarUpdate(@Query("codigoEmpresa") String codigoEmpresa, @Query("IDTablet") String idTablet, @Query("appcode") String appcode);
+    // empresa: etiqueta del dispositivo (CMS01, CMS02...) que el backend registra junto al IDTablet para el control de uso simultaneo
+    Call<RespuestaValidarUpdateWS> validarUpdate(@Query("codigoEmpresa") String codigoEmpresa, @Query("IDTablet") String idTablet, @Query("appcode") String appcode, @Query("empresa") String empresa);
 
     @GET("comanderoV3/recuperaRegistrosMD5?")
     Call<RespuestaRegistrosMD5WS> recuperaRegistrosMD5(@Query("id") String id,  @Query("codemp") String codemp, @Query("tabla") String tabla, @Query("offset") int offset);

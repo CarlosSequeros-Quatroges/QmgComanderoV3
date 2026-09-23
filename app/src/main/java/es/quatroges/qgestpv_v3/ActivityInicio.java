@@ -2025,7 +2025,7 @@ public class ActivityInicio extends AppCompatActivity
             int versionCode = Integer.valueOf(String.valueOf(lVersionCode));
             String appcode = String.valueOf( versionCode);
 
-            apiService.validarUpdate(configuracion.codigo, configuracion.deviceID, appcode).enqueue(new Callback<RespuestaValidarUpdateWS>() {
+            apiService.validarUpdate(configuracion.codigo, configuracion.deviceID, appcode, configuracion.empresa).enqueue(new Callback<RespuestaValidarUpdateWS>() {
                 @Override
                 public void onResponse(Call<RespuestaValidarUpdateWS> call, Response<RespuestaValidarUpdateWS> response) {
                     if (! response.isSuccessful()) {
