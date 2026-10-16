@@ -143,6 +143,7 @@ public class BTDriverSM5802 {
         connectSocketInterno();
     }
 
+    @SuppressLint("MissingPermission")
     private synchronized void connectSocketInterno() {
 
         Log.d(TAG, "connectSocket");
@@ -356,6 +357,7 @@ public class BTDriverSM5802 {
             Log.e(TAG, "BT socket ");
         }
 
+        @SuppressLint("MissingPermission")
         public synchronized void run() {
             Log.i(TAG, "BEGIN mConnectThread");
             this.setName("ConnectThread");
@@ -393,6 +395,7 @@ public class BTDriverSM5802 {
             /////BTDriverSM5802.this.connectSocket(mmSocket, mmDevice);
         }
 
+        @SuppressLint("MissingPermission")
         public void cancel() {
             Log.e(TAG, "BT cancelo threadconnect ");
             try {

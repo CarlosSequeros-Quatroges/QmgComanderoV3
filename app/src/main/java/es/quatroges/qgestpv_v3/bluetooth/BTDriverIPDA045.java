@@ -398,6 +398,7 @@ public class BTDriverIPDA045 {
     }
 
 
+    @SuppressLint("MissingPermission")
     public synchronized void connect(BluetoothDevice device) {
         mmDevice = device;
         Message msg = this.mHandler.obtainMessage(4);
@@ -410,6 +411,7 @@ public class BTDriverIPDA045 {
     }
 
     //public synchronized void connectSocket(BluetoothSocket socket, BluetoothDevice device) {
+    @SuppressLint("MissingPermission")
     public synchronized void connectSocket() {
 
         Log.d(TAG, "connectSocket");
@@ -422,6 +424,7 @@ public class BTDriverIPDA045 {
             this.setState(ClaseBluetoothPrintConstantes.STATE_CONNECTED_SOCKET);
     }
 
+    @SuppressLint("MissingPermission")
     public synchronized void disconnectSocket() {
         Message msg = this.mHandler.obtainMessage(4);
         Bundle bundle = new Bundle();

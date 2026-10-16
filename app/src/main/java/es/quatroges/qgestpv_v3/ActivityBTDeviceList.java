@@ -1,5 +1,6 @@
 package es.quatroges.qgestpv_v3;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -149,6 +150,7 @@ public class ActivityBTDeviceList extends Activity {
         }
     }
 
+    @SuppressLint("MissingPermission")
     void initDeviceList() {
         //empty list first?
         if (mPairedDevicesArrayAdapter.getCount() > 0)
@@ -185,6 +187,7 @@ public class ActivityBTDeviceList extends Activity {
     /**
      * Start device discover with the BluetoothAdapter
      */
+    @SuppressLint("MissingPermission")
     private void doDiscovery() {
         addLog("doDiscovery()");
 
@@ -225,6 +228,7 @@ public class ActivityBTDeviceList extends Activity {
 
     // The on-click listener for all devices in the ListViews
     private OnItemClickListener mDeviceClickListener = new OnItemClickListener() {
+        @SuppressLint("MissingPermission")
         public void onItemClick(AdapterView<?> av, View v, int arg2, long arg3) {
             addLog("OnItemClickListener()");
             // Cancel discovery because it's costly and we're about to connect
@@ -252,6 +256,7 @@ public class ActivityBTDeviceList extends Activity {
     // The BroadcastReceiver that listens for discovered devices and
     // changes the title when discovery is finished
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @SuppressLint("MissingPermission")
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();

@@ -586,7 +586,7 @@ public class ClaseBluetooth {
 	}
 
 	private static final Handler mHandler = new Handler() {
-		@SuppressLint("HandlerLeak")
+		@SuppressLint({"HandlerLeak", "MissingPermission"})
 		@Override
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);
@@ -665,6 +665,7 @@ public class ClaseBluetooth {
 
 								Handler h = new Handler();
 								h.postDelayed(new Runnable() {
+									@SuppressLint("MissingPermission")
 									@Override
 									public void run() {
 										if (!PermisosBluetooth.tienePermisoConectar(context)) {
@@ -1863,6 +1864,7 @@ public class ClaseBluetooth {
 
 	}
 
+	@SuppressLint("MissingPermission")
 	private static void initDeviceList() {
 
 		// Get a set of currently paired devices
@@ -1890,6 +1892,7 @@ public class ClaseBluetooth {
 
 	}
 
+	@SuppressLint("MissingPermission")
 	private static void doDiscovery() {
 		addLog("doDiscovery()");
 
@@ -1914,6 +1917,7 @@ public class ClaseBluetooth {
 	}
 
 
+	@SuppressLint("MissingPermission")
 	private static void stopDiscovery(String texto) {
 
 		if (!PermisosBluetooth.tienePermisoEscanear(context)) {
@@ -1936,6 +1940,7 @@ public class ClaseBluetooth {
 	}
 
 	private static final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+		@SuppressLint("MissingPermission")
 		@Override
 		public void onReceive(Context context, Intent intent) {
 

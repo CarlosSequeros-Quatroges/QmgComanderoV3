@@ -1,5 +1,6 @@
 package es.quatroges.qgestpv_v3;
 
+import android.annotation.SuppressLint;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 import static es.quatroges.qgestpv_v3.basedatos.ClaseBaseDatos.ACTION_GRABANDO_ALERGENOS;
@@ -6193,6 +6194,7 @@ public class ActivityInicio extends AppCompatActivity
     }
 
     private static Handler handlerNotificaBT = new Handler() {
+        @SuppressLint("MissingPermission")
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
