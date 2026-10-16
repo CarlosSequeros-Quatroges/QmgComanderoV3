@@ -1,0 +1,6 @@
+CODE 6 -> PUBLICADO
+
+16/10/2026.
+Por un error descargando cabeceras con descripción en blanco y pos (int) nulo, da error
+cuando parsea la respuesta. se establece una función GsonTolerante que trata los campos numéricos
+vacíos como 0
