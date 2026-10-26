@@ -77,7 +77,6 @@ import java.util.Locale;
 import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import es.quatroges.qgestpv_v3.basedatos.ClaseBaseDatos;
 import es.quatroges.qgestpv_v3.bluetooth.ClaseBluetooth;
@@ -1123,6 +1122,17 @@ public class ActivityInicio extends AppCompatActivity
         }
     }
 
+    /**
+     * Identifica una linea de venta: por codigo si ya esta grabada en el backend (codigo != 0)
+     * y por linea_app (numero local unico) si todavia esta pendiente de enviar (codigo == 0).
+     */
+    private static boolean esMismaLinea(ClaseLineaVentas a, ClaseLineaVentas b) {
+        if (a == null || b == null) return false;
+        if (a.mesa != b.mesa || a.submesa != b.submesa) return false;
+        if (b.codigo != 0) return a.codigo == b.codigo;
+        return a.codigo == 0 && a.linea_app == b.linea_app;
+    }
+
     @Override
     public void eliminaLinea(boolean borrar, ClaseLineaVentas  item) {
 
@@ -1143,14 +1153,27 @@ public class ActivityInicio extends AppCompatActivity
 
         ArrayList<ClaseLineaVentas> lineas = subMesaAnt.lineasVentas;
 
-        AtomicInteger index = new AtomicInteger(-1);
-        int tLineaSel = lineas.stream()
-                .filter( l -> {
-                    index.getAndIncrement();
-                    return l.codigo == item.codigo;
-                })
-                .map(user -> index.get())
-                .findFirst().orElse(-1);
+        // 1) Primera opcion: la posicion seleccionada (lineaSel), igual que hace la edicion en actualizaLinea.
+        //    listaLineaVentas es la misma lista que subMesaAnt.lineasVentas cuando la submesa es la actual,
+        //    pero se comprueba que la linea en esa posicion es realmente la recibida (el panel de detalle
+        //    trabaja con una copia Parcelable, asi que no se puede comparar por referencia).
+        int tLineaSel = -1;
+        if (lineas == listaLineaVentas && lineaSel >= 0 && lineaSel < lineas.size()
+                && esMismaLinea(lineas.get(lineaSel), item)) {
+            tLineaSel = lineaSel;
+        }
+
+        // 2) Si no coincide (indice desfasado u otro flujo), se busca en la lista:
+        //    - linea ya transmitida: por codigo (unico en el backend)
+        //    - linea pendiente (codigo 0): por linea_app, el numero local unico que se asigna al añadir el producto
+        if (tLineaSel == -1) {
+            for (int i = 0; i < lineas.size(); i++) {
+                if (esMismaLinea(lineas.get(i), item)) {
+                    tLineaSel = i;
+                    break;
+                }
+            }
+        }
 
         if (tLineaSel == -1) return;
         lineas.remove(tLineaSel);
