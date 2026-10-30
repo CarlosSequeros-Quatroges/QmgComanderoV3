@@ -13,22 +13,19 @@
         android:id="@+id/action_leer_qr"
         android:orderInCategory="97"
         android:title="@string/config_leer_qr"
-        android:icon="@drawable/ic_cfg_qr"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/action_importar"
         android:orderInCategory="98"
         android:title="@string/config_importar"
-        android:icon="@drawable/ic_cfg_importar"
-        app:showAsAction="always" />
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/action_exportar"
         android:orderInCategory="99"
         android:title="@string/config_exportar"
-        android:icon="@drawable/ic_cfg_exportar"
-        app:showAsAction="always" />
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/action_cancelar"
