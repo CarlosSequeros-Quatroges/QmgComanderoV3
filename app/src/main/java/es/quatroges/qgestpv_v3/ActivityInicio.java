@@ -3496,7 +3496,7 @@ public class ActivityInicio extends AppCompatActivity
 
         new ServSincronizaBD();
         ServSincronizaBD.setConfig(configuracion);
-        // hosts.txt en la carpeta de la app para redirigir nombres de servidores (solo depuracion)
+        // hosts.txt en la carpeta de la app para redirigir nombres de servidores (depuracion e incidencias)
         HostsLocales.inicializar(getApplicationContext());
         Log.v("On Create", "datos cargados");
 

@@ -32,13 +32,15 @@ import okhttp3.Dns;
  * La URL configurada sigue usando el nombre, asi que SNI, certificado y cabecera Host se mantienen y un proxy
  * que enruta por nombre funciona igual que desde el PC. Los nombres que no esten en el fichero se resuelven por DNS.
  *
- * Solo esta activo en compilaciones de depuracion (BuildConfig.DEBUG): en release siempre se usa el DNS del sistema.
+ * Activo tambien en release para poder conectar con el sistema de un cliente al atender una incidencia: basta con
+ * dejar el fichero en la carpeta de la app. Si el fichero no existe no tiene ningun efecto.
  */
 public final class HostsLocales implements Dns {
 
     private static final String TAG = "HostsLocales";
     public static final String FICHERO = "hosts.txt";
-    private static final boolean SOLO_DEBUG = true;
+    /** true para limitarlo a compilaciones de depuracion; el usuario prefiere tenerlo siempre disponible */
+    private static final boolean SOLO_DEBUG = false;
 
     private static final HostsLocales INSTANCIA = new HostsLocales();
 
