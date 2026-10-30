@@ -92,6 +92,34 @@ public final class ConfiguracionJson {
         return fichero;
     }
 
+    /** conf-actual.json de la carpeta de la app (puede no existir). */
+    public static File ficheroActual(Context context) {
+        return new File(carpeta(context), FICHERO_ACTUAL);
+    }
+
+    /**
+     * Si no existe conf-actual.json y hay configuracion guardada, la exporta en segundo plano.
+     * Se llama al arrancar para que siempre haya una copia de la configuracion en uso.
+     */
+    public static void exportarSiNoExiste(final Context context, final ClaseBaseDatos bd) {
+        if (bd == null || ficheroActual(context).exists()) return;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    List<Configuracion> parametros = bd.getConfiguracion();
+                    if (parametros == null || parametros.isEmpty()) {
+                        Log.i(TAG, "Sin configuracion guardada: no se exporta conf-actual.json");
+                        return;
+                    }
+                    exportar(context, bd);
+                } catch (Exception e) {
+                    Log.w(TAG, "No se ha podido exportar la configuracion al arrancar", e);
+                }
+            }
+        }, "exportar-configuracion").start();
+    }
+
     /** Ficheros conf-*.json de la carpeta de la app, ordenados por nombre. */
     public static List<File> listar(Context context) {
         File[] ficheros = carpeta(context).listFiles((dir, name) ->

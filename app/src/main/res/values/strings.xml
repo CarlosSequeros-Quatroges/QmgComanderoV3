@@ -219,4 +219,6 @@
     <string name="config_error_qr">No se ha podido generar el código QR</string>
     <string name="config_cerrar">Cerrar</string>
     <string name="config_buscar_fichero">Buscar en Descargas u otra carpeta…</string>
+    <string name="config_importar_ultima">Importar última configuración</string>
+    <string name="config_sin_actual">No hay guardada una configuración actual (conf-actual.json)</string>
 </resources>
