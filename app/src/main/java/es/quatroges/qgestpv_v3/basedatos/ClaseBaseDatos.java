@@ -157,6 +157,25 @@ public abstract class ClaseBaseDatos extends RoomDatabase {
         }.execute();
     }
 
+    /** Graba (o actualiza) varios parametros de configuracion y espera a que terminen (importacion desde JSON/QR). */
+    public void importaConfiguracion(final java.util.Map<String, String> valores) throws ExecutionException, InterruptedException {
+        Callable<Integer> callable = new Callable<Integer>() {
+            @Override
+            public Integer call() {
+                int n = 0;
+                for (java.util.Map.Entry<String, String> e : valores.entrySet()) {
+                    Configuracion parametro = new Configuracion(e.getKey(), e.getValue());
+                    long id = configuracionDAO().insertConfiguracion(parametro);
+                    if (id == -1) configuracionDAO().updateConfiguracion(parametro);
+                    n++;
+                }
+                return n;
+            }
+        };
+        Future<Integer> future = Executors.newSingleThreadExecutor().submit(callable);
+        future.get();
+    }
+
     /** Graba (o actualiza) un parametro de configuracion en segundo plano, sin notificar progreso a la UI. */
     public void guardaParametroConfiguracion(final String clave, final String valor) {
         Executors.newSingleThreadExecutor().submit(new Runnable() {

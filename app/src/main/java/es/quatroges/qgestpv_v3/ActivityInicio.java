@@ -2124,6 +2124,14 @@ public class ActivityInicio extends AppCompatActivity
                     if (ClaseCondicionesVenta.establecimientos == null) {
                         ClaseCondicionesVenta.establecimientos = new ArrayList<>();
                         ClaseCondicionesVenta.establecimientos.add(new ClaseEstablecimientos(configuracion.codigo, configuracion.empresa));
+                    } else {
+                        // el nombre del propio establecimiento se refresca con la configuracion actual (la cache puede traer uno antiguo)
+                        for (ClaseEstablecimientos tmp : ClaseCondicionesVenta.establecimientos) {
+                            if (tmp.codigo != null && tmp.codigo.equals(configuracion.codigo)) {
+                                tmp.nombre = configuracion.empresa;
+                                break;
+                            }
+                        }
                     }
 
 
@@ -4694,6 +4702,9 @@ public class ActivityInicio extends AppCompatActivity
                                 grabaFechaSincronizacion("200101000000");
                             }
                             cargaConfiguracion();
+                            // la empresa o el codigo pueden haber cambiado (edicion o configuracion importada)
+                            if (getSupportActionBar() != null)
+                                getSupportActionBar().setTitle(configuracion.empresa + "(" + configuracion.codigo + ")");
                             // aplica el modelo y la MAC de impresora recien guardados
                             reiniciaBluetooth();
 

@@ -202,4 +202,15 @@
 
 
     <string name="strAvisoPermisoRedLocal">Sin el permiso de red local la aplicación no puede conectar con el servidor del comandero. Actívelo en Ajustes > Aplicaciones > Permisos.</string>
+    <string name="config_exportar">Exportar configuración</string>
+    <string name="config_importar">Importar configuración</string>
+    <string name="config_leer_qr">Leer configuración de un QR</string>
+    <string name="config_exportada">Configuración exportada a %1$s</string>
+    <string name="config_importada">Configuración cargada (%1$d parámetros). Pulse Guardar para aplicarla o Cancelar para descartarla.</string>
+    <string name="config_sin_ficheros">No hay ficheros conf-*.json en %1$s</string>
+    <string name="config_elegir_fichero">Elija la configuración a cargar</string>
+    <string name="config_error_exportar">No se ha podido exportar la configuración</string>
+    <string name="config_error_importar">No se ha podido cargar la configuración</string>
+    <string name="config_qr_prompt">Enfoque el código QR con la configuración</string>
+    <string name="config_qr_cancelado">Lectura de QR cancelada</string>
 </resources>

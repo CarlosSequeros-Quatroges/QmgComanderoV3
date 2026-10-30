@@ -2,6 +2,8 @@ package es.quatroges.qgestpv_v3;
 
 
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -9,13 +11,18 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.journeyapps.barcodescanner.ScanContract;
+import com.journeyapps.barcodescanner.ScanOptions;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
@@ -24,6 +31,7 @@ import java.util.concurrent.ExecutionException;
 import es.quatroges.qgestpv_v3.adapters.AdapterTabsPagerConfiguracion;
 import es.quatroges.qgestpv_v3.basedatos.ClaseBaseDatos;
 import es.quatroges.qgestpv_v3.configuracion.ClaseConfiguracion;
+import es.quatroges.qgestpv_v3.configuracion.ConfiguracionJson;
 import es.quatroges.qgestpv_v3.datos.Configuracion;
 
 /**
@@ -49,6 +57,21 @@ public class ActivityConfig extends AppCompatActivity implements
 
     private ClaseConfiguracion configuracion;
     private ClaseBaseDatos bd;
+
+    private static final String TAG = "ActivityConfig";
+    /** true si se ha cargado una configuracion desde fichero o QR: al salir hay que avisar a ActivityInicio aunque se cancele */
+    private boolean configuracionImportada = false;
+    /** pestaña que estaba activa al importar, para volver a ella tras recrear la pantalla (estatico: sobrevive a recreate()) */
+    private static int pestanaTrasImportar = -1;
+
+    /** Lector de QR: el contenido es el mismo JSON que genera la exportacion */
+    private final ActivityResultLauncher<ScanOptions> lectorQR = registerForActivityResult(new ScanContract(), resultado -> {
+        if (resultado.getContents() == null) {
+            Toast.makeText(this, R.string.config_qr_cancelado, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        importarJson(resultado.getContents());
+    });
 
     // INTERFACES DATOS
     @Override
@@ -130,27 +153,101 @@ public class ActivityConfig extends AppCompatActivity implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
+        return accionMenu(item.getItemId());
+    }
 
+    /** Acciones de la cabecera (compartidas por la toolbar y el menu de opciones). */
+    private boolean accionMenu(int id) {
         if (id == R.id.action_cancelar) {
+            // si se importo una configuracion, la base de datos ya cambio: ActivityInicio debe recargarla igualmente
+            setResult(configuracionImportada ? 1 : 0);
             finish();
-            setResult(0);
         }
-        else if (id ==  R.id.action_guardar) {
-            int resultado =  guardarConfiguracion();
-            if (resultado == 1) {
-                setResult(1);
-            }
-            else{
-                setResult(0);}
+        else if (id == R.id.action_guardar) {
+            int resultado = guardarConfiguracion();
+            setResult(resultado == 0 && configuracionImportada ? 1 : resultado);
             finish();
+        }
+        else if (id == R.id.action_exportar) {
+            exportarConfiguracion();
+        }
+        else if (id == R.id.action_importar) {
+            elegirConfiguracionAImportar();
+        }
+        else if (id == R.id.action_leer_qr) {
+            ScanOptions opciones = new ScanOptions();
+            opciones.setDesiredBarcodeFormats(ScanOptions.QR_CODE);
+            opciones.setPrompt(getString(R.string.config_qr_prompt));
+            opciones.setBeepEnabled(false);
+            opciones.setOrientationLocked(true);
+            lectorQR.launch(opciones);
         }
         return true;
     }
 
+    /** Guarda la configuracion almacenada en conf-actual.json dentro de la carpeta de la app. */
+    private void exportarConfiguracion() {
+        try {
+            File fichero = ConfiguracionJson.exportar(this, bd);
+            Toast.makeText(this, getString(R.string.config_exportada, fichero.getAbsolutePath()), Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            Log.e(TAG, "Error exportando la configuracion", e);
+            Toast.makeText(this, getString(R.string.config_error_exportar) + "\n" + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /** Muestra los conf-*.json de la carpeta de la app y carga el elegido. */
+    private void elegirConfiguracionAImportar() {
+        final List<File> ficheros = ConfiguracionJson.listar(this);
+        if (ficheros.isEmpty()) {
+            Toast.makeText(this, getString(R.string.config_sin_ficheros, ConfiguracionJson.carpeta(this).getAbsolutePath()), Toast.LENGTH_LONG).show();
+            return;
+        }
+        String[] nombres = new String[ficheros.size()];
+        for (int i = 0; i < ficheros.size(); i++) nombres[i] = ficheros.get(i).getName();
+
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.config_elegir_fichero)
+                .setItems(nombres, (dialog, which) -> importarFichero(ficheros.get(which)))
+                .setNegativeButton(R.string.config_cancelar, null)
+                .show();
+    }
+
+    private void importarFichero(File fichero) {
+        try {
+            int n = ConfiguracionJson.importarFichero(bd, fichero);
+            configuracionCargada(n);
+        } catch (Exception e) {
+            Log.e(TAG, "Error importando " + fichero.getName(), e);
+            Toast.makeText(this, getString(R.string.config_error_importar) + "\n" + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void importarJson(String json) {
+        try {
+            int n = ConfiguracionJson.importarJson(bd, json);
+            configuracionCargada(n);
+        } catch (Exception e) {
+            Log.e(TAG, "Error importando configuracion desde QR", e);
+            Toast.makeText(this, getString(R.string.config_error_importar) + "\n" + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /** Tras cargar en la base de datos, se vuelve a crear la pantalla para que las pestañas muestren los valores nuevos. */
+    private void configuracionCargada(int parametros) {
+        configuracionImportada = true;
+        pestanaTrasImportar = viewPager != null ? viewPager.getCurrentItem() : -1;
+        Toast.makeText(this, getString(R.string.config_importada, parametros), Toast.LENGTH_LONG).show();
+        recreate();
+    }
+
     @Override
     protected void onCreate (Bundle savedInstanceState){
-        super.onCreate(savedInstanceState);
+        boolean importada = savedInstanceState != null && savedInstanceState.getBoolean("configuracionImportada", false);
+        // Tras importar se descarta el estado guardado: si no, Android restaura el texto de los campos y las casillas
+        // por encima de los valores recien cargados en la base de datos y la pantalla seguiria mostrando los antiguos.
+        super.onCreate(importada ? null : savedInstanceState);
+        configuracionImportada = importada;
         setContentView(R.layout.cfg_activity_config);
         Toolbar toolbar = findViewById(R.id.toolbar);
 
@@ -166,17 +263,7 @@ public class ActivityConfig extends AppCompatActivity implements
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                int id = item.getItemId();
-                if (id ==  R.id.action_cancelar) {
-                    finish();
-                    setResult(0);
-                }
-                else if (id == R.id.action_guardar) {
-                    int resultado = guardarConfiguracion();
-                    setResult(resultado);
-                    finish();
-                }
-                return true;
+                return accionMenu(item.getItemId());
             }
         });
 
@@ -194,7 +281,26 @@ public class ActivityConfig extends AppCompatActivity implements
             tab.setText(tabs[position]);
         }).attach();
 
+        if (pestanaTrasImportar >= 0) {
+            viewPager.setCurrentItem(pestanaTrasImportar, false);
+            pestanaTrasImportar = -1;
+        }
 
+
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        // Tras importar no se restaura la jerarquia de vistas: los fragmentos ya se han creado de nuevo con los
+        // valores importados y ViewPager2 intentaria recuperar fragmentos que ya no existen.
+        if (configuracionImportada) return;
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("configuracionImportada", configuracionImportada);
     }
 
     private int guardarConfiguracion()
