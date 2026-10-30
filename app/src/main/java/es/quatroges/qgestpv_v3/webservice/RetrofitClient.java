@@ -48,6 +48,8 @@ public class RetrofitClient {
                     .writeTimeout(writeTO,TimeUnit.SECONDS);
 
             httpClient.addInterceptor(logging);  // <-- this is the important line!
+            // resolucion local de nombres (hosts.txt en la carpeta de la app), solo en depuracion
+            httpClient.dns(HostsLocales.getInstance());
 
             retrofit = new Retrofit.Builder()
                     .baseUrl(baseUrl)

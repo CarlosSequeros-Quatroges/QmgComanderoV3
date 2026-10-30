@@ -127,6 +127,7 @@ import es.quatroges.qgestpv_v3.utils.ClaseUtils;
 import es.quatroges.qgestpv_v3.utils.PermisosRedLocal;
 import es.quatroges.qgestpv_v3.webservice.APIService;
 import es.quatroges.qgestpv_v3.webservice.ClaseServicioWeb;
+import es.quatroges.qgestpv_v3.webservice.HostsLocales;
 import es.quatroges.qgestpv_v3.webservice.RespuestaTestjsonWS;
 import es.quatroges.qgestpv_v3.webservice.RespuestaValidarUpdateWS;
 import retrofit2.Call;
@@ -3495,6 +3496,8 @@ public class ActivityInicio extends AppCompatActivity
 
         new ServSincronizaBD();
         ServSincronizaBD.setConfig(configuracion);
+        // hosts.txt en la carpeta de la app para redirigir nombres de servidores (solo depuracion)
+        HostsLocales.inicializar(getApplicationContext());
         Log.v("On Create", "datos cargados");
 
         if (latenciaTest == null){
