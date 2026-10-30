@@ -28,6 +28,12 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/action_mostrar_qr"
+        android:orderInCategory="99"
+        android:title="@string/config_mostrar_qr"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_cancelar"
         android:orderInCategory="100"
         android:title="@string/config_cancelar"

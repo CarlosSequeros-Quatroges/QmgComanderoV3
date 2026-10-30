@@ -213,4 +213,9 @@
     <string name="config_error_importar">No se ha podido cargar la configuración</string>
     <string name="config_qr_prompt">Enfoque el código QR con la configuración</string>
     <string name="config_qr_cancelado">Lectura de QR cancelada</string>
+    <string name="config_mostrar_qr">Mostrar QR de configuración</string>
+    <string name="config_qr_titulo">Configuración de %1$s</string>
+    <string name="config_qr_ayuda">En el otro terminal: Configuración, menú, "Leer configuración de un QR"</string>
+    <string name="config_error_qr">No se ha podido generar el código QR</string>
+    <string name="config_cerrar">Cerrar</string>
 </resources>

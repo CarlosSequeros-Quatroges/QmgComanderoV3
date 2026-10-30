@@ -1,7 +1,11 @@
 package es.quatroges.qgestpv_v3;
 
 
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.util.Log;
 import android.widget.Toast;
 import android.view.Menu;
@@ -19,12 +23,18 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
@@ -174,6 +184,9 @@ public class ActivityConfig extends AppCompatActivity implements
         else if (id == R.id.action_importar) {
             elegirConfiguracionAImportar();
         }
+        else if (id == R.id.action_mostrar_qr) {
+            mostrarQrConfiguracion();
+        }
         else if (id == R.id.action_leer_qr) {
             ScanOptions opciones = new ScanOptions();
             opciones.setDesiredBarcodeFormats(ScanOptions.QR_CODE);
@@ -183,6 +196,53 @@ public class ActivityConfig extends AppCompatActivity implements
             lectorQR.launch(opciones);
         }
         return true;
+    }
+
+    /**
+     * Muestra la configuracion guardada como codigo QR para que otro terminal la lea con "Leer configuracion de un QR".
+     * El contenido es el JSON compacto de la tabla de configuracion (el mismo formato que exporta/importa).
+     */
+    private void mostrarQrConfiguracion() {
+        try {
+            String json = ConfiguracionJson.jsonActual(bd);
+
+            DisplayMetrics dm = getResources().getDisplayMetrics();
+            int lado = (int) (Math.min(dm.widthPixels, dm.heightPixels) * 0.85);
+
+            Map<EncodeHintType, Object> hints = new EnumMap<>(EncodeHintType.class);
+            hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+            hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
+            hints.put(EncodeHintType.MARGIN, 1);
+            Bitmap qr = new BarcodeEncoder().encodeBitmap(json, BarcodeFormat.QR_CODE, lado, lado, hints);
+
+            ImageView imagen = new ImageView(this);
+            imagen.setImageBitmap(qr);
+            imagen.setBackgroundColor(Color.WHITE);
+            int margen = (int) (16 * dm.density);
+            imagen.setPadding(margen, margen, margen, margen);
+            imagen.setAdjustViewBounds(true);
+
+            TextView ayuda = new TextView(this);
+            ayuda.setText(R.string.config_qr_ayuda);
+            ayuda.setGravity(Gravity.CENTER);
+            ayuda.setPadding(margen, margen / 2, margen, margen / 2);
+
+            LinearLayout contenedor = new LinearLayout(this);
+            contenedor.setOrientation(LinearLayout.VERTICAL);
+            contenedor.setGravity(Gravity.CENTER_HORIZONTAL);
+            contenedor.addView(imagen);
+            contenedor.addView(ayuda);
+
+            String empresa = configuracion != null && configuracion.empresa != null ? configuracion.empresa : "";
+            new AlertDialog.Builder(this)
+                    .setTitle(getString(R.string.config_qr_titulo, empresa))
+                    .setView(contenedor)
+                    .setPositiveButton(R.string.config_cerrar, null)
+                    .show();
+        } catch (Exception e) {
+            Log.e(TAG, "Error generando el QR de configuracion", e);
+            Toast.makeText(this, getString(R.string.config_error_qr) + "\n" + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 
     /** Guarda la configuracion almacenada en conf-actual.json dentro de la carpeta de la app. */
