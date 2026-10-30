@@ -874,7 +874,8 @@ public class ServSincronizaBD extends IntentService {
                 LinkedHashMap<Integer,String> wsMD5 = (md5s != null && !md5s.isEmpty() )? md5s.stream()
                         .collect(Collectors.toMap(
                                 roomRegistrosCRC::getIdfila,
-                                roomRegistrosCRC::getCrc,
+                                // el servidor puede no enviar crc (p.ej. hora_comidas de un TPV sin horarios): toMap no admite nulos
+                                r -> r.getCrc() == null ? "" : r.getCrc(),
                                 (existing, replacement) -> replacement,
                                 LinkedHashMap::new)):new LinkedHashMap<Integer, String>();
 
@@ -893,7 +894,8 @@ public class ServSincronizaBD extends IntentService {
                 LinkedHashMap<Integer,String> localMD5 = ( tMD5 != null && !tMD5.isEmpty()  )? tMD5.stream()
                         .collect(Collectors.toMap(
                                 roomRegistrosCRC::getIdfila,
-                                roomRegistrosCRC::getCrc,
+                                // el servidor puede no enviar crc (p.ej. hora_comidas de un TPV sin horarios): toMap no admite nulos
+                                r -> r.getCrc() == null ? "" : r.getCrc(),
                                 (existing, replacement) -> replacement,
                                 LinkedHashMap::new)):new LinkedHashMap<Integer, String>();
 
