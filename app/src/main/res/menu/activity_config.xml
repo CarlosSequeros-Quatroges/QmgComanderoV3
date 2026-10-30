@@ -16,12 +16,6 @@
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/action_importar_ultima"
-        android:orderInCategory="98"
-        android:title="@string/config_importar_ultima"
-        app:showAsAction="never" />
-
-    <item
         android:id="@+id/action_importar"
         android:orderInCategory="98"
         android:title="@string/config_importar"

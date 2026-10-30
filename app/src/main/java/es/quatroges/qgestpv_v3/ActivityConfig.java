@@ -197,11 +197,6 @@ public class ActivityConfig extends AppCompatActivity implements
         else if (id == R.id.action_exportar) {
             exportarConfiguracion();
         }
-        else if (id == R.id.action_importar_ultima) {
-            File actual = ConfiguracionJson.ficheroActual(this);
-            if (actual.exists()) importarFichero(actual);
-            else Toast.makeText(this, R.string.config_sin_actual, Toast.LENGTH_LONG).show();
-        }
         else if (id == R.id.action_importar) {
             elegirConfiguracionAImportar();
         }
