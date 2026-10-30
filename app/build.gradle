@@ -8,7 +8,7 @@ android {
         targetSdkVersion 37
         versionCode 8
 
-        versionName "QMGComandero_v3.2.4_code8_bd.7_20261030094046"
+        versionName "QMGComandero_v3.2.4_code8_bd.7_20261030......"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     buildTypes {
