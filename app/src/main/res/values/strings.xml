@@ -218,4 +218,5 @@
     <string name="config_qr_ayuda">En el otro terminal: Configuración, menú, "Leer configuración de un QR"</string>
     <string name="config_error_qr">No se ha podido generar el código QR</string>
     <string name="config_cerrar">Cerrar</string>
+    <string name="config_buscar_fichero">Buscar en Descargas u otra carpeta…</string>
 </resources>

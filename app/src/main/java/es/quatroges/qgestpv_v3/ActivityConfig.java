@@ -3,7 +3,10 @@ package es.quatroges.qgestpv_v3;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.DocumentsContract;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.util.Log;
@@ -16,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -30,8 +34,11 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -73,6 +80,15 @@ public class ActivityConfig extends AppCompatActivity implements
     private boolean configuracionImportada = false;
     /** pestaña que estaba activa al importar, para volver a ella tras recrear la pantalla (estatico: sobrevive a recreate()) */
     private static int pestanaTrasImportar = -1;
+
+    /**
+     * Selector de archivos del sistema para cargar un conf-*.json desde Descargas u otra carpeta.
+     * Desde Android 11 la app no puede listar ficheros de Descargas que no haya creado ella; el selector no necesita permisos.
+     */
+    private final ActivityResultLauncher<Intent> selectorFichero = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), resultado -> {
+        if (resultado.getResultCode() != RESULT_OK || resultado.getData() == null || resultado.getData().getData() == null) return;
+        importarUri(resultado.getData().getData());
+    });
 
     /** Lector de QR: el contenido es el mismo JSON que genera la exportacion */
     private final ActivityResultLauncher<ScanOptions> lectorQR = registerForActivityResult(new ScanContract(), resultado -> {
@@ -256,21 +272,60 @@ public class ActivityConfig extends AppCompatActivity implements
         }
     }
 
-    /** Muestra los conf-*.json de la carpeta de la app y carga el elegido. */
+    /**
+     * Muestra los conf-*.json de la carpeta de la app (se pierden al desinstalar) y una ultima entrada para buscar
+     * en Descargas u otra carpeta con el selector del sistema (sobreviven a la reinstalacion).
+     */
     private void elegirConfiguracionAImportar() {
         final List<File> ficheros = ConfiguracionJson.listar(this);
         if (ficheros.isEmpty()) {
-            Toast.makeText(this, getString(R.string.config_sin_ficheros, ConfiguracionJson.carpeta(this).getAbsolutePath()), Toast.LENGTH_LONG).show();
+            abrirSelectorFichero();
             return;
         }
-        String[] nombres = new String[ficheros.size()];
+        String[] nombres = new String[ficheros.size() + 1];
         for (int i = 0; i < ficheros.size(); i++) nombres[i] = ficheros.get(i).getName();
+        nombres[ficheros.size()] = getString(R.string.config_buscar_fichero);
 
         new AlertDialog.Builder(this)
                 .setTitle(R.string.config_elegir_fichero)
-                .setItems(nombres, (dialog, which) -> importarFichero(ficheros.get(which)))
+                .setItems(nombres, (dialog, which) -> {
+                    if (which < ficheros.size()) importarFichero(ficheros.get(which));
+                    else abrirSelectorFichero();
+                })
                 .setNegativeButton(R.string.config_cancelar, null)
                 .show();
+    }
+
+    /** Abre el selector de archivos del sistema situado en Descargas. */
+    private void abrirSelectorFichero() {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("*/*");
+        intent.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"application/json", "text/plain", "application/octet-stream"});
+        intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI,
+                DocumentsContract.buildDocumentUri("com.android.externalstorage.documents", "primary:Download"));
+        try {
+            selectorFichero.launch(intent);
+        } catch (Exception e) {
+            Log.e(TAG, "No se ha podido abrir el selector de archivos", e);
+            Toast.makeText(this, getString(R.string.config_error_importar) + "\n" + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /** Carga un fichero elegido con el selector del sistema (URI de contenido). */
+    private void importarUri(Uri uri) {
+        try (InputStream is = getContentResolver().openInputStream(uri)) {
+            if (is == null) throw new IOException("No se puede leer " + uri);
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            byte[] buf = new byte[4096];
+            int n;
+            while ((n = is.read(buf)) != -1) bos.write(buf, 0, n);
+            int parametros = ConfiguracionJson.importarJson(bd, new String(bos.toByteArray(), StandardCharsets.UTF_8));
+            configuracionCargada(parametros);
+        } catch (Exception e) {
+            Log.e(TAG, "Error importando " + uri, e);
+            Toast.makeText(this, getString(R.string.config_error_importar) + "\n" + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 
     private void importarFichero(File fichero) {
