@@ -86,6 +86,7 @@ import es.quatroges.qgestpv_v3.bluetooth.PermisosBluetooth;
 import es.quatroges.qgestpv_v3.configuracion.ClaseCondicionesVenta;
 import es.quatroges.qgestpv_v3.configuracion.ClaseConfiguracion;
 import es.quatroges.qgestpv_v3.configuracion.ClaseUltimoEstadoApp;
+import es.quatroges.qgestpv_v3.configuracion.ConfiguracionJson;
 import es.quatroges.qgestpv_v3.datos.ActualizaPax;
 import es.quatroges.qgestpv_v3.datos.Alergenos;
 import es.quatroges.qgestpv_v3.datos.CabeceraTiquet;
@@ -3489,6 +3490,8 @@ public class ActivityInicio extends AppCompatActivity
         baseDatos = ClaseBaseDatos.getDatabase(this, handlerNotificaWS, this);
         configuracion = new ClaseConfiguracion(this);
         cargaConfiguracion();
+        // copia de la configuracion en uso (conf-actual.json) si aun no existe, p.ej. tras reinstalar
+        ConfiguracionJson.exportarSiNoExiste(this, baseDatos);
 
         new ClaseCondicionesVenta(configuracion.codigo, configuracion.empresa);
         ClaseCondicionesVenta.cargarPreferencias(this, configuracion.codigo, configuracion.empresa);
