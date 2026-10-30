@@ -10,6 +10,13 @@ Se corrige eliminar linea no enviada. Siempre eliminaba la primera no enviada
 Se cambia forma de pago efe+tar de Z a X
 CODE 7 -PUBLICADA
 
+30/10/2026
 se añade gestión de permiso acceso a red local, necesario tras actualizar a android 17
+Importar y exportar configuración en archivo json y QR
+soporte de archivo hosts.txt para hacer proxy de nombre público a ip
+
+corrige filas hora_comida con crc nulo
+
+
 
 
