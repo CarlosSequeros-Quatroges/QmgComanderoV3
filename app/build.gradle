@@ -6,9 +6,9 @@ android {
         applicationId "es.quatroges.qgestpv_v3"
         minSdkVersion 26
         targetSdkVersion 37
-        versionCode 6
+        versionCode 7
 
-        versionName "QMGComandero_v3.2.2_code6_bd.6_20260923120100"
+        versionName "QMGComandero_v3.2.3_code6_bd.7_20261026100600"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     buildTypes {

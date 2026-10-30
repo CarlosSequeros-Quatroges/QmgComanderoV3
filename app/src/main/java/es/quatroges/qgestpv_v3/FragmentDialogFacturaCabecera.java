@@ -104,6 +104,7 @@ public class FragmentDialogFacturaCabecera extends Fragment {
             case "h":
                 tvFormaPago.setText("Forma de pago: Tarjeta");
                 break;
+            case "x":
             case "z":
                 tvFormaPago.setText("Forma de pago: Efectivo y Tarjeta");
                 break;

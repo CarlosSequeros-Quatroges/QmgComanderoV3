@@ -124,6 +124,7 @@ import es.quatroges.qgestpv_v3.utils.ClaseItemFiltro;
 import es.quatroges.qgestpv_v3.utils.ClaseLatencia;
 import es.quatroges.qgestpv_v3.utils.ClaseOnTouch;
 import es.quatroges.qgestpv_v3.utils.ClaseUtils;
+import es.quatroges.qgestpv_v3.utils.PermisosRedLocal;
 import es.quatroges.qgestpv_v3.webservice.APIService;
 import es.quatroges.qgestpv_v3.webservice.ClaseServicioWeb;
 import es.quatroges.qgestpv_v3.webservice.RespuestaTestjsonWS;
@@ -1648,6 +1649,16 @@ public class ActivityInicio extends AppCompatActivity
     }
 
     private static <T> void testWS(final enAccionesWS accion, final T args) {
+        if (PermisosRedLocal.pendienteDeRespuesta()) {
+            // el usuario aun no ha respondido al permiso de red local: se reintenta en un segundo
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    testWS(accion, args);
+                }
+            }, 1000);
+            return;
+        }
         try {
 
             //compruebo condiciones de conexión a internet
@@ -3566,7 +3577,7 @@ public class ActivityInicio extends AppCompatActivity
 
         // Permisos Bluetooth de ejecución (Android 12+: SCAN/CONNECT; Android 8-11: ubicación para escanear).
         // Si faltan se piden aquí; la conexión se reintenta desde onRequestPermissionsResult.
-        PermisosBluetooth.solicitarSiFaltan(this);
+        solicitaPermisosPendientes();
 
         if (ClaseBluetooth.getApplicationContext() == null) {
             reiniciaBluetooth();
@@ -4623,6 +4634,17 @@ public class ActivityInicio extends AppCompatActivity
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == PermisosRedLocal.REQUEST_PERMISO_RED_LOCAL) {
+            if (PermisosRedLocal.resultado(grantResults)) {
+                Log.i(TAG, "permiso de red local concedido: las llamadas al servidor se reanudan");
+            } else {
+                Log.w(TAG, "permiso de red local denegado: no se podra conectar con un servidor de la LAN");
+                ClaseUtils.Aviso.mostrarAviso("Aviso...", context.getResources().getText(R.string.strAvisoPermisoRedLocal).toString(), context);
+            }
+            return;
+        }
+
         if (requestCode != PermisosBluetooth.REQUEST_PERMISOS_BT) return;
 
         if (PermisosBluetooth.todosConcedidos(grantResults)) {
@@ -4632,6 +4654,17 @@ public class ActivityInicio extends AppCompatActivity
             Log.w(TAG, "permisos Bluetooth denegados");
             ClaseUtils.Aviso.mostrarAviso("Aviso...", context.getResources().getText(R.string.strConsultaAvisoPermisoBluetooth).toString(), context);
         }
+        // resuelto el de Bluetooth, se pide el siguiente pendiente (red local en Android 17+)
+        solicitaPermisosPendientes();
+    }
+
+    /**
+     * Pide los permisos de ejecucion que falten, de uno en uno para que los dialogos del sistema no se pisen:
+     * primero Bluetooth (impresora) y despues red local (servidor en la LAN, Android 17+).
+     */
+    private void solicitaPermisosPendientes() {
+        if (!PermisosBluetooth.solicitarSiFaltan(this)) return;
+        PermisosRedLocal.solicitarSiFalta(this);
     }
 
     public void onActivityResult(int requestCode, final int resultCode, Intent data) {

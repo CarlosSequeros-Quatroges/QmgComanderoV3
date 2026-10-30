@@ -1220,7 +1220,7 @@ public class FragmentFormaPago extends Fragment {
                 formapago = "E";
             }
             if (chEfectivo.isChecked() && chTarjeta.isChecked() ) {
-                formapago = "Z";
+                formapago = "X";
             }
 
             datos.putString("formapago",formapago);

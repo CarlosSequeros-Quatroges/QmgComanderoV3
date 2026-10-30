@@ -4,3 +4,8 @@ CODE 6 -> PUBLICADO
 Por un error descargando cabeceras con descripción en blanco y pos (int) nulo, da error
 cuando parsea la respuesta. se establece una función GsonTolerante que trata los campos numéricos
 vacíos como 0
+
+26/10/2026
+Se corrige eliminar linea no enviada. Siempre eliminaba la primera no enviada
+Se cambia forma de pago efe+tar de Z a X
+CODE 7 -PUBLICADA

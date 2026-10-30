@@ -201,4 +201,5 @@
     <string name="dialog_strCalculaPrecio_preciofinal">Precio aplicado: [precio_final] €</string>
 
 
+    <string name="strAvisoPermisoRedLocal">Sin el permiso de red local la aplicación no puede conectar con el servidor del comandero. Actívelo en Ajustes > Aplicaciones > Permisos.</string>
 </resources>
