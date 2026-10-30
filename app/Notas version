@@ -9,3 +9,7 @@ vacíos como 0
 Se corrige eliminar linea no enviada. Siempre eliminaba la primera no enviada
 Se cambia forma de pago efe+tar de Z a X
 CODE 7 -PUBLICADA
+
+se añade gestión de permiso acceso a red local, necesario tras actualizar a android 17
+
+
