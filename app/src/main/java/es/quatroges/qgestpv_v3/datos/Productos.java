@@ -120,7 +120,7 @@ public class Productos {
 
     @Ignore
     public Productos(Integer rowid, @NonNull String codmenu, @NonNull int tmenu, @NonNull int cabecera, String descripcion, String euros, String costo, String mprecios, String abrevia, String aplicar_hh, String tipo, String aplicar_ti,
-                     String notas, String alergenos, String etiquetas, String orden,String orden_platos, String codfam, String codsub, String es_extra, String ver_extra, String pensiones) {
+                     String notas, String alergenos, String etiquetas, String orden,String orden_platos, String codfam, String codsub, String es_extra, String ver_extra, String pensiones, String preciop) {
         this.rowid =rowid;
         this.codmenu = codmenu;
         this.tmenu = tmenu;
@@ -144,6 +144,7 @@ public class Productos {
         this.es_extra = es_extra;
         this.ver_extra = ver_extra;
         this.pensiones = pensiones;
+        this.preciop = preciop;
         this.calculaMD5();
 
 
