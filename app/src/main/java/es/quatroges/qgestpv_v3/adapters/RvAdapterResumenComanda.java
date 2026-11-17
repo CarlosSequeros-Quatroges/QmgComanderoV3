@@ -24,6 +24,7 @@ import java.util.Collections;
 
 import es.quatroges.qgestpv_v3.R;
 import es.quatroges.qgestpv_v3.datos.listas.lineaVentas.ClaseLineaVentas;
+import es.quatroges.qgestpv_v3.datos.listas.lineaVentas.RvAdapterLineaVentas;
 import es.quatroges.qgestpv_v3.utils.ClaseItemExtra;
 import es.quatroges.qgestpv_v3.utils.ClaseUtils;
 
@@ -105,7 +106,9 @@ public class RvAdapterResumenComanda extends RecyclerView.Adapter<RvAdapterResum
         }
 
         categoriaViewHolder.ivPension.setVisibility(GONE);
-        if (!listaLineaVentas.get(i).pension.equalsIgnoreCase("")) {
+        // mismo icono y criterio que las lineas de venta: tramo aplicado; nada si la pension no se aplica a la submesa
+        if (!listaLineaVentas.get(i).pension.equalsIgnoreCase("") && RvAdapterLineaVentas.iconoPension != 0) {
+            categoriaViewHolder.ivPension.setBackgroundResource(RvAdapterLineaVentas.iconoPension);
             categoriaViewHolder.ivPension.setVisibility(View.VISIBLE);
         }
 

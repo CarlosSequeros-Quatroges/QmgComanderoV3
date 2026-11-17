@@ -6608,7 +6608,7 @@ public class ActivityInicio extends AppCompatActivity
         // la rejilla de productos muestra el precio con pension cuando corresponde
         ClaseProductos.pensionAplicada = (submesa != null && submesa.aplicaPension) ? submesa.pension : null;
         ivAplicaPension.setImageResource(R.drawable.pension_no);
-        RvAdapterLineaVentas.iconoPension = R.drawable.navmenu_gratis;
+        RvAdapterLineaVentas.iconoPension = 0;
         tvBarPension.setText("");
         ivAplicaPension.setVisibility(INVISIBLE);
         tvBarPension.setVisibility(INVISIBLE);
@@ -6622,8 +6622,8 @@ public class ActivityInicio extends AppCompatActivity
 
         // tramo de pension aplicado al abrir la mesa (desayuno, almuerzo, cena) si se aplica; rojo si no se aplica
         ivAplicaPension.setImageResource(submesa.iconoPension());
-        // las lineas con pension muestran el mismo tramo en vez del euro tachado
-        RvAdapterLineaVentas.iconoPension = submesa.iconoPensionAplicada();
+        // las lineas con pension muestran el mismo tramo en vez del euro tachado; sin icono si la pension no se aplica
+        RvAdapterLineaVentas.iconoPension = submesa.pensionAplicada() ? submesa.iconoPensionAplicada() : 0;
 
 
     }

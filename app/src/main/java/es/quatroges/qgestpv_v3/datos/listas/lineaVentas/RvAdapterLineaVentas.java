@@ -37,8 +37,9 @@ public class RvAdapterLineaVentas extends RecyclerView.Adapter<RvAdapterLineaVen
     static ArrayList<ClaseLineaVentas> listaLineaVentas;
     static Context context;
     static FragmentLineaVentas fragmentLineaVentas;
-    /** icono de las lineas con pension: el del tramo que se aplica a la submesa actual (lo fija ActivityInicio.muestraPension) */
-    public static int iconoPension = R.drawable.navmenu_gratis;
+    /** icono de las lineas con pension: el del tramo que se aplica a la submesa actual (lo fija ActivityInicio.muestraPension);
+     *  0 si la pension no se aplica a la submesa (las lineas del TPV traen el codigo de pension aunque aplicap sea N) */
+    public static int iconoPension = 0;
     private final ArrayList<Integer> posicionesAgrupadas = new ArrayList<>();
 
     public RvAdapterLineaVentas(Context context, ArrayList<ClaseLineaVentas> listaLineaVentas, FragmentLineaVentas fragmentLineaVentas){
@@ -140,7 +141,7 @@ public class RvAdapterLineaVentas extends RecyclerView.Adapter<RvAdapterLineaVen
         else
             categoriaViewHolder.ivObservaciones.setVisibility(View.INVISIBLE);
 
-        if (!lineaVenta.pension.equalsIgnoreCase("")) {
+        if (!lineaVenta.pension.equalsIgnoreCase("") && iconoPension != 0) {
             // la linea con pension puede tener importe (preciop): se muestra la pension aplicada, no el euro tachado
             categoriaViewHolder.ivPension.setBackgroundResource(iconoPension);
             categoriaViewHolder.ivPension.setVisibility(View.VISIBLE);
