@@ -94,7 +94,7 @@ public abstract class ClaseBaseDatos extends RoomDatabase {
                      ClaseBaseDatos.context =context;
                      INSTANCE = Room.databaseBuilder(context.getApplicationContext(), ClaseBaseDatos.class, DATABASE_NAME)
                              .fallbackToDestructiveMigration()
-                             .addMigrations(Migraciones.MIGRATION_6_7)
+                             .addMigrations(Migraciones.MIGRATION_6_7, Migraciones.MIGRATION_7_8)
                              .setQueryCallback((sqlQuery, bindArgs )-> {
                                  Log.d("ClaseBaseDatos", "SQL Query: " + sqlQuery + ",\n Args: " + bindArgs);
                              },Executors.newSingleThreadExecutor())

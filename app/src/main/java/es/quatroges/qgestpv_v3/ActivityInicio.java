@@ -1325,30 +1325,8 @@ public class ActivityInicio extends AppCompatActivity
                     linea.estado = ClaseUtils.enEstado.actualizar;
                 }
 
-                //VALORAR PENSION
-
-                if (!linea.pension.equalsIgnoreCase("") && !submesa.aplicaPension) {
-                    linea.pension = "";
-                    linea.teuros = linea.peuros * linea.cantidad;
-                }
-                else if (linea.pension.equalsIgnoreCase("") && submesa.aplicaPension){
-                    //ver si el producto tiene pension. por defecto se paga
-                    linea.pension = "";
-                    linea.teuros = linea.peuros * linea.cantidad;
-
-                    try {
-                        if (linea.tmenu < 1 ) linea.tmenu = tpv.tmenu;
-                        Productos producto = baseDatos.getProducto(linea.codmenu,linea.tmenu);
-                        if (producto != null && producto.getPensiones().contains("|"+submesa.pension+"|")) {
-                            linea.pension = submesa.pension;
-                            linea.teuros = 0.00;
-                        }
-                    } catch (ExecutionException e) {
-                        throw new RuntimeException(e);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
+                //VALORAR PENSION: precio unitario (preciop o euros) y precio de los extras segun la pension de la submesa destino
+                aplicaPensionLinea(linea, submesa);
                 submesa.lineasVentas.add(linea);
             break;
             }
@@ -1380,6 +1358,16 @@ public class ActivityInicio extends AppCompatActivity
 
                     List<Productos> productos = baseDatos.appGetRecuperaProductosExtras(codmenus,linea.tmenu);
                     extras =  ClaseItemExtra.fromProductos(productos);
+                    // precio de cada extra: preciop si la pension del cliente se aplica tambien al extra
+                    for (ClaseItemExtra extra : extras) {
+                        for (Productos extraProducto : productos) {
+                            if (extraProducto.getCodmenu().equals(extra.codmenu)) {
+                                extra.precio = precioTexto(productoConPension(submesa, extraProducto.getPensiones())
+                                        ? extraProducto.getPreciop() : extraProducto.getEuros());
+                                break;
+                            }
+                        }
+                    }
                 }
             }
         } catch (ExecutionException e) {
@@ -4377,14 +4365,15 @@ public class ActivityInicio extends AppCompatActivity
             }
         }
         if (!duplicado) {
-            Double teuros = Double.parseDouble(producto.euros.replace(",", "."));
+            // precio unitario: preciop si la pension del cliente se aplica a este producto, euros en caso contrario
+            double peuros = precioNumerico(producto.euros);
             String pensionAplicada = "";
 
-            if (submesa.aplicaPension && producto.pensiones.contains("|"+submesa.pension+"|")) {
-                teuros = 0.00;
+            if (productoConPension(submesa, producto.pensiones)) {
+                peuros = precioNumerico(producto.preciop);
                 pensionAplicada = submesa.pension;
             }
-            teuros = uds * teuros;
+            Double teuros = uds * peuros;
 
             Double tcoste = Double.parseDouble(producto.costo.replace(",", "."));
             tcoste = uds * tcoste;
@@ -4426,7 +4415,7 @@ public class ActivityInicio extends AppCompatActivity
                 camarero = String.valueOf(user.codigo);
             }
             lineaVenta = new ClaseLineaVentas(0, mesaSel, mesa.submesas.get(subMesaSel).submesa, producto.codmenu, uds,
-                    Double.parseDouble(producto.euros.replace(",", ".")), teuros, Double.parseDouble(producto.costo.replace(",", ".")), tcoste,
+                    peuros, teuros, Double.parseDouble(producto.costo.replace(",", ".")), tcoste,
                     producto.descripcion, tpv.codtpv, happyHour, "", ClaseUtils.enEstado.anadir, camarero, producto.tipo, producto.tmenu, ClaseUtils.enEstado.transmitida, producto.mprecios, "", "S", tmpOrden, false, "",0,nlinea, pensionAplicada);
             listaLineaVentas.add(lineaVenta);
             lineaSel = listaLineaVentas.size() - 1;
@@ -4592,7 +4581,8 @@ public class ActivityInicio extends AppCompatActivity
                                 producto.getDescripcion(), ClaseUtils.double2string(Double.valueOf(producto.getEuros()), 2), ClaseUtils.double2string(Double.valueOf(producto.getCosto()), 2)
                                 , producto.getMprecios(), producto.getAbrevia(), producto.getAplicar_hh(), producto.getTipo(),
                                 producto.getAplicar_ti(), color.get(cont), producto.getNotas(), producto.getAlergenos(), producto.getEtiquetas(), Integer.valueOf(producto.getOrden()), Integer.valueOf(producto.getOrden_platos()),
-                                producto.getCodfam(), producto.getCodsub(), producto.getEs_extra(), producto.getVer_extra(), producto.getPensiones()));
+                                producto.getCodfam(), producto.getCodsub(), producto.getEs_extra(), producto.getVer_extra(), producto.getPensiones(),
+                                precioTexto(producto.getPreciop())));
                         cont += 1;
                         if (cont == 3) cont = 0;
                     } catch (Exception ex) {
@@ -6502,6 +6492,8 @@ public class ActivityInicio extends AppCompatActivity
     }
 
     private static  void muestraPension(ClaseSubMesas submesa) {
+        // la rejilla de productos muestra el precio con pension cuando corresponde
+        ClaseProductos.pensionAplicada = (submesa != null && submesa.aplicaPension) ? submesa.pension : null;
         ivAplicaPension.setImageResource(R.drawable.pension_no);
         tvBarPension.setText("");
         ivAplicaPension.setVisibility(INVISIBLE);
@@ -6602,28 +6594,84 @@ public class ActivityInicio extends AppCompatActivity
 
     }
 
+    /** true si la pension aplicada a la submesa esta incluida en el campo "pensiones" del producto (formato |SA|MP|...). */
+    private static boolean productoConPension(ClaseSubMesas submesa, String pensiones) {
+        return submesa != null && submesa.aplicaPension
+                && submesa.pension != null && !submesa.pension.isEmpty()
+                && pensiones != null && pensiones.contains("|" + submesa.pension + "|");
+    }
+
+    /** Convierte un precio recibido como texto ("1,50", "1.50", vacio o nulo) a numero; vacio o no valido = 0. */
+    private static double precioNumerico(String precio) {
+        if (precio == null) return 0.0;
+        try {
+            return Double.parseDouble(precio.trim().replace(",", "."));
+        } catch (NumberFormatException e) {
+            return 0.0;
+        }
+    }
+
+    /** Precio como texto con dos decimales y punto, que es el formato que usan los extras y la lista de productos. */
+    private static String precioTexto(String precio) {
+        return ClaseUtils.double2string(precioNumerico(precio), 2).replace(",", ".");
+    }
+
+    /**
+     * Aplica o retira la pension a una linea segun la submesa indicada:
+     * - con pension (el producto la incluye): pension de la linea, precio unitario = preciop del producto
+     * - sin pension: si la linea la tenia, vuelve al precio de venta normal (euros); si no, respeta el precio actual
+     * En ambos casos recalcula el total y el precio de los extras.
+     * @return true si la pension de la linea ha cambiado
+     */
+    private static boolean aplicaPensionLinea(ClaseLineaVentas linea, ClaseSubMesas submesa) {
+        String pensionAnterior = linea.pension == null ? "" : linea.pension;
+        if (linea.tmenu < 1) linea.tmenu = tpv.tmenu;
+
+        Productos producto;
+        try {
+            producto = baseDatos.getProducto(linea.codmenu, linea.tmenu);
+        } catch (ExecutionException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        boolean conPension = producto != null && productoConPension(submesa, producto.getPensiones());
+        linea.pension = conPension ? submesa.pension : "";
+        if (conPension) {
+            linea.peuros = precioNumerico(producto.getPreciop());
+        } else if (!pensionAnterior.isEmpty() && producto != null) {
+            linea.peuros = precioNumerico(producto.getEuros());
+        }
+        linea.teuros = linea.peuros * linea.cantidad;
+
+        repreciaExtras(linea, submesa);
+        return !linea.pension.equalsIgnoreCase(pensionAnterior);
+    }
+
+    /** Recalcula el precio de los extras de una linea: preciop si la pension de la submesa se aplica al extra, euros si no. */
+    private static void repreciaExtras(ClaseLineaVentas linea, ClaseSubMesas submesa) {
+        if (linea.extras == null) return;
+        for (ClaseItemExtra extra : linea.extras) {
+            if (extra == null || extra.tipo == null || !extra.tipo.equalsIgnoreCase("E")
+                    || extra.codmenu == null || extra.codmenu.isEmpty()) continue;
+            try {
+                Productos extraProducto = baseDatos.getProducto(extra.codmenu, linea.tmenu);
+                if (extraProducto != null) {
+                    extra.precio = precioTexto(productoConPension(submesa, extraProducto.getPensiones())
+                            ? extraProducto.getPreciop() : extraProducto.getEuros());
+                }
+            } catch (ExecutionException | InterruptedException e) {
+                Log.w(TAG, "No se ha podido recalcular el precio del extra " + extra.codmenu, e);
+            }
+        }
+    }
+
     private static void recalculaPension(ClaseSubMesas submesa) {
         boolean hayCambios = false;
         for ( ClaseLineaVentas lineaVentas :submesa.lineasVentas) {
-            String tpension = lineaVentas.pension;
-            lineaVentas.pension = "";
-            lineaVentas.teuros = lineaVentas.peuros * lineaVentas.cantidad;
+            // aplica o retira la pension: precio unitario (preciop / euros), total y precio de los extras
+            boolean cambiaPension = aplicaPensionLinea(lineaVentas, submesa);
 
-            try {
-                    if (lineaVentas.tmenu < 1 ) lineaVentas.tmenu = tpv.tmenu;
-                    Productos producto = baseDatos.getProducto(lineaVentas.codmenu,lineaVentas.tmenu);
-
-                    if (producto != null && producto.getPensiones() != null &&  submesa.pension != null && producto.getPensiones().contains("|"+submesa.pension+"|")) {
-                        lineaVentas.pension = submesa.pension;
-                        lineaVentas.teuros = 0.00;
-                }
-            } catch (ExecutionException e) {
-                throw new RuntimeException(e);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-
-            if (!lineaVentas.pension.equalsIgnoreCase(tpension)){
+            if (cambiaPension){
                 hayCambios = true;
                 if (lineaVentas.estado == ClaseUtils.enEstado.transmitida) {
                     lineaVentas.estado = ClaseUtils.enEstado.actualizar;

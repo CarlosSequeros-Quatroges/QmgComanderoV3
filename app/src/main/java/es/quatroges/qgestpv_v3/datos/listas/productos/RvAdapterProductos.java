@@ -120,7 +120,7 @@ implements Filterable {
             return;
         }
         categoriaViewHolder.descripcion.setText(listaProductosFiltrados.get(i).descripcion);
-        categoriaViewHolder.precio.setText( listaProductosFiltrados.get(i).euros);
+        categoriaViewHolder.precio.setText( listaProductosFiltrados.get(i).precioMostrar());
         if (fragmentProductos.productoSel > listaProductos.size() )
             fragmentProductos.productoSel =0;
 

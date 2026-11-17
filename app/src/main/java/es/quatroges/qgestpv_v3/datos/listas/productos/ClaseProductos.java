@@ -14,6 +14,8 @@ public class ClaseProductos implements Parcelable, Cloneable, Comparable<ClasePr
 
     }
     public static enOrdenProductos ordenCodigo;
+    /** pension aplicada a la submesa en pantalla (null si no se aplica): la rejilla muestra preciop a los productos que la incluyen */
+    public static String pensionAplicada = null;
     public String codmenu;
     public int tmenu;
     public int cabecera;
@@ -38,6 +40,8 @@ public class ClaseProductos implements Parcelable, Cloneable, Comparable<ClasePr
     public String es_extra;
     public String ver_extra;
     public String pensiones;;
+    /** precio de venta cuando se aplica la pension del cliente */
+    public String preciop;
 
 
 
@@ -45,7 +49,7 @@ public class ClaseProductos implements Parcelable, Cloneable, Comparable<ClasePr
 
     public ClaseProductos(String codmenu, int tmenu,int cabecera,  String descripcion, String euros, String costo, String mprecios, String abrevia, String aplicar_hh, String tipo, String aplicar_ti, int color,
         String notas, String alergenos, String etiquetas, int orden, int orden_platos,
-        String codfam, String codsub, String es_extra, String ver_extra, String pensiones){
+        String codfam, String codsub, String es_extra, String ver_extra, String pensiones, String preciop){
 
         this.codmenu = codmenu;
         this.tmenu = tmenu;
@@ -69,7 +73,19 @@ public class ClaseProductos implements Parcelable, Cloneable, Comparable<ClasePr
         this.es_extra = es_extra;
         this.ver_extra = ver_extra;
         this.pensiones = pensiones;
+        this.preciop = preciop;
 
+    }
+
+    /** true si a este producto le corresponde el precio con pension para la pension aplicada en pantalla. */
+    public boolean conPensionAplicada() {
+        return pensionAplicada != null && !pensionAplicada.isEmpty()
+                && pensiones != null && pensiones.contains("|" + pensionAplicada + "|");
+    }
+
+    /** Precio a mostrar: preciop si se aplica la pension, euros en caso contrario. */
+    public String precioMostrar() {
+        return conPensionAplicada() ? preciop : euros;
     }
 
     @Override
@@ -101,6 +117,7 @@ public class ClaseProductos implements Parcelable, Cloneable, Comparable<ClasePr
         dest.writeString(this.es_extra);
         dest.writeString(this.ver_extra);
         dest.writeString(this.pensiones);
+        dest.writeString(this.preciop);
 
     }
 
@@ -127,6 +144,7 @@ public class ClaseProductos implements Parcelable, Cloneable, Comparable<ClasePr
         this.es_extra = in.readString();
         this.ver_extra = in.readString();
         this.pensiones = in.readString();
+        this.preciop = in.readString();
     }
 
     protected ClaseProductos(Parcel in){

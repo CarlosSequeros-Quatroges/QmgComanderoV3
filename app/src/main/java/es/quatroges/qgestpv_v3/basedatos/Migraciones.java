@@ -5,7 +5,7 @@ import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
 public class Migraciones {
-    public static final int DATABASE_VERSION = 7;
+    public static final int DATABASE_VERSION = 8;
 
     public static final Migration MIGRATION_6_7 = new Migration(6, 7) {
         @Override
@@ -25,6 +25,14 @@ public class Migraciones {
             database.execSQL("ALTER TABLE `productos` ADD COLUMN `es_extra` TEXT");
             database.execSQL("ALTER TABLE `productos` ADD COLUMN `ver_extra` TEXT");
             database.execSQL("ALTER TABLE `productos` ADD COLUMN `pensiones` TEXT");
+        }
+    };
+
+    /** Precio con pension (preciop) en la tabla productos. */
+    public static final Migration MIGRATION_7_8 = new Migration(7, 8) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE `productos` ADD COLUMN `preciop` TEXT");
         }
     };
 }

@@ -107,6 +107,11 @@ public class Productos {
     @Expose
     private String pensiones;;
 
+    /** Precio de venta cuando al cliente se le aplica la pension (si "pensiones" incluye la suya). Antes era 0 euros. */
+    @SerializedName("preciop")
+    @Expose
+    private String preciop;
+
 
     private String md5;
 
@@ -347,8 +352,16 @@ public class Productos {
         this.md5 = md5;
     }
 
+    public String getPreciop() {
+        return preciop;
+    }
+
+    public void setPreciop(String preciop) {
+        this.preciop = preciop;
+    }
+
     public void calculaMD5() {
-        md5 = ClaseUtils.md5(String.valueOf(codmenu)+String.valueOf(tmenu)+String.valueOf(cabecera)+descripcion+euros+costo+mprecios+abrevia+aplicar_hh+tipo+aplicar_ti+notas+alergenos+etiquetas+String.valueOf(orden)+String.valueOf(orden_platos)+String.valueOf(codfam)+String.valueOf(codsub)+es_extra+ver_extra+pensiones);
+        md5 = ClaseUtils.md5(String.valueOf(codmenu)+String.valueOf(tmenu)+String.valueOf(cabecera)+descripcion+euros+costo+mprecios+abrevia+aplicar_hh+tipo+aplicar_ti+notas+alergenos+etiquetas+String.valueOf(orden)+String.valueOf(orden_platos)+String.valueOf(codfam)+String.valueOf(codsub)+es_extra+ver_extra+pensiones+preciop);
     }
 
 }
