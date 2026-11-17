@@ -34,6 +34,9 @@ import okhttp3.Dns;
  *
  * Activo tambien en release para poder conectar con el sistema de un cliente al atender una incidencia: basta con
  * dejar el fichero en la carpeta de la app. Si el fichero no existe no tiene ningun efecto.
+ *
+ * El check "Aplicar archivo hosts" de Configuracion (clave usarhosts) permite desactivarlo sin borrar el fichero:
+ * fuera de la oficina se desmarca y los nombres se resuelven por DNS a sus IP reales.
  */
 public final class HostsLocales implements Dns {
 
@@ -45,6 +48,8 @@ public final class HostsLocales implements Dns {
     private static final HostsLocales INSTANCIA = new HostsLocales();
 
     private File fichero;
+    /** check de configuracion: false => se ignora hosts.txt y se resuelve siempre por DNS */
+    private volatile boolean activado = true;
     private long ultimaModificacion = -1;
     private Map<String, List<InetAddress>> tabla = Collections.emptyMap();
 
@@ -68,12 +73,18 @@ public final class HostsLocales implements Dns {
     }
 
     public boolean activo() {
-        return (!SOLO_DEBUG || BuildConfig.DEBUG) && fichero != null && !tabla.isEmpty();
+        return activado && (!SOLO_DEBUG || BuildConfig.DEBUG) && fichero != null && !tabla.isEmpty();
+    }
+
+    /** Aplica el check "Aplicar archivo hosts" de la configuracion. Surte efecto en la siguiente resolucion de nombre. */
+    public static void setActivado(boolean activado) {
+        if (INSTANCIA.activado != activado) Log.i(TAG, activado ? "hosts.txt activado por configuracion" : "hosts.txt desactivado por configuracion: resolucion DNS");
+        INSTANCIA.activado = activado;
     }
 
     @Override
     public List<InetAddress> lookup(String hostname) throws UnknownHostException {
-        if (SOLO_DEBUG && !BuildConfig.DEBUG) return Dns.SYSTEM.lookup(hostname);
+        if (!activado || (SOLO_DEBUG && !BuildConfig.DEBUG)) return Dns.SYSTEM.lookup(hostname);
 
         recargarSiCambio();
         List<InetAddress> locales = tabla.get(hostname.toLowerCase(Locale.ROOT));

@@ -469,6 +469,7 @@ public abstract class ClaseBaseDatos extends RoomDatabase {
             INSTANCE.upsetConfiguracion(new Configuracion("torw3", String.valueOf(bDatosWS.getInt("torw3"))), 1, 1);
             INSTANCE.upsetConfiguracion(new Configuracion("torw4", String.valueOf(bDatosWS.getInt("torw4"))), 1, 1);
             INSTANCE.upsetConfiguracion(new Configuracion("torw5", String.valueOf(bDatosWS.getInt("torw5"))), 1, 1);
+            INSTANCE.upsetConfiguracion(new Configuracion("usarhosts", String.valueOf(bDatosWS.getBoolean("usarhosts", true))), 1, 1);
         }
 
         if (bDatosBBDD != null) {

@@ -65,7 +65,6 @@
             android:textColor="@color/textoAzul"
             android:textSize="@dimen/text_titulo"
             android:textStyle="bold" />
-            />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -222,6 +221,26 @@
 
 
         </LinearLayout>
+
+        <CheckBox
+            android:id="@+id/cbUsarHosts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:checked="true"
+            android:text="@string/config_strUsarHosts"
+            android:textColor="@color/textoAzul"
+            android:textSize="@dimen/text_titulo"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:text="@string/config_strUsarHostsAyuda"
+            android:textColor="@color/colorAccent"
+            android:textSize="@dimen/text_titulo" />
 
         <TextView
             android:layout_width="wrap_content"

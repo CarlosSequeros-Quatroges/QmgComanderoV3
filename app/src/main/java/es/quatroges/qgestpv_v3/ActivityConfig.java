@@ -137,6 +137,7 @@ public class ActivityConfig extends AppCompatActivity implements
         bundle.putInt("torw3",configuracion.rwTO3);
         bundle.putInt("torw4",configuracion.rwTO4);
         bundle.putInt("torw5",configuracion.rwTO5);
+        bundle.putBoolean("usarhosts", configuracion.usarHosts);
 
         return bundle;
     }
@@ -570,6 +571,9 @@ public class ActivityConfig extends AppCompatActivity implements
                             break;
                         case "torw5":
                             configuracion.rwTO5 = Integer.valueOf(parametro.getValor().toLowerCase());
+                            break;
+                        case "usarhosts":
+                            configuracion.usarHosts = !parametro.getValor().equalsIgnoreCase("false");
                             break;
 //base de datos
                         case "sincronizaauto":

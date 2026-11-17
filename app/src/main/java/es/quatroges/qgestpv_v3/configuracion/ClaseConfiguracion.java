@@ -37,6 +37,8 @@ public class ClaseConfiguracion {
     public int rwTO4;
     public int rwTO3;
     public int rwTO5;
+    /** aplicar hosts.txt de la carpeta de la app al resolver los nombres de servidor (desmarcar fuera de la oficina) */
+    public boolean usarHosts;
 
     //BASE DE DATOS
     public boolean sincronizaAuto;
@@ -85,6 +87,7 @@ public class ClaseConfiguracion {
         this.rwTO3 = 3;
         this.rwTO4 = 4;
         this.rwTO5 = 5;
+        this.usarHosts = true;
 
         //base de datos
         this.sincronizaAuto = true;

@@ -3501,6 +3501,7 @@ public class ActivityInicio extends AppCompatActivity
         ServSincronizaBD.setConfig(configuracion);
         // hosts.txt en la carpeta de la app para redirigir nombres de servidores (depuracion e incidencias)
         HostsLocales.inicializar(getApplicationContext());
+        HostsLocales.setActivado(configuracion.usarHosts);
         Log.v("On Create", "datos cargados");
 
         if (latenciaTest == null){
@@ -3907,6 +3908,9 @@ public class ActivityInicio extends AppCompatActivity
                             break;
                         case "torw5":
                             configuracion.rwTO5 = Integer.valueOf(parametro.getValor().toLowerCase());
+                            break;
+                        case "usarhosts":
+                            configuracion.usarHosts = !parametro.getValor().equalsIgnoreCase("false");
                             break;
 
                         case "sincronizaauto":
@@ -4710,6 +4714,8 @@ public class ActivityInicio extends AppCompatActivity
                                 grabaFechaSincronizacion("200101000000");
                             }
                             cargaConfiguracion();
+                            // check "Aplicar archivo hosts": sin reiniciar, las siguientes llamadas usan hosts.txt o las IP reales
+                            HostsLocales.setActivado(configuracion.usarHosts);
                             // la empresa o el codigo pueden haber cambiado (edicion o configuracion importada)
                             if (getSupportActionBar() != null)
                                 getSupportActionBar().setTitle(configuracion.empresa + "(" + configuracion.codigo + ")");

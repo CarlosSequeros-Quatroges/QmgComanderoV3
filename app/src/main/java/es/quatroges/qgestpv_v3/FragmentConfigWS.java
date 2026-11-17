@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.view.WindowMetrics;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -28,6 +29,7 @@ public class FragmentConfigWS extends Fragment {
 
     private static EditText etUri,etApi,etCon, etRW1, etRW2, etRW3, etRW4,etRW5;
     private static TextView tvUUID;
+    private static CheckBox cbUsarHosts;
 
 
     private static Context context = null;
@@ -55,6 +57,7 @@ public class FragmentConfigWS extends Fragment {
         bundle.putInt("torw3", Integer.valueOf(etRW3.getText().toString()) );
         bundle.putInt("torw4", Integer.valueOf(etRW4.getText().toString()) );
         bundle.putInt("torw5", Integer.valueOf(etRW5.getText().toString()) );
+        bundle.putBoolean("usarhosts", cbUsarHosts.isChecked());
 
         return bundle;
     }
@@ -87,6 +90,7 @@ public class FragmentConfigWS extends Fragment {
         etRW3 =rootView.findViewById(R.id.etRW3);
         etRW4 =rootView.findViewById(R.id.etRW4);
         etRW5 =rootView.findViewById(R.id.etRW5);
+        cbUsarHosts = rootView.findViewById(R.id.cbUsarHosts);
 
 
         Bundle bdatos = activityCommunicator.wsGetDatos();
@@ -100,6 +104,7 @@ public class FragmentConfigWS extends Fragment {
         etRW3.setText(String.valueOf(bdatos.getInt("torw3")));
         etRW4.setText(String.valueOf(bdatos.getInt("torw4")));
         etRW5.setText(String.valueOf(bdatos.getInt("torw5")));
+        cbUsarHosts.setChecked(bdatos.getBoolean("usarhosts", true));
 
         tvUUID.setText(bdatos.getString("deviceid"));
 

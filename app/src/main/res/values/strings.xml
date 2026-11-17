@@ -59,6 +59,8 @@
     <string name="config_strServidorWeb">Servidor web</string>
     <string name="config_strAPI">Api</string>
     <string name="config_strTimeout">Timeout</string>
+    <string name="config_strUsarHosts">Aplicar archivo hosts</string>
+    <string name="config_strUsarHostsAyuda">Resuelve los nombres de servidor con hosts.txt de la carpeta de la app. Desmarcar fuera de la oficina para usar las IP reales.</string>
 
     <string name="config_strSincronizarAuto">Sincronización automática de tablas</string>
 
