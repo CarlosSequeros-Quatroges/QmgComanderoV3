@@ -6643,26 +6643,41 @@ public class ActivityInicio extends AppCompatActivity
         }
         linea.teuros = linea.peuros * linea.cantidad;
 
-        repreciaExtras(linea, submesa);
-        return !linea.pension.equalsIgnoreCase(pensionAnterior);
+        // un extra repreciado es un cambio del extra comandado: la linea tambien debe enviarse como actualizada
+        boolean cambianExtras = repreciaExtras(linea, submesa);
+        return !linea.pension.equalsIgnoreCase(pensionAnterior) || cambianExtras;
     }
 
-    /** Recalcula el precio de los extras de una linea: preciop si la pension de la submesa se aplica al extra, euros si no. */
-    private static void repreciaExtras(ClaseLineaVentas linea, ClaseSubMesas submesa) {
-        if (linea.extras == null) return;
+    /**
+     * Recalcula el precio de los extras de una linea: preciop si la pension de la submesa se aplica al extra, euros si no.
+     * Si cambia el precio de un extra ya transmitido, pasa a estado "actualizar" para que viaje con la linea
+     * (el envio filtra los extras en estado "transmitida").
+     * @return true si ha cambiado el precio de algun extra
+     */
+    private static boolean repreciaExtras(ClaseLineaVentas linea, ClaseSubMesas submesa) {
+        boolean cambios = false;
+        if (linea.extras == null) return false;
         for (ClaseItemExtra extra : linea.extras) {
             if (extra == null || extra.tipo == null || !extra.tipo.equalsIgnoreCase("E")
                     || extra.codmenu == null || extra.codmenu.isEmpty()) continue;
             try {
                 Productos extraProducto = baseDatos.getProducto(extra.codmenu, linea.tmenu);
-                if (extraProducto != null) {
-                    extra.precio = precioTexto(productoConPension(submesa, extraProducto.getPensiones())
-                            ? extraProducto.getPreciop() : extraProducto.getEuros());
+                if (extraProducto == null) continue;
+
+                String precioNuevo = precioTexto(productoConPension(submesa, extraProducto.getPensiones())
+                        ? extraProducto.getPreciop() : extraProducto.getEuros());
+                if (precioNumerico(precioNuevo) == precioNumerico(extra.precio)) continue;
+
+                extra.precio = precioNuevo;
+                cambios = true;
+                if (extra.estado == ClaseUtils.enEstado.transmitida) {
+                    extra.estado = ClaseUtils.enEstado.actualizar;
                 }
             } catch (ExecutionException | InterruptedException e) {
                 Log.w(TAG, "No se ha podido recalcular el precio del extra " + extra.codmenu, e);
             }
         }
+        return cambios;
     }
 
     private static void recalculaPension(ClaseSubMesas submesa) {
