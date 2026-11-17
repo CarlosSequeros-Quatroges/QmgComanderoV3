@@ -152,6 +152,8 @@ implements Filterable {
             categoriaViewHolder.ivPax.setVisibility(View.INVISIBLE);
             categoriaViewHolder.ivEstado.setVisibility(View.INVISIBLE);
             categoriaViewHolder.ivRoom.setVisibility(View.INVISIBLE);
+            categoriaViewHolder.layPension.removeAllViews();
+            categoriaViewHolder.layPension.setVisibility(View.GONE);
         }
         else if (listaMesasFiltradas.get(i).abiertas == true||
                 listaMesasFiltradas.get(i).tickets == true) {
@@ -189,6 +191,21 @@ implements Filterable {
             }
 
             categoriaViewHolder.importe.setText(ClaseUtils.double2string(listaMesasFiltradas.get(i).importe,2));
+
+            // pension de cada submesa, debajo de pax / habitacion: icono verde si se aplica, rojo si no (igual que dentro de la mesa)
+            categoriaViewHolder.layPension.removeAllViews();
+            if (listaMesasFiltradas.get(i).submesas != null) {
+                for (ClaseSubMesas submesa : listaMesasFiltradas.get(i).submesas) {
+                    if (submesa.pension == null || submesa.pension.trim().equals("")) {
+                        continue;
+                    }
+                    View fila = LayoutInflater.from(categoriaViewHolder.layPension.getContext()).inflate(R.layout.mesa_pension_row, categoriaViewHolder.layPension, false);
+                    fila.findViewById(R.id.ivPensionFila).setBackgroundResource(submesa.iconoPension());
+                    ((TextView) fila.findViewById(R.id.tvPensionFila)).setText(submesa.pension.trim());
+                    categoriaViewHolder.layPension.addView(fila);
+                }
+            }
+            categoriaViewHolder.layPension.setVisibility(categoriaViewHolder.layPension.getChildCount() > 0 ? VISIBLE : View.GONE);
 
 
         }
@@ -415,7 +432,7 @@ implements Filterable {
         TextView pax, room ;
 
         TextView importe;
-        LinearLayout fondo,laySel, layDatos;
+        LinearLayout fondo,laySel, layDatos, layPension;
         EditText etPax, etRoom;
         androidx.appcompat.widget.AppCompatImageView ivAceptar,ivCancelar, ivEstado, ivMesa, ivPax, ivRoom, ivExterno;
 
@@ -431,6 +448,7 @@ implements Filterable {
             fondo = itemView.findViewById(R.id.fondo);
             laySel = itemView.findViewById(R.id.laySel);
             layDatos = itemView.findViewById(R.id.layDatos);
+            layPension = itemView.findViewById(R.id.layPension);
             etPax = itemView.findViewById(R.id.etPax);
             etRoom = itemView.findViewById(R.id.etRoom);
 

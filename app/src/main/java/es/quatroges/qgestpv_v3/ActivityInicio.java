@@ -112,6 +112,7 @@ import es.quatroges.qgestpv_v3.datos.listas.establecimientos.ClaseEstablecimient
 import es.quatroges.qgestpv_v3.datos.listas.facturas.ClaseFacturaCabecera;
 import es.quatroges.qgestpv_v3.datos.listas.facturas.ClaseFacturas;
 import es.quatroges.qgestpv_v3.datos.listas.lineaVentas.ClaseLineaVentas;
+import es.quatroges.qgestpv_v3.datos.listas.lineaVentas.RvAdapterLineaVentas;
 import es.quatroges.qgestpv_v3.datos.listas.lineaVentas.LineaVentaMapper;
 import es.quatroges.qgestpv_v3.datos.listas.mesas.ClaseMesas;
 import es.quatroges.qgestpv_v3.datos.listas.mesas.ClaseSubMesas;
@@ -4996,6 +4997,7 @@ public class ActivityInicio extends AppCompatActivity
                             subMesa.importe = 0.0;
                             usubmesa = estadoMesa.getSubmesa();
                         }
+                        actualizaPensionEstado(subMesa, estadoMesa);
 
                         if (estadoMesa.getEstado().equals("A")) {
                             subMesa.estado = ClaseSubMesas.enEstados.abierta;
@@ -5030,6 +5032,7 @@ public class ActivityInicio extends AppCompatActivity
             if (!encontrada) {  // la han podido crear en otro terminal
 
                 ClaseSubMesas newSubMesa = new ClaseSubMesas(estadoMesa.getSubmesa(), ClaseSubMesas.enEstados.abierta, false, estadoMesa.getNpax(), estadoMesa.getCodenl(), estadoMesa.getHabitacion(), estadoMesa.getPension(),"","","", false, estadoMesa.getApertura(),"","");
+                actualizaPensionEstado(newSubMesa, estadoMesa);
 
                 if (estadoMesa.getEstado().equals("A")) {
                     newSubMesa.estado = ClaseSubMesas.enEstados.abierta;
@@ -5068,6 +5071,19 @@ public class ActivityInicio extends AppCompatActivity
         return;
     }
 
+
+    /**
+     * Pension y criterio de aplicacion (aplicap S/N) que llegan con el estado de la mesa, para mostrarlos en la lista de mesas.
+     * Solo se toman los valores informados: si la API no los envia se conserva lo que ya conoce la app.
+     */
+    private static void actualizaPensionEstado(ClaseSubMesas submesa, EstadoMesas estadoMesa) {
+        if (estadoMesa.getPension() != null && !estadoMesa.getPension().trim().isEmpty()) {
+            submesa.pension = estadoMesa.getPension().trim();
+        }
+        if (estadoMesa.getAplicap() != null && !estadoMesa.getAplicap().trim().isEmpty()) {
+            submesa.aplicap = estadoMesa.getAplicap().trim().toUpperCase();
+        }
+    }
 
     private static void cargaLineasVenta(Intent intent) {
         ClaseUtils.ProgressDialogo.cerrarDialogo();
@@ -6518,6 +6534,7 @@ public class ActivityInicio extends AppCompatActivity
         // la rejilla de productos muestra el precio con pension cuando corresponde
         ClaseProductos.pensionAplicada = (submesa != null && submesa.aplicaPension) ? submesa.pension : null;
         ivAplicaPension.setImageResource(R.drawable.pension_no);
+        RvAdapterLineaVentas.iconoPension = R.drawable.pension_si;
         tvBarPension.setText("");
         ivAplicaPension.setVisibility(INVISIBLE);
         tvBarPension.setVisibility(INVISIBLE);
@@ -6529,23 +6546,10 @@ public class ActivityInicio extends AppCompatActivity
         tvBarPension.setVisibility(VISIBLE);
         tvBarPension.setText(submesa.pension);
 
-        if ( submesa.aplicaPension){
-            switch (submesa.tipoPensionAplicada.toUpperCase()) {
-                case "D":
-                    ivAplicaPension.setImageResource(R.drawable.pension_desayuno);
-                    break;
-                case "A":
-                    ivAplicaPension.setImageResource(R.drawable.pension_almuerzo);
-                    break;
-                case "C":
-                    ivAplicaPension.setImageResource(R.drawable.pension_cena);
-                    break;
-                default:
-                    // pension aplicada por criterio del servidor fuera del horario actual
-                    ivAplicaPension.setImageResource(R.drawable.aceptar);
-                    break;
-            }
-        }
+        // verde con el tramo que se aplica (o generico si el criterio vino del servidor fuera de horario), rojo si no se aplica
+        ivAplicaPension.setImageResource(submesa.iconoPension());
+        // las lineas con pension muestran el mismo tramo en vez del euro tachado
+        RvAdapterLineaVentas.iconoPension = submesa.iconoPensionAplicada();
 
 
     }

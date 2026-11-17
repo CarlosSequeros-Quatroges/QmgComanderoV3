@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import java.util.ArrayList;
 
+import es.quatroges.qgestpv_v3.R;
 import es.quatroges.qgestpv_v3.datos.listas.lineaVentas.ClaseLineaVentas;
 
 @SuppressWarnings("unchecked")
@@ -68,6 +69,32 @@ public class ClaseSubMesas implements Parcelable {
         this.horaApertura = horaApertura;
         this.tipoPensionAplicada = tipoPensionAplicada;
         this.horarioPensionAplicado = horarioPensionAplicado;
+    }
+
+    /** true si a la submesa se le aplica la pension: criterio fijado (aplicap) o, si aun no se conoce, el calculado en la app */
+    public boolean pensionAplicada() {
+        if (aplicap != null && !aplicap.trim().isEmpty()) return aplicap.trim().equalsIgnoreCase("S");
+        return aplicaPension;
+    }
+
+    /** icono verde del tramo de pension que se aplica (desayuno, almuerzo, cena); generico si no se conoce el tramo */
+    public int iconoPensionAplicada() {
+        String tipo = tipoPensionAplicada == null ? "" : tipoPensionAplicada.trim().toUpperCase();
+        switch (tipo) {
+            case "D":
+                return R.drawable.pension_desayuno;
+            case "A":
+                return R.drawable.pension_almuerzo;
+            case "C":
+                return R.drawable.pension_cena;
+            default:
+                return R.drawable.pension_si;
+        }
+    }
+
+    /** icono de pension de la submesa: verde si se aplica, rojo si no */
+    public int iconoPension() {
+        return pensionAplicada() ? iconoPensionAplicada() : R.drawable.pension_no;
     }
 
     @Override

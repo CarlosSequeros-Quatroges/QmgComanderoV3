@@ -50,6 +50,11 @@ public class EstadoMesas  implements Parcelable {
     @Expose
     private String apertura;
 
+    /** "S" si a la submesa se le aplica la pension, "N" si no; vacio si la API no lo envia */
+    @SerializedName("aplicap")
+    @Expose
+    private String aplicap = "";
+
 
     public EstadoMesas(){
 
@@ -149,6 +154,14 @@ public class EstadoMesas  implements Parcelable {
         this.apertura = apertura;
     }
 
+    public String getAplicap() {
+        return aplicap;
+    }
+
+    public void setAplicap(String aplicap) {
+        this.aplicap = aplicap;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -166,6 +179,7 @@ public class EstadoMesas  implements Parcelable {
         dest.writeString(nfactura);
         dest.writeString(pension);
         dest.writeString(apertura);
+        dest.writeString(aplicap);
     }
 
     public void readFromParcel(Parcel in){
@@ -179,6 +193,7 @@ public class EstadoMesas  implements Parcelable {
         this.nfactura= in.readString();
         this.pension= in.readString();
         this.apertura= in.readString();
+        this.aplicap = in.readString();
     }
 
     protected EstadoMesas(Parcel in){
