@@ -38,7 +38,7 @@ public class RvAdapterLineaVentas extends RecyclerView.Adapter<RvAdapterLineaVen
     static Context context;
     static FragmentLineaVentas fragmentLineaVentas;
     /** icono de las lineas con pension: el del tramo que se aplica a la submesa actual (lo fija ActivityInicio.muestraPension) */
-    public static int iconoPension = R.drawable.pension_si;
+    public static int iconoPension = R.drawable.navmenu_gratis;
     private final ArrayList<Integer> posicionesAgrupadas = new ArrayList<>();
 
     public RvAdapterLineaVentas(Context context, ArrayList<ClaseLineaVentas> listaLineaVentas, FragmentLineaVentas fragmentLineaVentas){

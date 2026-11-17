@@ -77,7 +77,7 @@ public class ClaseSubMesas implements Parcelable {
         return aplicaPension;
     }
 
-    /** icono verde del tramo de pension que se aplica (desayuno, almuerzo, cena); generico si no se conoce el tramo */
+    /** icono del tramo de pension aplicado al abrir la mesa (desayuno, almuerzo, cena); check si no se conoce el tramo */
     public int iconoPensionAplicada() {
         String tipo = tipoPensionAplicada == null ? "" : tipoPensionAplicada.trim().toUpperCase();
         switch (tipo) {
@@ -88,7 +88,7 @@ public class ClaseSubMesas implements Parcelable {
             case "C":
                 return R.drawable.pension_cena;
             default:
-                return R.drawable.pension_si;
+                return R.drawable.aceptar;
         }
     }
 

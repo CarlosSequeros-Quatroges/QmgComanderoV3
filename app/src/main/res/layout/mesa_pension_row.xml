@@ -11,7 +11,7 @@
         android:layout_width="@dimen/icon_small_size"
         android:layout_height="@dimen/icon_small_size"
         android:layout_gravity="center_vertical"
-        android:background="@drawable/pension_si" />
+        android:background="@drawable/pension_no" />
 
     <TextView
         android:id="@+id/tvPensionFila"

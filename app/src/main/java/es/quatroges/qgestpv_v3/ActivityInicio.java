@@ -4966,6 +4966,16 @@ public class ActivityInicio extends AppCompatActivity
         ClaseUtils.ProgressDialogo.cerrarDialogo();
         ArrayList<EstadoMesas> mesas = intent.getParcelableArrayListExtra("mesas");
 
+        // tramos horarios del tpv para deducir el tramo de pension aplicado al abrir cada submesa (icono de la lista de mesas)
+        List<Hora_Comidas> horarios = null;
+        if (tpv != null) {
+            try {
+                horarios = baseDatos.getHoraComidasTPV(Integer.valueOf(tpv.codtpv));
+            } catch (Exception e) {
+                Log.w("EstadoMesas", "No se han podido leer los horarios de comidas", e);
+            }
+        }
+
         int umesa = 0;
         int usubmesa = 0;
 
@@ -4997,7 +5007,7 @@ public class ActivityInicio extends AppCompatActivity
                             subMesa.importe = 0.0;
                             usubmesa = estadoMesa.getSubmesa();
                         }
-                        actualizaPensionEstado(subMesa, estadoMesa);
+                        actualizaPensionEstado(subMesa, estadoMesa, horarios);
 
                         if (estadoMesa.getEstado().equals("A")) {
                             subMesa.estado = ClaseSubMesas.enEstados.abierta;
@@ -5032,7 +5042,7 @@ public class ActivityInicio extends AppCompatActivity
             if (!encontrada) {  // la han podido crear en otro terminal
 
                 ClaseSubMesas newSubMesa = new ClaseSubMesas(estadoMesa.getSubmesa(), ClaseSubMesas.enEstados.abierta, false, estadoMesa.getNpax(), estadoMesa.getCodenl(), estadoMesa.getHabitacion(), estadoMesa.getPension(),"","","", false, estadoMesa.getApertura(),"","");
-                actualizaPensionEstado(newSubMesa, estadoMesa);
+                actualizaPensionEstado(newSubMesa, estadoMesa, horarios);
 
                 if (estadoMesa.getEstado().equals("A")) {
                     newSubMesa.estado = ClaseSubMesas.enEstados.abierta;
@@ -5076,13 +5086,29 @@ public class ActivityInicio extends AppCompatActivity
      * Pension y criterio de aplicacion (aplicap S/N) que llegan con el estado de la mesa, para mostrarlos en la lista de mesas.
      * Solo se toman los valores informados: si la API no los envia se conserva lo que ya conoce la app.
      */
-    private static void actualizaPensionEstado(ClaseSubMesas submesa, EstadoMesas estadoMesa) {
+    private static void actualizaPensionEstado(ClaseSubMesas submesa, EstadoMesas estadoMesa, List<Hora_Comidas> horarios) {
         if (estadoMesa.getPension() != null && !estadoMesa.getPension().trim().isEmpty()) {
             submesa.pension = estadoMesa.getPension().trim();
         }
         if (estadoMesa.getAplicap() != null && !estadoMesa.getAplicap().trim().isEmpty()) {
             submesa.aplicap = estadoMesa.getAplicap().trim().toUpperCase();
         }
+        // tramo aplicado al abrir la mesa: si aun no se calculo (mesa no abierta en este terminal) se deduce de la hora de apertura
+        if (submesa.pensionAplicada() && (submesa.tipoPensionAplicada == null || submesa.tipoPensionAplicada.isEmpty())) {
+            String horaApertura = estadoMesa.getApertura() != null ? estadoMesa.getApertura() : submesa.horaApertura;
+            submesa.tipoPensionAplicada = tramoPorHoraApertura(horaApertura, horarios);
+        }
+    }
+
+    /** Tipo de tramo (D/A/C) cuyo horario contiene la hora de apertura, con la misma comparacion que calculaAplicaPension; "" si ninguno. */
+    private static String tramoPorHoraApertura(String horaApertura, List<Hora_Comidas> horarios) {
+        if (horaApertura == null || horaApertura.isEmpty() || horarios == null) return "";
+        for (Hora_Comidas horario : horarios) {
+            if (horaApertura.compareTo(horario.getDesde_hora()) > 0 && horaApertura.compareTo(horario.getHasta_hora()) < 0) {
+                return horario.getTipo();
+            }
+        }
+        return "";
     }
 
     private static void cargaLineasVenta(Intent intent) {
@@ -6534,7 +6560,7 @@ public class ActivityInicio extends AppCompatActivity
         // la rejilla de productos muestra el precio con pension cuando corresponde
         ClaseProductos.pensionAplicada = (submesa != null && submesa.aplicaPension) ? submesa.pension : null;
         ivAplicaPension.setImageResource(R.drawable.pension_no);
-        RvAdapterLineaVentas.iconoPension = R.drawable.pension_si;
+        RvAdapterLineaVentas.iconoPension = R.drawable.navmenu_gratis;
         tvBarPension.setText("");
         ivAplicaPension.setVisibility(INVISIBLE);
         tvBarPension.setVisibility(INVISIBLE);
@@ -6546,7 +6572,7 @@ public class ActivityInicio extends AppCompatActivity
         tvBarPension.setVisibility(VISIBLE);
         tvBarPension.setText(submesa.pension);
 
-        // verde con el tramo que se aplica (o generico si el criterio vino del servidor fuera de horario), rojo si no se aplica
+        // tramo de pension aplicado al abrir la mesa (desayuno, almuerzo, cena) si se aplica; rojo si no se aplica
         ivAplicaPension.setImageResource(submesa.iconoPension());
         // las lineas con pension muestran el mismo tramo en vez del euro tachado
         RvAdapterLineaVentas.iconoPension = submesa.iconoPensionAplicada();
