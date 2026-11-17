@@ -15,6 +15,8 @@ public class ClaseConfiguracion {
     public boolean claveCamareros;
     public boolean pax;
     public int timerFragment;
+    /** segundos entre refrescos automaticos del estado de las mesas mientras se muestra la lista (0 = sin refresco) */
+    public int refrescoMesas;
     public boolean pagoEfectivo;
     public boolean pagoTarjeta;
     public boolean pagoCuentacasa;
@@ -65,6 +67,7 @@ public class ClaseConfiguracion {
         this.demo = true;
         this.pax = false;
         this.timerFragment =10;
+        this.refrescoMesas = 15;
         this.pagoEfectivo = true;
         this.pagoTarjeta = true;
         this.pagoCuentacasa = false;

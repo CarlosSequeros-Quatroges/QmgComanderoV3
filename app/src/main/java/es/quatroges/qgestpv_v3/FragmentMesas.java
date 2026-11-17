@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -83,19 +84,7 @@ public class FragmentMesas extends Fragment
                     tmpListMesas.add(entry.getValue());
                 }
             }
-            Collections.sort(tmpListMesas, new Comparator<ClaseMesas>() {
-                @Override
-                public int compare(ClaseMesas claseMesas, ClaseMesas t1) {
-                    if (claseMesas.tickets && ! t1.tickets )  return -1;
-                    if (claseMesas.tickets && t1.tickets) return Integer.valueOf(claseMesas.mesa).compareTo(t1.mesa);
-                    if (t1.tickets == true) return 1;
-                    if (claseMesas.abiertas == true && ! t1.abiertas) return -1;
-                    if (claseMesas.abiertas && t1.abiertas) return Integer.valueOf(claseMesas.mesa).compareTo(t1.mesa);
-                    if (t1.abiertas == true) return 1;
-                    return Integer.valueOf(claseMesas.mesa).compareTo(t1.mesa);
-                }
-            });
-
+            ordenaMesas(tmpListMesas);
 
             adapterMesas = new RvAdapterMesas(context, tmpListMesas, this) ;
             rvMesas.setAdapter(adapterMesas);
@@ -117,6 +106,46 @@ public class FragmentMesas extends Fragment
     }
 
 
+
+    /** mesas con tiquet primero, luego abiertas, luego libres; dentro de cada grupo por numero */
+    private static void ordenaMesas(ArrayList<ClaseMesas> mesas) {
+        Collections.sort(mesas, new Comparator<ClaseMesas>() {
+            @Override
+            public int compare(ClaseMesas claseMesas, ClaseMesas t1) {
+                if (claseMesas.tickets && ! t1.tickets )  return -1;
+                if (claseMesas.tickets && t1.tickets) return Integer.valueOf(claseMesas.mesa).compareTo(t1.mesa);
+                if (t1.tickets == true) return 1;
+                if (claseMesas.abiertas == true && ! t1.abiertas) return -1;
+                if (claseMesas.abiertas && t1.abiertas) return Integer.valueOf(claseMesas.mesa).compareTo(t1.mesa);
+                if (t1.abiertas == true) return 1;
+                return Integer.valueOf(claseMesas.mesa).compareTo(t1.mesa);
+            }
+        });
+    }
+
+    /**
+     * Refresco automatico del estado de las mesas: vuelve a pintar la lista con los datos actuales sin cambiar de pantalla,
+     * conservando el filtro de busqueda y la posicion de scroll. No hace nada si hay una edicion de pax/habitacion abierta.
+     */
+    public void refrescaEstadoMesas() {
+        if (interfaceMesas == null || rvMesas == null || adapterMesas == null || estado != enEstado.seleccion) return;
+        Bundle bundle = interfaceMesas.cargaMesas(true);
+        listaMesas = (TreeMap<Integer, ClaseMesas>) bundle.getSerializable("mesas");
+        ArrayList<ClaseMesas> tmpListMesas = new ArrayList<>();
+        if (listaMesas != null) {
+            for (Map.Entry<Integer, ClaseMesas> entry : listaMesas.entrySet()) {
+                tmpListMesas.add(entry.getValue());
+            }
+        }
+        ordenaMesas(tmpListMesas);
+
+        CharSequence filtro = svMesa != null ? svMesa.getQuery() : null;
+        Parcelable scroll = rvMesas.getLayoutManager() != null ? rvMesas.getLayoutManager().onSaveInstanceState() : null;
+        adapterMesas = new RvAdapterMesas(context, tmpListMesas, this);
+        rvMesas.setAdapter(adapterMesas);
+        if (filtro != null && filtro.length() > 0) adapterMesas.getFilter().filter(filtro);
+        if (scroll != null && rvMesas.getLayoutManager() != null) rvMesas.getLayoutManager().onRestoreInstanceState(scroll);
+    }
 
     public interface InterfaceMesas {
         Bundle cargaMesas(boolean refresca);

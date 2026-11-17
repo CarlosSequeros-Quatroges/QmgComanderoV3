@@ -110,6 +110,7 @@ public class ActivityConfig extends AppCompatActivity implements
         bundle.putBoolean("claveCamareros", configuracion.claveCamareros);
         bundle.putBoolean("pax", configuracion.pax);
         bundle.putInt("timerFragment", configuracion.timerFragment);
+        bundle.putInt("refrescoMesas", configuracion.refrescoMesas);
         bundle.putBoolean("pagoEfectivo",configuracion.pagoEfectivo);
         bundle.putBoolean("pagoTarjeta",configuracion.pagoTarjeta);
         bundle.putBoolean("pagoEfeTar",configuracion.pagoEfeTar);
@@ -528,6 +529,9 @@ public class ActivityConfig extends AppCompatActivity implements
                             break;
                         case "pagopension":
                             configuracion.pagoPension = Boolean.valueOf(parametro.getValor().toLowerCase());
+                            break;
+                        case "refresco_mesas":
+                            configuracion.refrescoMesas = Integer.valueOf(parametro.getValor().trim());
                             break;
                         case "timer_fragment":
                             configuracion.timerFragment = Integer.valueOf(parametro.getValor());

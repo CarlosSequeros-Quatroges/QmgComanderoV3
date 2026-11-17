@@ -29,7 +29,7 @@ import es.quatroges.qgestpv_v3.utils.ClaseUtils;
 public class FragmentConfigParametros extends Fragment {
     private static final String TAG = "FragmentConfigWs";
 
-    private static EditText etEmpresa, etCodigo,etTimerFragment;
+    private static EditText etEmpresa, etCodigo,etTimerFragment, etRefrescoMesas;
     private static TextView  tvResolucion, tvLayout;
     private static CheckBox chkDemo,chkCargaLineasVenta, chkClaveCamareros, chkPax,
                             chkEfectivo,chkTarjeta,chkEfeTar,chkCuentacasa,chkCredito,chkPension, chkMantenerVenta,
@@ -78,6 +78,13 @@ public class FragmentConfigParametros extends Fragment {
 
         bundle.putInt("timerFragment",ms);
 
+        int refresco = 15;
+        try {
+            refresco = Integer.parseInt(etRefrescoMesas.getText().toString().trim());
+        }
+        catch (NumberFormatException ne){}
+        bundle.putInt("refrescoMesas", Math.max(0, refresco));
+
         return bundle;
     }
 
@@ -102,6 +109,7 @@ public class FragmentConfigParametros extends Fragment {
         etEmpresa=rootView.findViewById(R.id.etEmpresa);
         etCodigo=rootView.findViewById(R.id.etCodigo);
         etTimerFragment=rootView.findViewById(R.id.etTimerFragment);
+        etRefrescoMesas=rootView.findViewById(R.id.etRefrescoMesas);
 
         chkDemo = rootView.findViewById(R.id.chkDemo);
         chkCargaLineasVenta = rootView.findViewById(R.id.chkCargaLineasVenta);
@@ -134,6 +142,7 @@ public class FragmentConfigParametros extends Fragment {
         etEmpresa.setText(bdatos.getString("empresa"));
         etCodigo.setText(bdatos.getString("codigo"));
         etTimerFragment.setText(String.valueOf(bdatos.getInt("timerFragment",5)));
+        etRefrescoMesas.setText(String.valueOf(bdatos.getInt("refrescoMesas",15)));
 
         chkDemo.setChecked(bdatos.getBoolean("demo"));
         chkCargaLineasVenta.setChecked(bdatos.getBoolean("cargaLineasVenta"));

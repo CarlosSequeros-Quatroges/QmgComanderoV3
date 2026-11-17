@@ -259,6 +259,9 @@ public class ActivityInicio extends AppCompatActivity
     private static FragmentCabeceras fragmentCabeceras;
     private static FragmentProductos fragmentProductos;
     private static FragmentMesas fragmentMesas;
+    /** refresco automatico del estado de las mesas mientras se muestra la lista: momento del ultimo y si la peticion en curso es silenciosa */
+    private static long ultimoRefrescoMesasMs = 0;
+    private static boolean refrescoMesasSilencioso = false;
     private static FragmentSubmesas fragmentSubmesas;
     private static FragmentLineaVentas fragmentLineaVentas;
     private static FragmentDetalleVenta fragmentDetalleVenta;
@@ -1718,7 +1721,15 @@ public class ActivityInicio extends AppCompatActivity
 
                     switch (accion) {
                         case test:
-                            hSyncDatos.postDelayed(checkConexion, 2000);
+                            if (procedeRefrescoMesas()) {
+                                // la lista de mesas lleva el intervalo configurado sin actualizarse: se pide el estado sin dialogo ni cambio de pantalla
+                                refrescoMesasSilencioso = true;
+                                ultimaAccionWs = enAccionesWS.getEstadoMesas;
+                                reintentosWS = 0;
+                                conectaWS(ultimaAccionWs, null);
+                            } else {
+                                hSyncDatos.postDelayed(checkConexion, 2000);
+                            }
                             break;
 
                         case validar:
@@ -1734,7 +1745,7 @@ public class ActivityInicio extends AppCompatActivity
                             break;
 
                         case getEstadoMesas:
-                            if (! ClaseUtils.VerTiquet.isVisible()) {
+                            if (!refrescoMesasSilencioso && ! ClaseUtils.VerTiquet.isVisible()) {
                                 ClaseUtils.ProgressDialogo.mostrarDialogo(true, context.getResources().getString(R.string.progress_strRecuperaMesas), context.getResources().getString(R.string.progress_strEspera), context);
                             }
                             try {
@@ -2301,6 +2312,17 @@ public class ActivityInicio extends AppCompatActivity
 
     }
 
+    /**
+     * true si toca pedir el estado de las mesas en segundo plano: intervalo configurado (refresco_mesas > 0), lista de mesas en pantalla,
+     * sin edicion de pax/habitacion abierta, sin tiquet en pantalla y pasado el intervalo desde la ultima respuesta.
+     */
+    private static boolean procedeRefrescoMesas() {
+        if (configuracion == null || configuracion.refrescoMesas <= 0 || tpv == null) return false;
+        if (estado != enEstado.mostrarmesas || fragmentMesas == null || fragmentMesas.estado != FragmentMesas.enEstado.seleccion) return false;
+        if (ClaseUtils.VerTiquet.isVisible()) return false;
+        return SystemClock.elapsedRealtime() - ultimoRefrescoMesasMs >= configuracion.refrescoMesas * 1000L;
+    }
+
     private static Runnable checkConexion = new Runnable() {
         @Override
         public void run() {
@@ -2449,7 +2471,14 @@ public class ActivityInicio extends AppCompatActivity
                 mensaje = context.getString(R.string.strErrorWsTabla) + " tabla '" + tabla + "'";
                 cerrar = true;
             } else if (intent.getAction().equals(ServSincronizaBD.ACTION_ERROR_ESTADOMESAS)) {
-                mensaje = context.getString(R.string.strErrorWsMesas);
+                if (refrescoMesasSilencioso) {
+                    // el refresco automatico no molesta al usuario: se vuelve a intentar en el siguiente ciclo
+                    refrescoMesasSilencioso = false;
+                    ultimoRefrescoMesasMs = SystemClock.elapsedRealtime();
+                    resultadoWS = (estado == enEstado.mostrarmesas) ? 1 : 2;
+                } else {
+                    mensaje = context.getString(R.string.strErrorWsMesas);
+                }
                 cerrar = true;
             } else if (intent.getAction().equals(ServSincronizaBD.ACTION_ERROR_LINEASVENTA)) {
                 mensaje = context.getString(R.string.strErrorWsLineasVenta);
@@ -2565,17 +2594,33 @@ public class ActivityInicio extends AppCompatActivity
                 delay = 200;
                 resultadoWS = 1;
             } else if (intent.getAction().equals(ServSincronizaBD.ACTION_OK_ESTADOMESAS)) {
-                cargaEstadoMesas(intent);
-
-                if (estado == enEstado.traspasa || estado == enEstado.traspasa_sub) {
-
-                    seleccionaMesa(traspasaMesa_mesasel, listaMesas.get(traspasaMesa_mesasel).pax, "");
+                ultimoRefrescoMesasMs = SystemClock.elapsedRealtime();
+                if (refrescoMesasSilencioso) {
+                    refrescoMesasSilencioso = false;
+                    if (estado == enEstado.mostrarmesas && fragmentMesas != null && fragmentMesas.estado == FragmentMesas.enEstado.seleccion) {
+                        // refresco automatico: lista nueva desde la base de datos (las mesas cerradas en otro terminal vuelven a libres),
+                        // estado del servidor encima y repintado sin cambiar de pantalla ni perder el filtro
+                        listaMesas = ClaseMesas.recuperaMesas(tpv, listaNombreMesas);
+                        cargaEstadoMesas(intent);
+                        fragmentMesas.refrescaEstadoMesas();
+                        resultadoWS = 1;
+                    } else {
+                        // el usuario ya ha entrado en una mesa o esta editando pax: se descarta, hay otra accion en curso
+                        resultadoWS = 2;
+                    }
                 } else {
-                    ultimoEstado = estado;
-                    estado = enEstado.mostrarmesas;
-                    cambiaEstado(estado);
+                    cargaEstadoMesas(intent);
+
+                    if (estado == enEstado.traspasa || estado == enEstado.traspasa_sub) {
+
+                        seleccionaMesa(traspasaMesa_mesasel, listaMesas.get(traspasaMesa_mesasel).pax, "");
+                    } else {
+                        ultimoEstado = estado;
+                        estado = enEstado.mostrarmesas;
+                        cambiaEstado(estado);
+                    }
+                    resultadoWS = 1;
                 }
-                resultadoWS = 1;
                 cerrar = true;
             } else if (intent.getAction().equals(ServSincronizaBD.ACTION_OK_LINEASVENTA)) {
                 cargaLineasVenta(intent);
@@ -3876,6 +3921,9 @@ public class ActivityInicio extends AppCompatActivity
                             break;
                         case "compacto":
                             configuracion.compacto = Boolean.valueOf(parametro.getValor().toLowerCase());
+                            break;
+                        case "refresco_mesas":
+                            configuracion.refrescoMesas = Integer.valueOf(parametro.getValor().trim());
                             break;
                         case "timer_fragment":
                             configuracion.timerFragment = Integer.valueOf(parametro.getValor());
