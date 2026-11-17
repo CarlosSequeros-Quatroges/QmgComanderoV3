@@ -57,6 +57,7 @@ import es.quatroges.qgestpv_v3.datos.listas.facturas.ClaseFacturaCabecera;
 import es.quatroges.qgestpv_v3.datos.listas.lineaVentas.ClaseLineaVentas;
 import es.quatroges.qgestpv_v3.datos.listas.mesas.ClaseSubMesas;
 import es.quatroges.qgestpv_v3.datos.listas.users.ClaseUsers;
+import es.quatroges.qgestpv_v3.utils.ClaseItemExtra;
 import es.quatroges.qgestpv_v3.utils.ClaseUtils;
 import es.quatroges.qgestpv_v3.utils.EncodeUtils;
 
@@ -1130,6 +1131,70 @@ public class ClaseBluetooth {
 	}
 
 
+	/**
+	 * Lineas de extras de una linea de comanda, debajo del plato: "+ extra" (con), "- extra" (sin) y "* nota".
+	 * Si la linea no lleva extras se imprime su nota de texto. Siempre recortado al ancho del papel.
+	 */
+	private static String extrasComanda(GrabaLineasVenta linea) {
+		StringBuilder sb = new StringBuilder();
+		if (linea.getExtras() != null) {
+			for (ClaseItemExtra extra : linea.getExtras()) {
+				if (extra == null) continue;
+				String texto;
+				if ("E".equalsIgnoreCase(extra.tipo)) {
+					String desc = extra.descripcion == null ? "" : extra.descripcion;
+					if (extra.estadoExtra == ClaseItemExtra.ESTADO_CON) texto = "+ " + desc;
+					else if (extra.estadoExtra == ClaseItemExtra.ESTADO_SIN) texto = "- " + desc;
+					else continue;
+				} else {
+					String nota = extra.nota != null && !extra.nota.trim().isEmpty() ? extra.nota : extra.descripcion;
+					if (nota == null || nota.trim().isEmpty()) continue;
+					texto = "* " + nota;
+				}
+				sb.append("      ").append(ClaseUtils.maxLength(texto.trim(), 26)).append("<br>");
+			}
+		}
+		if (sb.length() == 0 && linea.getNota() != null && !linea.getNota().trim().isEmpty()) {
+			for (String nota : linea.getNota().split("\n")) {
+				if (!nota.trim().isEmpty()) sb.append("      ").append(ClaseUtils.maxLength(nota.trim(), 26)).append("<br>");
+			}
+		}
+		return sb.toString();
+	}
+
+	/**
+	 * Lineas de extras de producto de una linea de cuenta: "+ extra" con su importe (precio x cantidad de la linea) o "- extra" sin importe.
+	 * Las notas de texto no van en la cuenta. relleno es el caracter de relleno de ese tiquet ("#" se imprime como espacio) y sn si va entre &lt;sn&gt;.
+	 */
+	private static String extrasCuenta(ClaseLineaVentas linea, String relleno, boolean sn) {
+		StringBuilder sb = new StringBuilder();
+		if (linea.extras == null) return "";
+		for (ClaseItemExtra extra : linea.extras) {
+			if (extra == null || !"E".equalsIgnoreCase(extra.tipo)) continue;
+			String desc = extra.descripcion == null ? "" : extra.descripcion;
+			String texto;
+			String importe = "";
+			if (extra.estadoExtra == ClaseItemExtra.ESTADO_CON) {
+				texto = "+ " + desc;
+				try {
+					double precio = Double.parseDouble(extra.precio.trim().replace(",", "."));
+					importe = ClaseUtils.double2string(precio * linea.cantidad, 2);
+				} catch (Exception e) {
+					importe = "";
+				}
+			} else if (extra.estadoExtra == ClaseItemExtra.ESTADO_SIN) {
+				texto = "- " + desc;
+			} else {
+				continue;
+			}
+			String fila = ClaseUtils.padLeft("", relleno, 4)
+					+ ClaseUtils.padRight(ClaseUtils.maxLength(texto, 20), relleno, 20) + relleno
+					+ ClaseUtils.padLeft(importe, relleno, 6);
+			sb.append(sn ? "<sn>" + fila + "</sn><br>" : fila + "<br>");
+		}
+		return sb.toString();
+	}
+
 	public static String imprimeComanda(CabeceraTiquet cabeceraTiquet, ArrayList<GrabaLineasVenta> lineasVentas) {
 		if (checkPrinterConectado() == false) {
 
@@ -1165,9 +1230,7 @@ public class ClaseBluetooth {
 				sb.append("<b>---------- BEBIDAS -------------</b><br>");
 				for (GrabaLineasVenta tmp : tmpLineas) {
 					sb.append( ClaseUtils.padLeft(String.valueOf(tmp.getCantidad())," ",3) + "       " +ClaseUtils.maxLength(tmp.getDescripcion(),20) + "<br>");
-					if (tmp.getNota() != null && !tmp.getNota().equals("")) {
-						sb.append("   " + tmp.getNota().substring(0,28) + "<br>");
-					}
+					sb.append(extrasComanda(tmp));
 				}
 				sb.append("<br>");
 			}
@@ -1186,9 +1249,7 @@ public class ClaseBluetooth {
 				sb.append("<b>---------- ENTRANTES -----------</b><br>");
 				for (GrabaLineasVenta tmp : tmpLineas) {
 					sb.append( ClaseUtils.padLeft(String.valueOf(tmp.getCantidad())," ",3) + "       " + ClaseUtils.maxLength(tmp.getDescripcion(),20)  + "<br>");
-					if (tmp.getNota() != null && !tmp.getNota().equals("")) {
-						sb.append("   " + tmp.getNota().substring(0,28) + "<br>");
-					}
+					sb.append(extrasComanda(tmp));
 				}
 				sb.append("<br>");
 			}
@@ -1207,9 +1268,7 @@ public class ClaseBluetooth {
 				sb.append("<b>---------- PRIMEROS ------------</b><br>");
 				for (GrabaLineasVenta tmp : tmpLineas) {
 					sb.append( ClaseUtils.padLeft(String.valueOf(tmp.getCantidad())," ",3) + "       " + ClaseUtils.maxLength(tmp.getDescripcion(),20)  + "<br>");
-					if (tmp.getNota() != null && !tmp.getNota().equals("")) {
-						sb.append("   " + tmp.getNota().substring(0,28) + "<br>");
-					}
+					sb.append(extrasComanda(tmp));
 				}
 				sb.append("<br>");
 			}
@@ -1228,9 +1287,7 @@ public class ClaseBluetooth {
 				sb.append("<b>--------- SEGUNDOS ------------</b><br>");
 				for (GrabaLineasVenta tmp : tmpLineas) {
 					sb.append( ClaseUtils.padLeft(String.valueOf(tmp.getCantidad())," ",3) + "       " + ClaseUtils.maxLength(tmp.getDescripcion(),20)  + "<br>");
-					if (tmp.getNota() != null && !tmp.getNota().equals("")) {
-						sb.append("   " + tmp.getNota().substring(0,28) + "<br>");
-					}
+					sb.append(extrasComanda(tmp));
 				}
 				sb.append("<br>");
 			}
@@ -1250,9 +1307,7 @@ public class ClaseBluetooth {
 				sb.append("<b>---------- POSTRES -------------</b><br>");
 				for (GrabaLineasVenta tmp : tmpLineas) {
 					sb.append( ClaseUtils.padLeft(String.valueOf(tmp.getCantidad())," ",3) + "       " + ClaseUtils.maxLength(tmp.getDescripcion(),20)  + "<br>");
-					if (tmp.getNota() != null && !tmp.getNota().equals("")) {
-						sb.append("   " + tmp.getNota().substring(0,28) + "<br>");
-					}
+					sb.append(extrasComanda(tmp));
 				}
 				sb.append("<br>");
 			}
@@ -1260,7 +1315,8 @@ public class ClaseBluetooth {
 			//cambios (estado = 'actualizar')
 			try {
 				tmpLineas =  new ArrayList<GrabaLineasVenta>( lineasVentas.stream().filter(
-							linea -> "actualizar".equals(linea.getEstado().toLowerCase())).collect(Collectors.toList()));
+							linea -> "actualizar".equals(linea.getEstado().toLowerCase())
+							|| ("transmitida".equals(linea.getEstado().toLowerCase()) && linea.getExtras() != null && !linea.getExtras().isEmpty())).collect(Collectors.toList()));
 			}
 			catch (Exception e){
 				tmpLineas = new ArrayList<GrabaLineasVenta>();
@@ -1272,9 +1328,7 @@ public class ClaseBluetooth {
 					sb.append(ClaseUtils.padLeft(String.valueOf(tmp.getCantidad())," ",3)+
 							  ClaseUtils.padRight("("+tmp.getCantidad_ant()+")"," ",7)+" "+
 							  ClaseUtils.maxLength(tmp.getDescripcion(),20) +"<br>" );
-					if (tmp.getNota() != null && !tmp.getNota().equals("")) {
-						sb.append(tmp.getNota() + "<br>");
-					}
+					sb.append(extrasComanda(tmp));
 				}
 				sb.append("<br>");
 			}
@@ -1373,6 +1427,7 @@ public class ClaseBluetooth {
 					sb.append("<sn>"+ ClaseUtils.padLeft(String.valueOf(tmp.cantidad),"#",3) + " " +
 							ClaseUtils.padRight(ClaseUtils.maxLength(tmp.descripcion,20) ,"#",20) + " "+
 							ClaseUtils.padLeft( ClaseUtils.double2string(tmp.teuros,2),"#",6)+"</sn><br>");
+					sb.append(extrasCuenta(tmp, "#", true));
 
 				}
 			}
@@ -1529,6 +1584,7 @@ public class ClaseBluetooth {
 					sb.append( ClaseUtils.padLeft(String.valueOf(tmp.cantidad)," ",3) + " " +
 							ClaseUtils.padRight(ClaseUtils.maxLength(tmp.descripcion,20) ," ",20) + " "+
 							ClaseUtils.padLeft( ClaseUtils.double2string(tmp.teuros,2)," ",6)+"<br>");
+					sb.append(extrasCuenta(tmp, " ", false));
 
 				}
 			}
