@@ -29,6 +29,10 @@ public class PensionesSubmesa implements Parcelable {
     @Expose
     private String hora_apertura;
 
+    /** "S" si la pension se aplica a la mesa (criterio fijado al abrirla), "N" si no; null si la API no lo envia */
+    @SerializedName("aplicap")
+    private String aplicap;
+
 
     public PensionesSubmesa(){
 
@@ -82,6 +86,14 @@ public class PensionesSubmesa implements Parcelable {
         this.hora_apertura = hora_apertura;
     }
 
+    public String getAplicap() {
+        return aplicap;
+    }
+
+    public void setAplicap(String aplicap) {
+        this.aplicap = aplicap;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -95,6 +107,7 @@ public class PensionesSubmesa implements Parcelable {
         dest.writeString(tipoPension);
         dest.writeString(descTipoPension);
         dest.writeString(hora_apertura);
+        dest.writeString(aplicap);
 
     }
 
@@ -105,6 +118,7 @@ public class PensionesSubmesa implements Parcelable {
         this.tipoPension = in.readString();
         this.descTipoPension = in.readString();
         this.hora_apertura = in.readString();
+        this.aplicap = in.readString();
 
     }
 

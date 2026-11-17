@@ -38,6 +38,8 @@ public class ClaseSubMesas implements Parcelable {
     public String horaApertura;
     public String tipoPensionAplicada;
     public String horarioPensionAplicado;
+    /** criterio de pension fijado para la mesa: "S"/"N" cuando lo conoce el servidor o ya se ha decidido, "" si aun no */
+    public String aplicap = "";
 
     public ClaseSubMesas(int submesa, enEstados estado , boolean pagos, int pax, int codenl, String habitacion,
         String pension, String descPension, String tipoPension, String descTipoPension, boolean aplicaPension, String horaApertura,
@@ -99,6 +101,7 @@ public class ClaseSubMesas implements Parcelable {
         dest.writeString(this.horaApertura);
         dest.writeString(this.tipoPensionAplicada);
         dest.writeString(this.horarioPensionAplicado);
+        dest.writeString(this.aplicap);
 
     }
     public void readFromParcel(Parcel in){
@@ -137,6 +140,8 @@ public class ClaseSubMesas implements Parcelable {
         this.horaApertura = in.readString();
         this.tipoPensionAplicada = in.readString();
         this.horarioPensionAplicado= in.readString();
+        this.aplicap = in.readString();
+        if (this.aplicap == null) this.aplicap = "";
 
     }
 

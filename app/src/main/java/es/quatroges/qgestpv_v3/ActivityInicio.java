@@ -518,6 +518,7 @@ public class ActivityInicio extends AppCompatActivity
             submesaPax.setSubmesa(submesa.submesa);
             submesaPax.setNpax(submesa.pax);
             submesaPax.setHabitacion(submesa.habitacion);
+            submesaPax.setPensionDesde(submesa.pension, submesa.aplicaPension);
             submesasPax.add(submesaPax);
 
 
@@ -1001,7 +1002,11 @@ public class ActivityInicio extends AppCompatActivity
         ArrayList<GrabaLineasVenta> lineasVentas = new ArrayList<>();
         ArrayList<ActualizaPax> submesas = new ArrayList<>();
         for (ClaseSubMesas submesa : mesa.submesas) {
-            submesas.add(new ActualizaPax(submesa.submesa, submesa.codenl, submesa.pax, submesa.habitacion));
+            ActualizaPax datosSubmesa = new ActualizaPax(submesa.submesa, submesa.codenl, submesa.pax, submesa.habitacion);
+            // el backend graba en la cabecera de la mesa la pension y si se aplica (criterio fijado al abrirla)
+            datosSubmesa.setPensionDesde(submesa.pension, submesa.aplicaPension);
+            submesa.aplicap = submesa.aplicaPension ? "S" : "N";
+            submesas.add(datosSubmesa);
 
             int nlinea = 0;
             for (ClaseLineaVentas linea : submesa.lineasVentas) {
@@ -1309,7 +1314,9 @@ public class ActivityInicio extends AppCompatActivity
                 String horaApertura = ClaseUtils.now("HH:mm:ss");
 
 
-                mesa.submesas.add(new ClaseSubMesas(mesa.nSubmesas, ClaseSubMesas.enEstados.abierta, false, 0, 0,submesa.habitacion, submesa.pension,submesa.descPension,submesa.tipoPension,submesa.descTipoPension, false, horaApertura,"",""));
+                ClaseSubMesas nuevaSubmesa = new ClaseSubMesas(mesa.nSubmesas, ClaseSubMesas.enEstados.abierta, false, 0, 0,submesa.habitacion, submesa.pension,submesa.descPension,submesa.tipoPension,submesa.descTipoPension, false, horaApertura,"","");
+                determinaAplicaPension(nuevaSubmesa, null, true); // criterio por horario en el momento de abrirla
+                mesa.submesas.add(nuevaSubmesa);
                 if (fragmentSubmesas != null) fragmentSubmesas.actualizaSubmesas();
                 return true;
             }
@@ -2586,7 +2593,12 @@ public class ActivityInicio extends AppCompatActivity
                 mesa.submesas.get(subMesaSel).descPension = intent.getStringExtra("desc_pension");
                 mesa.submesas.get(subMesaSel).tipoPension = intent.getStringExtra("tipo_pension");
                 mesa.submesas.get(subMesaSel).descTipoPension = intent.getStringExtra("desc_tipo_pension");
-                calculaAplicaPension(mesa.submesas.get(subMesaSel));
+                {
+                    ClaseSubMesas smPension = mesa.submesas.get(subMesaSel);
+                    boolean sinLineas = smPension.lineasVentas == null || smPension.lineasVentas.isEmpty();
+                    // con lineas ya comandadas se respeta el criterio fijado; si no, se decide ahora por horario
+                    determinaAplicaPension(smPension, (sinLineas || smPension.aplicap.isEmpty()) ? null : smPension.aplicap, sinLineas);
+                }
                 if (recalculaPension) {
                     recalculaPension = false;
                     recalculaPension(mesa.submesas.get(subMesaSel));
@@ -5066,6 +5078,7 @@ public class ActivityInicio extends AppCompatActivity
             String tTipoPension = "";
             String tDescTipoPension = "";
             String tHoraApertua = "";
+            String tAplicap = null;
 
             ArrayList<ClaseLineaVentas> lineasSubmesa = new ArrayList<>();
             for (LineasVenta linea : lineas) {
@@ -5086,6 +5099,7 @@ public class ActivityInicio extends AppCompatActivity
                     tTipoPension = pension.getTipoPension();
                     tDescTipoPension = pension.getDescTipoPension();
                     tHoraApertua = pension.getHora_apertura();
+                    tAplicap = pension.getAplicap();
                     break;
                 }
             }
@@ -5098,7 +5112,8 @@ public class ActivityInicio extends AppCompatActivity
             submesa.descTipoPension = tDescTipoPension;
             if (tHoraApertua != null) submesa.horaApertura = tHoraApertua;
 
-            calculaAplicaPension(submesa);
+            // criterio de pension: el que fijo el servidor al abrir la mesa (aplicap) o, si la mesa esta vacia, el horario de apertura
+            determinaAplicaPension(submesa, tAplicap, lineasSubmesa.isEmpty());
 
         }
 
@@ -5588,7 +5603,9 @@ public class ActivityInicio extends AppCompatActivity
     static private void añadirSubmesaPax(int pax, boolean actualizaSel, String habitacion, String pension) {
         mesa.nSubmesas += 1;
         String horaApertura = ClaseUtils.now("HH:mm:ss");
-        mesa.submesas.add(new ClaseSubMesas(mesa.nSubmesas, ClaseSubMesas.enEstados.abierta, false, pax, 0, habitacion, pension,"","","", false, horaApertura,"",""));
+        ClaseSubMesas nuevaSubmesa = new ClaseSubMesas(mesa.nSubmesas, ClaseSubMesas.enEstados.abierta, false, pax, 0, habitacion, pension,"","","", false, horaApertura,"","");
+        determinaAplicaPension(nuevaSubmesa, null, true); // criterio por horario en el momento de abrirla
+        mesa.submesas.add(nuevaSubmesa);
         if (actualizaSel) {
             subMesaSel = mesa.submesas.size() - 1;
             submesa = mesa.submesas.get(subMesaSel);
@@ -6517,10 +6534,39 @@ public class ActivityInicio extends AppCompatActivity
                 case "C":
                     ivAplicaPension.setImageResource(R.drawable.pension_cena);
                     break;
+                default:
+                    // pension aplicada por criterio del servidor fuera del horario actual
+                    ivAplicaPension.setImageResource(R.drawable.aceptar);
+                    break;
             }
         }
 
 
+    }
+
+    /**
+     * Fija si a la submesa se le aplica la pension.
+     * El criterio se decide una sola vez, al abrir la mesa, y se mantiene en modificaciones posteriores:
+     * - aplicapServidor "S": el servidor ya lo fijo, se respeta aunque la hora actual quede fuera del horario
+     * - aplicapServidor "N" con la mesa vacia: es el momento de decidirlo por el horario de apertura (se enviara con las lineas)
+     * - aplicapServidor "N" con lineas: la mesa se abrio sin pension, se mantiene
+     * - null (API sin aplicap o criterio aun no fijado): se decide por horario de apertura
+     * calculaAplicaPension se ejecuta siempre para disponer del tipo y tramo horario que se muestran en pantalla.
+     */
+    private static void determinaAplicaPension(ClaseSubMesas submesa, String aplicapServidor, boolean mesaVacia) {
+        calculaAplicaPension(submesa);
+
+        if (aplicapServidor == null || aplicapServidor.trim().isEmpty()) {
+            submesa.aplicap = submesa.aplicaPension ? "S" : "N";
+        } else if (aplicapServidor.trim().equalsIgnoreCase("S")) {
+            submesa.aplicaPension = true;
+            submesa.aplicap = "S";
+        } else if (mesaVacia) {
+            submesa.aplicap = submesa.aplicaPension ? "S" : "N";
+        } else {
+            submesa.aplicaPension = false;
+            submesa.aplicap = "N";
+        }
     }
 
     private static void calculaAplicaPension(ClaseSubMesas submesa) {

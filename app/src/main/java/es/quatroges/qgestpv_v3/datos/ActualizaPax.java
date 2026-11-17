@@ -24,6 +24,16 @@ public class ActualizaPax implements Parcelable {
     @Expose
     private String habitacion;
 
+    /** codigo de pension del cliente de la submesa ("" si no tiene) */
+    @SerializedName("pension")
+    @Expose
+    private String pension = "";
+
+    /** "S" si a la submesa se le aplica la pension, "N" si no: el backend lo graba en la cabecera de la mesa */
+    @SerializedName("aplicap")
+    @Expose
+    private String aplicap = "N";
+
 
     public ActualizaPax(int submesa, int codenl, int npax, String habitacion) {
         this.submesa = submesa;
@@ -71,6 +81,28 @@ public class ActualizaPax implements Parcelable {
         this.habitacion = habitacion;
     }
 
+    public String getPension() {
+        return pension;
+    }
+
+    public void setPension(String pension) {
+        this.pension = pension == null ? "" : pension;
+    }
+
+    public String getAplicap() {
+        return aplicap;
+    }
+
+    public void setAplicap(String aplicap) {
+        this.aplicap = aplicap;
+    }
+
+    /** Rellena pension y aplicap a partir del estado de la submesa en la app. */
+    public void setPensionDesde(String pension, boolean aplicaPension) {
+        setPension(pension);
+        this.aplicap = aplicaPension ? "S" : "N";
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -82,6 +114,8 @@ public class ActualizaPax implements Parcelable {
         dest.writeInt(codenl);
         dest.writeInt(npax);
         dest.writeString(habitacion);
+        dest.writeString(pension);
+        dest.writeString(aplicap);
     }
 
     public void readFromParcel(Parcel in){
@@ -89,6 +123,8 @@ public class ActualizaPax implements Parcelable {
         this.codenl = in.readInt();
         this.npax = in.readInt();
         this.habitacion = in.readString();
+        this.pension = in.readString();
+        this.aplicap = in.readString();
     }
 
     protected ActualizaPax(Parcel in){
