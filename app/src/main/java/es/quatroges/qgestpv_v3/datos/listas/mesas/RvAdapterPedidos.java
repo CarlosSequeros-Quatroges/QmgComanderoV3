@@ -65,7 +65,7 @@ public class RvAdapterPedidos extends RecyclerView.Adapter<RvAdapterPedidos.Pedi
                     filtrados = new ArrayList<>();
                     for (ClaseMesas pedido : listaPedidos) {
                         if (String.valueOf(pedido.mesa).contains(texto) || contiene(pedido.descripcion, texto)
-                                || contiene(pedido.codptoWeb, texto) || contiene(pedido.fpagoWeb, texto)) {
+                                || contiene(pedido.codptoWeb, texto) || contiene(textoFormaPago(pedido.fpagoWeb), texto)) {
                             filtrados.add(pedido);
                         }
                     }
@@ -88,6 +88,19 @@ public class RvAdapterPedidos extends RecyclerView.Adapter<RvAdapterPedidos.Pedi
         };
     }
 
+    /** "Forma de pago: Efectivo / Tarjeta / Cargo habitacion" a partir de la letra que envia el servidor (E / T / R); vacio si no hay. */
+    private String textoFormaPago(String fpago) {
+        if (fpago == null || fpago.trim().isEmpty()) return "";
+        String desc;
+        switch (fpago.trim().toUpperCase()) {
+            case "E": desc = context.getString(R.string.pedidos_strFpagoEfectivo); break;
+            case "T": desc = context.getString(R.string.pedidos_strFpagoTarjeta); break;
+            case "R": desc = context.getString(R.string.pedidos_strFpagoHabitacion); break;
+            default: desc = fpago.trim();
+        }
+        return context.getString(R.string.pedidos_strFormaPago, desc);
+    }
+
     @Override
     public int getItemCount() {
         return listaFiltrada == null ? 0 : listaFiltrada.size();
@@ -106,7 +119,7 @@ public class RvAdapterPedidos extends RecyclerView.Adapter<RvAdapterPedidos.Pedi
 
         holder.numero.setText(String.valueOf(pedido.mesa));
         holder.tvCodptoWeb.setText(pedido.codptoWeb == null ? "" : pedido.codptoWeb);
-        holder.tvFpagoWeb.setText(pedido.fpagoWeb == null ? "" : pedido.fpagoWeb);
+        holder.tvFpagoWeb.setText(textoFormaPago(pedido.fpagoWeb));
         holder.importe.setText(ClaseUtils.double2string(pedido.importe, 2));
 
         // un pedido solo existe si el servidor lo envia abierto o con cuenta pedida; libre no deberia darse

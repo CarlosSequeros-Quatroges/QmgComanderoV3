@@ -41,7 +41,7 @@
                         android:layout_width="@dimen/icon_small_size"
                         android:layout_height="@dimen/icon_small_size"
                         android:layout_gravity="left"
-                        android:background="@drawable/bar_mesa" />
+                        android:background="@drawable/bar_printer_azul" />
 
                     <TextView
                         android:id="@+id/numero"
@@ -89,7 +89,7 @@
                     android:paddingRight="6dp"
                     android:paddingTop="2dp"
                     android:gravity="left"
-                    android:text="Tarjeta"
+                    android:text="Forma de pago: Tarjeta"
                     android:textColor="@color/textoBlanco"
                     android:textSize="@dimen/text_actionbar"
                     android:textStyle="bold"
