@@ -29,6 +29,7 @@
     <string name="svMesas">Buscar mesa ...</string>
     <string name="mesas_strTabMesas">Mesas</string>
     <string name="mesas_strTabPedidos">Pedidos</string>
+    <string name="pedidos_strEntrega">Entrega: %1$s</string>
     <string name="pedidos_strFormaPago">Forma de pago: %1$s</string>
     <string name="pedidos_strFpagoEfectivo">Efectivo</string>
     <string name="pedidos_strFpagoTarjeta">Tarjeta</string>

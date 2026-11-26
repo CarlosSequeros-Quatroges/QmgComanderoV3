@@ -118,7 +118,7 @@ public class RvAdapterPedidos extends RecyclerView.Adapter<RvAdapterPedidos.Pedi
         final ClaseMesas pedido = listaFiltrada.get(i);
 
         holder.numero.setText(String.valueOf(pedido.mesa));
-        holder.tvCodptoWeb.setText(pedido.codptoWeb == null ? "" : pedido.codptoWeb);
+        holder.tvCodptoWeb.setText(pedido.codptoWeb == null || pedido.codptoWeb.trim().isEmpty() ? "" : context.getString(R.string.pedidos_strEntrega, pedido.codptoWeb.trim()));
         holder.tvFpagoWeb.setText(textoFormaPago(pedido.fpagoWeb));
         holder.importe.setText(ClaseUtils.double2string(pedido.importe, 2));
 

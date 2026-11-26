@@ -74,7 +74,7 @@
                     android:paddingRight="6dp"
                     android:paddingTop="2dp"
                     android:gravity="left"
-                    android:text="WEB01"
+                    android:text="Entrega: WEB01"
                     android:textColor="@color/textoBlanco"
                     android:textSize="@dimen/text_actionbar"
                     android:textStyle="bold"
