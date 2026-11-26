@@ -9,6 +9,8 @@ import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Filter;
 
 import androidx.annotation.NonNull;
@@ -51,6 +53,8 @@ public class FragmentMesas extends Fragment
 
     /** pestañas MESAS / PEDIDOS: tipo de estado que se muestra (ClaseMesas.TIPO_ESTADO_*) */
     private TabLayout tlTipoMesas;
+    /** icono vibrando mientras haya pedidos web nuevos sin ver */
+    private View ivAvisoPedidos;
     private String tipoEstado = ClaseMesas.TIPO_ESTADO_MESAS;
     private boolean ajustandoTab;
     private int nMesasVisibles;
@@ -179,11 +183,13 @@ public class FragmentMesas extends Fragment
         boolean pedidos = ClaseMesas.TIPO_ESTADO_PEDIDOS.equals(tipoEstado);
         int nAbiertas = 0;
         int nPedidos = 0;
+        int nPedidosNuevos = 0;
         if (mesas != null) {
             for (Map.Entry<Integer, ClaseMesas> entry : mesas.entrySet()) {
                 ClaseMesas mesa = entry.getValue();
                 if (mesa.esPedido()) {
                     nPedidos++;
+                    if (mesa.avisoWeb) nPedidosNuevos++;
                 } else if (mesa.abiertas || mesa.tickets) {
                     nAbiertas++;
                 }
@@ -192,7 +198,23 @@ public class FragmentMesas extends Fragment
         }
         nMesasVisibles = lista.size();
         actualizaTitulosTabs(nAbiertas, nPedidos);
+        muestraAvisoPedidos(nPedidosNuevos > 0);
         return lista;
+    }
+
+    /** Icono de aviso vibrando mientras haya pedidos web nuevos (aviso_web = S); oculto y parado si no hay. */
+    private void muestraAvisoPedidos(boolean hayNuevos) {
+        if (ivAvisoPedidos == null || context == null) return;
+        if (hayNuevos) {
+            if (ivAvisoPedidos.getVisibility() != View.VISIBLE || ivAvisoPedidos.getAnimation() == null) {
+                ivAvisoPedidos.setVisibility(View.VISIBLE);
+                Animation vibracion = AnimationUtils.loadAnimation(context, R.anim.vibracion);
+                ivAvisoPedidos.startAnimation(vibracion);
+            }
+        } else {
+            ivAvisoPedidos.clearAnimation();
+            ivAvisoPedidos.setVisibility(View.GONE);
+        }
     }
 
     private void actualizaTitulosTabs(int nAbiertas, int nPedidos) {
@@ -313,6 +335,7 @@ public class FragmentMesas extends Fragment
 
         svMesa = rootView.findViewById(R.id.svMesa);
         tlTipoMesas = rootView.findViewById(R.id.tlTipoMesas);
+        ivAvisoPedidos = rootView.findViewById(R.id.ivAvisoPedidos);
         configuraTabs();
 
 

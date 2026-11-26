@@ -7,9 +7,17 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/cvFondo"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tlTipoMesas"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
+        android:layout_weight="1"
         android:layout_height="wrap_content"
         android:background="@color/cvFondo"
         app:tabMode="fixed"
@@ -29,6 +37,17 @@
             android:layout_height="wrap_content"
             android:text="@string/mesas_strTabPedidos" />
     </com.google.android.material.tabs.TabLayout>
+
+        <!-- hay pedidos web nuevos sin ver (aviso_web = S): icono vibrando, como en el TPV de Windows -->
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ivAvisoPedidos"
+            android:layout_width="@dimen/icon_cv_size"
+            android:layout_height="@dimen/icon_cv_size"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/bar_aviso_sel"
+            android:visibility="gone" />
+    </LinearLayout>
 
     <androidx.appcompat.widget.SearchView
         android:id="@+id/svMesa"
