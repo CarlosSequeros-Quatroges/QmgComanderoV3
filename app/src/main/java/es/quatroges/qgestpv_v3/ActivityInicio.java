@@ -2657,23 +2657,26 @@ public class ActivityInicio extends AppCompatActivity
                         pendienteOtroTipoEstado = false;
                         resultadoWS = 2;
                     }
+                    cerrar = true;
                 } else {
                     cargaEstadoMesas(intent);
 
                     if (pideOtroTipoEstado()) {
-                        // falta el otro tipo (mesas o pedidos): se encadena antes de mostrar la lista
+                        // falta el otro tipo (mesas o pedidos): se encadena antes de mostrar la lista y el dialogo sigue abierto
                         resultadoWS = 2;
-                    } else if (estado == enEstado.traspasa || estado == enEstado.traspasa_sub) {
-
-                        seleccionaMesa(traspasaMesa_mesasel, listaMesas.get(traspasaMesa_mesasel).pax, "");
+                        cerrar = false;
                     } else {
-                        ultimoEstado = estado;
-                        estado = enEstado.mostrarmesas;
-                        cambiaEstado(estado);
+                        if (estado == enEstado.traspasa || estado == enEstado.traspasa_sub) {
+                            seleccionaMesa(traspasaMesa_mesasel, listaMesas.get(traspasaMesa_mesasel).pax, "");
+                        } else {
+                            ultimoEstado = estado;
+                            estado = enEstado.mostrarmesas;
+                            cambiaEstado(estado);
+                        }
+                        resultadoWS = 1;
+                        cerrar = true;
                     }
-                    resultadoWS = 1;
                 }
-                cerrar = true;
             } else if (intent.getAction().equals(ServSincronizaBD.ACTION_OK_LINEASVENTA)) {
                 cargaLineasVenta(intent);
 
@@ -5078,7 +5081,7 @@ public class ActivityInicio extends AppCompatActivity
     private static void cargaEstadoMesas(Intent intent) {
         double importe;
         int pax;
-        ClaseUtils.ProgressDialogo.cerrarDialogo();
+        // el dialogo de progreso lo cierra el receptor cuando termina el ciclo (las dos respuestas, mesas y pedidos)
         ArrayList<EstadoMesas> mesas = intent.getParcelableArrayListExtra("mesas");
 
         // tramos horarios del tpv para deducir el tramo de pension aplicado al abrir cada submesa (icono de la lista de mesas)
