@@ -54,6 +54,18 @@
                         android:textSize="@dimen/text_actionbar"
                         android:textStyle="bold" />
 
+                    <TextView
+                        android:id="@+id/tvHoraPedido"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="5dp"
+                        android:gravity="center"
+                        android:text="Hora pedido: 12:35:10"
+                        android:textColor="@color/textoBlanco"
+                        android:textSize="@dimen/text_actionbar"
+                        android:textStyle="bold" />
+
                     <androidx.appcompat.widget.AppCompatImageView
                         android:id="@+id/ivEstado"
                         android:layout_width="@dimen/icon_small_size"
@@ -62,20 +74,6 @@
                         android:layout_marginLeft="20dp"
                         android:background="@drawable/bar_tiquet" />
                 </LinearLayout>
-
-                <!-- hora del pedido -->
-                <TextView
-                    android:id="@+id/tvHoraPedido"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="6dp"
-                    android:paddingRight="6dp"
-                    android:paddingTop="2dp"
-                    android:gravity="left"
-                    android:text="Hora pedido: 12:35:10"
-                    android:textColor="@color/textoBlanco"
-                    android:textSize="@dimen/text_actionbar"
-                    android:textStyle="bold" />
 
                 <!-- punto de entrega -->
                 <TextView
@@ -92,35 +90,39 @@
                     android:textStyle="bold"
                     android:maxLines="2" />
 
-                <!-- forma de pago -->
-                <TextView
-                    android:id="@+id/tvFpagoWeb"
+                <!-- forma de pago e importe del pedido -->
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:orientation="horizontal"
                     android:paddingLeft="6dp"
                     android:paddingRight="6dp"
                     android:paddingTop="2dp"
-                    android:gravity="left"
-                    android:text="Forma de pago: Tarjeta"
-                    android:textColor="@color/textoBlanco"
-                    android:textSize="@dimen/text_actionbar"
-                    android:textStyle="bold"
-                    android:maxLines="2" />
+                    android:paddingBottom="3dp">
 
-                <!-- importe del pedido -->
-                <TextView
-                    android:id="@+id/importe"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="6dp"
-                    android:paddingRight="6dp"
-                    android:paddingTop="2dp"
-                    android:paddingBottom="3dp"
-                    android:gravity="left"
-                    android:text="Importe: 123.14 €"
-                    android:textColor="@color/textoBlanco"
-                    android:textSize="@dimen/text_actionbar"
-                    android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/tvFpagoWeb"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:gravity="left"
+                        android:text="Forma de pago: Tarjeta"
+                        android:textColor="@color/textoBlanco"
+                        android:textSize="@dimen/text_actionbar"
+                        android:textStyle="bold"
+                        android:maxLines="2" />
+
+                    <TextView
+                        android:id="@+id/importe"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:gravity="right"
+                        android:text="Importe: 123.14 €"
+                        android:textColor="@color/textoBlanco"
+                        android:textSize="@dimen/text_actionbar"
+                        android:textStyle="bold" />
+                </LinearLayout>
 
             </LinearLayout>
         </LinearLayout>
