@@ -55,6 +55,8 @@ public class FragmentDetalleVenta extends Fragment {
     private static double precioOriginal;
     private static Handler hEventos;
     private boolean editar;
+    /** pedido web: la linea solo se puede eliminar (sin unidades, precio, extras, orden de plato ni cambio de submesa) */
+    private boolean soloBorrar;
     private static  boolean moviendoArticulo;
 
     private static TextView tvDescripcion, tvTotal, tvHH, tvExtraNotas;
@@ -110,6 +112,7 @@ public class FragmentDetalleVenta extends Fragment {
             detalleVenta = bundle.getParcelable("item");
             precioOriginal = bundle.getDouble("precio_original");
             editar = bundle.getBoolean("editar");
+            soloBorrar = bundle.getBoolean("soloBorrar", false);
 
             isHappyHour = interfaceDetalleVenta.isHappyHour();
             maxUnidades = 99;
@@ -229,6 +232,7 @@ public class FragmentDetalleVenta extends Fragment {
         Bundle bundle= interfaceDetalleVenta.cargaDetalleVenta();
         detalleVenta = bundle.getParcelable("item");
         editar = bundle.getBoolean("editar");
+        soloBorrar = bundle.getBoolean("soloBorrar", false);
 
         if (detalleVenta == null) detalleVenta = new ClaseLineaVentas(0,0,0,"0",0,0.0,0.0,0.0,0.0,"","0","N","",ClaseUtils.enEstado.transmitida,"","",0, ClaseUtils.enEstado.transmitida, "N","", "N",1, false,"",0,0,"");
         cargaDatos(detalleVenta,editar);
@@ -420,6 +424,23 @@ public class FragmentDetalleVenta extends Fragment {
                     ivCalculaPrecio.setVisibility(View.INVISIBLE);
                 }
 
+                // pedido web: se deja solo eliminar; unidades, precio, extras, orden de plato y submesa quedan fuera
+                etUnidades.setEnabled(!soloBorrar);
+                if (soloBorrar) {
+                    ivUdMas.setVisibility(View.INVISIBLE);
+                    ivUdMenos.setVisibility(View.INVISIBLE);
+                    ivMueveSubmesa.setVisibility(View.INVISIBLE);
+                    ivTipo.setVisibility(View.INVISIBLE);
+                    ivBebida.setVisibility(View.INVISIBLE);
+                    ivEntrante.setVisibility(View.INVISIBLE);
+                    ivPrimero.setVisibility(View.INVISIBLE);
+                    ivSegundo.setVisibility(View.INVISIBLE);
+                    ivPostre.setVisibility(View.INVISIBLE);
+                    etPrecio.setEnabled(false);
+                    ivCalculaPrecio.setVisibility(View.INVISIBLE);
+                    if (ivExtras != null) ivExtras.setVisibility(View.INVISIBLE);
+                }
+
             }
         },50);
 
@@ -538,6 +559,7 @@ public class FragmentDetalleVenta extends Fragment {
                     Bundle bundle= interfaceDetalleVenta.cargaDetalleVenta();
                     detalleVenta = bundle.getParcelable("item");
                     editar = bundle.getBoolean("editar");
+                    soloBorrar = bundle.getBoolean("soloBorrar", false);
                     cargaDatos(detalleVenta,editar);
                     ivAceptar.setVisibility(View.INVISIBLE);
                     if (ClaseUtils.modelo == ClaseUtils.enModel.phone) {

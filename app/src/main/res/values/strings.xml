@@ -32,6 +32,7 @@
     <string name="mesas_strTabMesasN">Mesas (%1$d)</string>
     <string name="mesas_strTabPedidosN">Pedidos (%1$d)</string>
     <string name="pedidos_strEntrega">Entrega: %1$s</string>
+    <string name="pedidos_strSoloBorrar">Pedido web: solo se pueden eliminar líneas</string>
     <string name="pedidos_strFormaPago">Forma de pago: %1$s</string>
     <string name="pedidos_strFpagoEfectivo">Efectivo</string>
     <string name="pedidos_strFpagoTarjeta">Tarjeta</string>

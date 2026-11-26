@@ -755,6 +755,7 @@ public class ActivityInicio extends AppCompatActivity
             Toast.makeText(this, "Submesa cerrada. No se puede modificar", Toast.LENGTH_LONG).show();
             return;
         }
+        if (avisaPedidoSoloBorrar()) return;
 
         productoSel = -1;
         for (ClaseProductos producto : listaProductos) {
@@ -955,6 +956,7 @@ public class ActivityInicio extends AppCompatActivity
     //region Interface fragmentLineaVentas
     @Override
     public Bundle cargaLineaVentas(boolean refresca) {
+        RvAdapterLineaVentas.soloBorrar = pedidoSoloBorrar();
         if (!refresca) {
 
             //listaLineaVentas = ClaseLineaVentas.recuperaLineaVentas(tpvSel, mesaSel,subMesaSel);
@@ -1154,6 +1156,7 @@ public class ActivityInicio extends AppCompatActivity
                 bundle.putBoolean("editar", false);
             else
                 bundle.putBoolean("editar", true);
+            bundle.putBoolean("soloBorrar", pedidoSoloBorrar());
 
             double precioOriginal = item.peuros;
             for (ClaseProductos tmpProducto : listaProductos) {
@@ -1259,6 +1262,10 @@ public class ActivityInicio extends AppCompatActivity
 
     @Override
     public void actualizaLinea(ClaseLineaVentas detalleVenta, boolean actualizaPlato) {
+        if (avisaPedidoSoloBorrar()) {
+            if (fragmentDetalleVenta != null) fragmentDetalleVenta.actualizaDetalleVenta();
+            return;
+        }
         ClaseLineaVentas item = listaLineaVentas.get(lineaSel);
 
         item.cantidad = detalleVenta.cantidad;
@@ -1371,6 +1378,7 @@ public class ActivityInicio extends AppCompatActivity
 
     @Override
     public void mueveLineaSubmesa(ClaseLineaVentas linea, int nueva_submesa) {
+        if (avisaPedidoSoloBorrar()) return;
         for (ClaseSubMesas submesa : mesa.submesas) {
             if (submesa.submesa == nueva_submesa) {
                 if (linea.estado == ClaseUtils.enEstado.transmitida) {
@@ -5076,6 +5084,18 @@ public class ActivityInicio extends AppCompatActivity
             listaMesas.put(nmesa, mesa);
         }
         return mesa;
+    }
+
+    /** En un pedido web (mesa >= 1000) la comanda solo admite eliminar lineas: ni añadir productos ni modificar las existentes. */
+    private static boolean pedidoSoloBorrar() {
+        return mesa != null && mesa.esPedido();
+    }
+
+    /** @return true si la accion se bloquea por ser un pedido web (y se avisa al usuario) */
+    private static boolean avisaPedidoSoloBorrar() {
+        if (!pedidoSoloBorrar()) return false;
+        Toast.makeText(context, context.getString(R.string.pedidos_strSoloBorrar), Toast.LENGTH_SHORT).show();
+        return true;
     }
 
     private static void cargaEstadoMesas(Intent intent) {

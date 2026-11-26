@@ -40,6 +40,8 @@ public class RvAdapterLineaVentas extends RecyclerView.Adapter<RvAdapterLineaVen
     /** icono de las lineas con pension: el del tramo que se aplica a la submesa actual (lo fija ActivityInicio.muestraPension);
      *  0 si la pension no se aplica a la submesa (las lineas del TPV traen el codigo de pension aunque aplicap sea N) */
     public static int iconoPension = 0;
+    /** pedido web: las lineas solo se pueden eliminar; sin arrastre para cambiar el orden de plato (lo fija ActivityInicio.cargaLineaVentas) */
+    public static boolean soloBorrar = false;
     private final ArrayList<Integer> posicionesAgrupadas = new ArrayList<>();
 
     public RvAdapterLineaVentas(Context context, ArrayList<ClaseLineaVentas> listaLineaVentas, FragmentLineaVentas fragmentLineaVentas){
@@ -195,6 +197,7 @@ public class RvAdapterLineaVentas extends RecyclerView.Adapter<RvAdapterLineaVen
         categoriaViewHolder.layDatosVenta.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
+                if (soloBorrar) return true;
                 String dragData = Integer.toString(indiceReal);
                 ClipData data = ClipData.newPlainText("linea_index", dragData);
                 View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
@@ -324,10 +327,11 @@ public class RvAdapterLineaVentas extends RecyclerView.Adapter<RvAdapterLineaVen
     }
 
     public boolean onItemMove(int fromAdapterPos, int toAdapterPos) {
-        return getIndiceReal(fromAdapterPos) >= 0 && getIndiceReal(toAdapterPos) >= 0;
+        return !soloBorrar && getIndiceReal(fromAdapterPos) >= 0 && getIndiceReal(toAdapterPos) >= 0;
     }
 
     public boolean onItemDrop(int fromAdapterPos, int toAdapterPos) {
+        if (soloBorrar) return false;
         int fromReal = getIndiceReal(fromAdapterPos);
         int toReal = getIndiceReal(toAdapterPos);
         if (fromReal < 0 || toReal < 0 || listaLineaVentas == null) {
@@ -371,6 +375,7 @@ public class RvAdapterLineaVentas extends RecyclerView.Adapter<RvAdapterLineaVen
 
 
     public boolean onItemDropToOrdenFromRealIndex(int fromReal, int ordenDestino) {
+        if (soloBorrar) return false;
         if (fromReal < 0 || listaLineaVentas == null || fromReal >= listaLineaVentas.size()) {
             return false;
         }
