@@ -116,11 +116,11 @@ public class ClaseMesas implements Parcelable {
         return TIPO_ESTADO_PEDIDOS.equals(tipo) ? TIPO_ESTADO_MESAS : TIPO_ESTADO_PEDIDOS;
     }
 
-    /** Fecha y hora del pedido para la tarjeta ("dd/MM HH:mm") a partir de yyyy-MM-ddTHH:mm:ss; tal cual si no tiene ese formato. */
-    public String fechaHoraPedidoCorta() {
+    /** Hora del pedido para la tarjeta ("HH:mm:ss") a partir de yyyy-MM-ddTHH:mm:ss; tal cual si no tiene ese formato. El orden usa la fecha completa. */
+    public String horaPedido() {
         String f = fechaHoraPedido == null ? "" : fechaHoraPedido.trim();
-        if (f.length() >= 16 && f.charAt(4) == '-' && f.charAt(7) == '-') {
-            return f.substring(8, 10) + "/" + f.substring(5, 7) + " " + f.substring(11, 16);
+        if (f.length() >= 19 && f.charAt(4) == '-' && f.charAt(7) == '-') {
+            return f.substring(11, 19);
         }
         return f;
     }

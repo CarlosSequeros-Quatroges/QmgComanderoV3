@@ -54,6 +54,8 @@ public class FragmentMesas extends Fragment
     private String tipoEstado = ClaseMesas.TIPO_ESTADO_MESAS;
     private boolean ajustandoTab;
     private int nMesasVisibles;
+    /** columnas de la rejilla de mesas (los pedidos van a una tarjeta por fila) */
+    private int columnasMesas = 2;
 
 
     public enum enEstado {
@@ -201,9 +203,13 @@ public class FragmentMesas extends Fragment
         if (tabPedidos != null) tabPedidos.setText(context.getString(R.string.mesas_strTabPedidosN, nPedidos));
     }
 
-    /** Adaptador de la pestaña activa: tarjetas de mesa o tarjetas de pedido (numero, punto web, forma de pago, importe). */
+    /** Adaptador de la pestaña activa: tarjetas de mesa en rejilla o tarjetas de pedido a una por fila. */
     private RecyclerView.Adapter<?> creaAdapter(ArrayList<ClaseMesas> lista) {
-        if (ClaseMesas.TIPO_ESTADO_PEDIDOS.equals(tipoEstado)) {
+        boolean pedidos = ClaseMesas.TIPO_ESTADO_PEDIDOS.equals(tipoEstado);
+        if (rvMesas != null && rvMesas.getLayoutManager() instanceof GridLayoutManager) {
+            ((GridLayoutManager) rvMesas.getLayoutManager()).setSpanCount(pedidos ? 1 : columnasMesas);
+        }
+        if (pedidos) {
             adapterMesas = null;
             adapterPedidos = new RvAdapterPedidos(context, lista, this);
             return adapterPedidos;
@@ -318,6 +324,7 @@ public class FragmentMesas extends Fragment
         float vpWidth = view.getMeasuredWidth()/displayMetrics.density;
         int cols = (int)( dpWidth /vpWidth);
         if (cols <= 1) cols = 2;
+        columnasMesas = cols;
 
 
         GridLayoutManager llmMesas = new GridLayoutManager(context,cols, GridLayoutManager.VERTICAL, false);
