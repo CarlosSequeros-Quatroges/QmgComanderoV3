@@ -104,6 +104,11 @@ public class ClaseMesas implements Parcelable {
 
     };
 
+    /** el tipo de estado contrario: cada ciclo pide los dos (primero el de la pestaña activa, luego este) */
+    public static String otroTipoEstado(String tipo) {
+        return TIPO_ESTADO_PEDIDOS.equals(tipo) ? TIPO_ESTADO_MESAS : TIPO_ESTADO_PEDIDOS;
+    }
+
     public static boolean esNumeroPedido(int mesa) {
         return mesa >= PEDIDO_DESDE;
     }

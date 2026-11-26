@@ -146,17 +146,35 @@ public class FragmentMesas extends Fragment
         if (scroll != null && rvMesas.getLayoutManager() != null) rvMesas.getLayoutManager().onRestoreInstanceState(scroll);
     }
 
-    /** Mesas de la pestaña activa: las del tpv (numero < 1000) en MESAS, los pedidos (>= 1000) en PEDIDOS. */
+    /** Mesas de la pestaña activa: las del tpv (numero < 1000) en MESAS, los pedidos (>= 1000) en PEDIDOS.
+     *  De paso actualiza el recuento de las pestañas: mesas abiertas o con cuenta pedida, y numero de pedidos. */
     private ArrayList<ClaseMesas> mesasDelTipo(TreeMap<Integer, ClaseMesas> mesas) {
         ArrayList<ClaseMesas> lista = new ArrayList<>();
         boolean pedidos = ClaseMesas.TIPO_ESTADO_PEDIDOS.equals(tipoEstado);
+        int nAbiertas = 0;
+        int nPedidos = 0;
         if (mesas != null) {
             for (Map.Entry<Integer, ClaseMesas> entry : mesas.entrySet()) {
-                if (entry.getValue().esPedido() == pedidos) lista.add(entry.getValue());
+                ClaseMesas mesa = entry.getValue();
+                if (mesa.esPedido()) {
+                    nPedidos++;
+                } else if (mesa.abiertas || mesa.tickets) {
+                    nAbiertas++;
+                }
+                if (mesa.esPedido() == pedidos) lista.add(mesa);
             }
         }
         nMesasVisibles = lista.size();
+        actualizaTitulosTabs(nAbiertas, nPedidos);
         return lista;
+    }
+
+    private void actualizaTitulosTabs(int nAbiertas, int nPedidos) {
+        if (tlTipoMesas == null || context == null) return;
+        TabLayout.Tab tabMesas = tlTipoMesas.getTabAt(0);
+        TabLayout.Tab tabPedidos = tlTipoMesas.getTabAt(1);
+        if (tabMesas != null) tabMesas.setText(context.getString(R.string.mesas_strTabMesasN, nAbiertas));
+        if (tabPedidos != null) tabPedidos.setText(context.getString(R.string.mesas_strTabPedidosN, nPedidos));
     }
 
     /** Adaptador de la pestaña activa: tarjetas de mesa o tarjetas de pedido (numero, punto web, forma de pago, importe). */

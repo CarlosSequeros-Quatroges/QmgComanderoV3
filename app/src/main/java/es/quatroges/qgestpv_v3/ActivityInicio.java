@@ -230,6 +230,9 @@ public class ActivityInicio extends AppCompatActivity
     private static TreeMap<Integer, ClaseMesas> listaMesas;
     /** pestaña activa del planning: ClaseMesas.TIPO_ESTADO_MESAS (mesas del tpv) o TIPO_ESTADO_PEDIDOS (mesas >= 1000); viaja en recuperaEstadoMesas */
     private static String tipoEstadoMesas = ClaseMesas.TIPO_ESTADO_MESAS;
+    /** cada ciclo de estado pide los dos tipos: el que esta en curso y si queda el otro por pedir */
+    private static String tipoEstadoPeticion = ClaseMesas.TIPO_ESTADO_MESAS;
+    private static boolean pendienteOtroTipoEstado = false;
     private static ClaseMesas mesa;
     private static int mesaSel, actualizaPax_mesasel, traspasaMesa_mesasel;
 
@@ -434,11 +437,37 @@ public class ActivityInicio extends AppCompatActivity
 
     @Override
     public void onCambiaTipoEstado(String tipoEstado) {
-        // cambio de pestaña MESAS / PEDIDOS: se vuelve a pedir el estado al servidor con el tipo elegido
+        // cambio de pestaña MESAS / PEDIDOS: cada ciclo carga los dos tipos, asi que se repinta al momento
         tipoEstadoMesas = tipoEstado;
-        ultimoEstado = estado;
-        estado = enEstado.cargamesas;
-        cambiaEstado(estado);
+        if (configuracion != null && configuracion.refrescoMesas > 0) {
+            if (fragmentMesas != null) fragmentMesas.actualizaMesas(false);
+            ultimoRefrescoMesasMs = 0;  // y se adelanta el siguiente refresco silencioso
+        } else {
+            // sin refresco automatico, se pide el estado para no mostrar datos antiguos
+            ultimoEstado = estado;
+            estado = enEstado.cargamesas;
+            cambiaEstado(estado);
+        }
+    }
+
+    /** Arranca un ciclo de estado: primero el tipo de la pestaña activa y despues el otro. */
+    private static void iniciaCicloEstadoMesas() {
+        tipoEstadoPeticion = tipoEstadoMesas;
+        pendienteOtroTipoEstado = true;
+    }
+
+    /**
+     * Tras una respuesta de estado, encadena la peticion del otro tipo si queda pendiente.
+     * @return true si se ha lanzado otra peticion (el ciclo aun no ha terminado)
+     */
+    private static boolean pideOtroTipoEstado() {
+        if (!pendienteOtroTipoEstado) return false;
+        pendienteOtroTipoEstado = false;
+        tipoEstadoPeticion = ClaseMesas.otroTipoEstado(tipoEstadoPeticion);
+        ultimaAccionWs = enAccionesWS.getEstadoMesas;
+        reintentosWS = 0;
+        conectaWS(ultimaAccionWs, null);
+        return true;
     }
 
     @Override
@@ -1736,6 +1765,7 @@ public class ActivityInicio extends AppCompatActivity
                             if (procedeRefrescoMesas()) {
                                 // la lista de mesas lleva el intervalo configurado sin actualizarse: se pide el estado sin dialogo ni cambio de pantalla
                                 refrescoMesasSilencioso = true;
+                                iniciaCicloEstadoMesas();
                                 ultimaAccionWs = enAccionesWS.getEstadoMesas;
                                 reintentosWS = 0;
                                 conectaWS(ultimaAccionWs, null);
@@ -1761,7 +1791,7 @@ public class ActivityInicio extends AppCompatActivity
                                 ClaseUtils.ProgressDialogo.mostrarDialogo(true, context.getResources().getString(R.string.progress_strRecuperaMesas), context.getResources().getString(R.string.progress_strEspera), context);
                             }
                             try {
-                                ServSincronizaBD.startActionGetEstadoMesas(context, configuracion.codigo, configuracion.deviceID, tpv.codtpv, tipoEstadoMesas, handlerNotificaWS, (Activity) context);
+                                ServSincronizaBD.startActionGetEstadoMesas(context, configuracion.codigo, configuracion.deviceID, tpv.codtpv, tipoEstadoPeticion, handlerNotificaWS, (Activity) context);
                             } catch (Exception ex) {
                                 errorPeticion = true;
                             }
@@ -2486,6 +2516,7 @@ public class ActivityInicio extends AppCompatActivity
                 if (refrescoMesasSilencioso) {
                     // el refresco automatico no molesta al usuario: se vuelve a intentar en el siguiente ciclo
                     refrescoMesasSilencioso = false;
+                    pendienteOtroTipoEstado = false;
                     ultimoRefrescoMesasMs = SystemClock.elapsedRealtime();
                     resultadoWS = (estado == enEstado.mostrarmesas) ? 1 : 2;
                 } else {
@@ -2608,22 +2639,31 @@ public class ActivityInicio extends AppCompatActivity
             } else if (intent.getAction().equals(ServSincronizaBD.ACTION_OK_ESTADOMESAS)) {
                 ultimoRefrescoMesasMs = SystemClock.elapsedRealtime();
                 if (refrescoMesasSilencioso) {
-                    refrescoMesasSilencioso = false;
                     if (estado == enEstado.mostrarmesas && fragmentMesas != null && fragmentMesas.estado == FragmentMesas.enEstado.seleccion) {
-                        // refresco automatico: lista nueva desde la base de datos (las mesas cerradas en otro terminal vuelven a libres),
-                        // estado del servidor encima y repintado sin cambiar de pantalla ni perder el filtro
-                        listaMesas = ClaseMesas.recuperaMesas(tpv, listaNombreMesas);
+                        // refresco automatico: con la primera respuesta del ciclo, lista nueva desde la base de datos (las mesas cerradas
+                        // en otro terminal vuelven a libres); el estado del servidor se superpone y se repinta sin cambiar de pantalla ni perder el filtro
+                        if (pendienteOtroTipoEstado) listaMesas = ClaseMesas.recuperaMesas(tpv, listaNombreMesas);
                         cargaEstadoMesas(intent);
-                        fragmentMesas.refrescaEstadoMesas();
-                        resultadoWS = 1;
+                        if (pideOtroTipoEstado()) {
+                            resultadoWS = 2;
+                        } else {
+                            refrescoMesasSilencioso = false;
+                            fragmentMesas.refrescaEstadoMesas();
+                            resultadoWS = 1;
+                        }
                     } else {
                         // el usuario ya ha entrado en una mesa o esta editando pax: se descarta, hay otra accion en curso
+                        refrescoMesasSilencioso = false;
+                        pendienteOtroTipoEstado = false;
                         resultadoWS = 2;
                     }
                 } else {
                     cargaEstadoMesas(intent);
 
-                    if (estado == enEstado.traspasa || estado == enEstado.traspasa_sub) {
+                    if (pideOtroTipoEstado()) {
+                        // falta el otro tipo (mesas o pedidos): se encadena antes de mostrar la lista
+                        resultadoWS = 2;
+                    } else if (estado == enEstado.traspasa || estado == enEstado.traspasa_sub) {
 
                         seleccionaMesa(traspasaMesa_mesasel, listaMesas.get(traspasaMesa_mesasel).pax, "");
                     } else {
@@ -4198,6 +4238,7 @@ public class ActivityInicio extends AppCompatActivity
                 if (! ClaseUtils.VerTiquet.isVisible()) {
                     ClaseUtils.ProgressDialogo.mostrarDialogo(true, context.getResources().getString(R.string.progress_strRecuperaMesas), context.getResources().getString(R.string.progress_strEspera), context);
                 }
+                iniciaCicloEstadoMesas();
                 ultimaAccionWs = enAccionesWS.getEstadoMesas;
                 reintentosWS = 0;
                 conectaWS(ultimaAccionWs, null);
