@@ -228,6 +228,8 @@ public class ActivityInicio extends AppCompatActivity
 
 
     private static TreeMap<Integer, ClaseMesas> listaMesas;
+    /** pestaña activa del planning: ClaseMesas.TIPO_ESTADO_MESAS (mesas del tpv) o TIPO_ESTADO_PEDIDOS (mesas >= 1000); viaja en recuperaEstadoMesas */
+    private static String tipoEstadoMesas = ClaseMesas.TIPO_ESTADO_MESAS;
     private static ClaseMesas mesa;
     private static int mesaSel, actualizaPax_mesasel, traspasaMesa_mesasel;
 
@@ -421,12 +423,22 @@ public class ActivityInicio extends AppCompatActivity
         bundle.putBoolean("pidePax", configuracion.pax);
         bundle.putBoolean("pideRoom", configuracion.pax);
         bundle.putSerializable("mesas", listaMesas);
+        bundle.putString("tipoEstado", tipoEstadoMesas);
         return bundle;
     }
 
     @Override
     public void onClickMesa(int i, int pax, String habitacion) {
         seleccionaMesa(i, pax, habitacion);
+    }
+
+    @Override
+    public void onCambiaTipoEstado(String tipoEstado) {
+        // cambio de pestaña MESAS / PEDIDOS: se vuelve a pedir el estado al servidor con el tipo elegido
+        tipoEstadoMesas = tipoEstado;
+        ultimoEstado = estado;
+        estado = enEstado.cargamesas;
+        cambiaEstado(estado);
     }
 
     @Override
@@ -1749,7 +1761,7 @@ public class ActivityInicio extends AppCompatActivity
                                 ClaseUtils.ProgressDialogo.mostrarDialogo(true, context.getResources().getString(R.string.progress_strRecuperaMesas), context.getResources().getString(R.string.progress_strEspera), context);
                             }
                             try {
-                                ServSincronizaBD.startActionGetEstadoMesas(context, configuracion.codigo, configuracion.deviceID, tpv.codtpv, handlerNotificaWS, (Activity) context);
+                                ServSincronizaBD.startActionGetEstadoMesas(context, configuracion.codigo, configuracion.deviceID, tpv.codtpv, tipoEstadoMesas, handlerNotificaWS, (Activity) context);
                             } catch (Exception ex) {
                                 errorPeticion = true;
                             }
@@ -2730,7 +2742,7 @@ public class ActivityInicio extends AppCompatActivity
                 listaMesas = ClaseMesas.recuperaMesas(tpv, listaNombreMesas);
 
                 mesaSel = traspasaMesa_mesasel;
-                mesa = listaMesas.get(mesaSel);
+                mesa = obtieneMesa(mesaSel);
                 tvBarMesa.setText(mesa.descripcion + "-" + Integer.toString(submesa.submesa));
 
                 ultimaAccionWs = enAccionesWS.getLineasMesa;
@@ -5008,6 +5020,20 @@ public class ActivityInicio extends AppCompatActivity
         if (fragmentSubmesas != null) fragmentSubmesas.actualizaSubmesas();
     }
 
+    /**
+     * Mesa de la lista por numero. Los pedidos (numero >= ClaseMesas.PEDIDO_DESDE) no forman parte de las mesas configuradas
+     * del tpv: se crean la primera vez que se necesitan (estado recibido del servidor o traspaso a un pedido).
+     * @return null si el numero no es una mesa del tpv ni un pedido
+     */
+    private static ClaseMesas obtieneMesa(int nmesa) {
+        ClaseMesas mesa = listaMesas.get(nmesa);
+        if (mesa == null && ClaseMesas.esNumeroPedido(nmesa)) {
+            mesa = ClaseMesas.nuevoPedido(nmesa, tpv, listaNombreMesas);
+            listaMesas.put(nmesa, mesa);
+        }
+        return mesa;
+    }
+
     private static void cargaEstadoMesas(Intent intent) {
         double importe;
         int pax;
@@ -5028,7 +5054,8 @@ public class ActivityInicio extends AppCompatActivity
         int usubmesa = 0;
 
         for (EstadoMesas estadoMesa : mesas) {
-            ClaseMesas mesa = listaMesas.get(estadoMesa.getMesa());
+            // las mesas del tpv ya estan en la lista; los pedidos (>= 1000) solo existen si el servidor los envia
+            ClaseMesas mesa = obtieneMesa(estadoMesa.getMesa());
             if (mesa == null) {
                 continue;
             }

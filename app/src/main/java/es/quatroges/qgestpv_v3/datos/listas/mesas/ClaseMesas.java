@@ -13,6 +13,12 @@ import es.quatroges.qgestpv_v3.utils.ClaseUtils;
 @SuppressWarnings("unchecked")
 public class ClaseMesas implements Parcelable {
 
+    /** tipo de estado que se pide al servidor: planning de mesas del tpv o pedidos */
+    public static final String TIPO_ESTADO_MESAS = "M";
+    public static final String TIPO_ESTADO_PEDIDOS = "P";
+    /** a partir de este numero la "mesa" es un pedido (pestaña PEDIDOS); no forma parte de las mesas configuradas del tpv */
+    public static final int PEDIDO_DESDE = 1000;
+
     public int mesa;
     public String descripcion;
     public int grupo;
@@ -90,6 +96,25 @@ public class ClaseMesas implements Parcelable {
         }
 
     };
+
+    public static boolean esNumeroPedido(int mesa) {
+        return mesa >= PEDIDO_DESDE;
+    }
+
+    public boolean esPedido() {
+        return esNumeroPedido(mesa);
+    }
+
+    /** Pedido recibido en el estado de mesas: no esta en la lista base del tpv, se crea con el nombre configurado o "P" + numero. */
+    public static ClaseMesas nuevoPedido(int mesa, ClaseTPVs tpv, TreeMap<String, Nom_Mesas> nomMesas) {
+        String desc = "P" + mesa;
+        int grupo = 1;
+        if (tpv != null && nomMesas != null && nomMesas.containsKey(tpv.codtpv + "-" + mesa)) {
+            desc = nomMesas.get(tpv.codtpv + "-" + mesa).getDescripcion();
+            grupo = nomMesas.get(tpv.codtpv + "-" + mesa).getGrupo();
+        }
+        return new ClaseMesas(mesa, desc, grupo);
+    }
 
     public static TreeMap<Integer ,ClaseMesas> recuperaMesas(ClaseTPVs tpv, TreeMap<String, Nom_Mesas> nomMesas){
 

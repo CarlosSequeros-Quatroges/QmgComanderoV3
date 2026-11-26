@@ -19,6 +19,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.tabs.TabLayout;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -43,6 +45,12 @@ public class FragmentMesas extends Fragment
 
     private androidx.appcompat.widget.SearchView svMesa;
     private RvAdapterMesas adapterMesas;
+
+    /** pestañas MESAS / PEDIDOS: tipo de estado que se muestra (ClaseMesas.TIPO_ESTADO_*) */
+    private TabLayout tlTipoMesas;
+    private String tipoEstado = ClaseMesas.TIPO_ESTADO_MESAS;
+    private boolean ajustandoTab;
+    private int nMesasVisibles;
 
 
     public enum enEstado {
@@ -76,14 +84,8 @@ public class FragmentMesas extends Fragment
             pideRoom = bundle.getBoolean("pideRoom",false);
             rvMesas.setAdapter(null);
 
-
-            ArrayList<ClaseMesas>tmpListMesas = new ArrayList<>();
-            if (listaMesas != null) {
-
-                for (Map.Entry<Integer, ClaseMesas> entry : listaMesas.entrySet()) {
-                    tmpListMesas.add(entry.getValue());
-                }
-            }
+            sincronizaTab(bundle.getString("tipoEstado", ClaseMesas.TIPO_ESTADO_MESAS));
+            ArrayList<ClaseMesas> tmpListMesas = mesasDelTipo(listaMesas);
             ordenaMesas(tmpListMesas);
 
             adapterMesas = new RvAdapterMesas(context, tmpListMesas, this) ;
@@ -131,12 +133,8 @@ public class FragmentMesas extends Fragment
         if (interfaceMesas == null || rvMesas == null || adapterMesas == null || estado != enEstado.seleccion) return;
         Bundle bundle = interfaceMesas.cargaMesas(true);
         listaMesas = (TreeMap<Integer, ClaseMesas>) bundle.getSerializable("mesas");
-        ArrayList<ClaseMesas> tmpListMesas = new ArrayList<>();
-        if (listaMesas != null) {
-            for (Map.Entry<Integer, ClaseMesas> entry : listaMesas.entrySet()) {
-                tmpListMesas.add(entry.getValue());
-            }
-        }
+        sincronizaTab(bundle.getString("tipoEstado", ClaseMesas.TIPO_ESTADO_MESAS));
+        ArrayList<ClaseMesas> tmpListMesas = mesasDelTipo(listaMesas);
         ordenaMesas(tmpListMesas);
 
         CharSequence filtro = svMesa != null ? svMesa.getQuery() : null;
@@ -147,9 +145,58 @@ public class FragmentMesas extends Fragment
         if (scroll != null && rvMesas.getLayoutManager() != null) rvMesas.getLayoutManager().onRestoreInstanceState(scroll);
     }
 
+    /** Mesas de la pestaña activa: las del tpv (numero < 1000) en MESAS, los pedidos (>= 1000) en PEDIDOS. */
+    private ArrayList<ClaseMesas> mesasDelTipo(TreeMap<Integer, ClaseMesas> mesas) {
+        ArrayList<ClaseMesas> lista = new ArrayList<>();
+        boolean pedidos = ClaseMesas.TIPO_ESTADO_PEDIDOS.equals(tipoEstado);
+        if (mesas != null) {
+            for (Map.Entry<Integer, ClaseMesas> entry : mesas.entrySet()) {
+                if (entry.getValue().esPedido() == pedidos) lista.add(entry.getValue());
+            }
+        }
+        nMesasVisibles = lista.size();
+        return lista;
+    }
+
+    private void configuraTabs() {
+        if (tlTipoMesas == null) return;
+        tlTipoMesas.clearOnTabSelectedListeners();
+        tlTipoMesas.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                if (ajustandoTab) return;
+                String tipo = tab.getPosition() == 1 ? ClaseMesas.TIPO_ESTADO_PEDIDOS : ClaseMesas.TIPO_ESTADO_MESAS;
+                if (tipo.equals(tipoEstado)) return;
+                tipoEstado = tipo;
+                if (interfaceMesas != null) interfaceMesas.onCambiaTipoEstado(tipo);
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) { }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) { }
+        });
+    }
+
+    /** Alinea la pestaña con el tipo de estado que tiene la actividad, sin disparar una nueva peticion. */
+    private void sincronizaTab(String tipo) {
+        tipoEstado = tipo == null || tipo.isEmpty() ? ClaseMesas.TIPO_ESTADO_MESAS : tipo;
+        if (tlTipoMesas == null) return;
+        int pos = ClaseMesas.TIPO_ESTADO_PEDIDOS.equals(tipoEstado) ? 1 : 0;
+        TabLayout.Tab tab = tlTipoMesas.getTabAt(pos);
+        if (tab != null && tlTipoMesas.getSelectedTabPosition() != pos) {
+            ajustandoTab = true;
+            tab.select();
+            ajustandoTab = false;
+        }
+    }
+
     public interface InterfaceMesas {
         Bundle cargaMesas(boolean refresca);
         void onClickMesa(int i,  int pax, String habitacion);
+        /** el usuario cambia de pestaña (MESAS / PEDIDOS): se pide al servidor el estado de ese tipo */
+        void onCambiaTipoEstado(String tipoEstado);
         void onLongClickMesa(int i);
         void actualizaPax(ArrayList<ClaseSubMesas> subMesas, int mesaSel);
     }
@@ -188,6 +235,8 @@ public class FragmentMesas extends Fragment
         estado = FragmentMesas.enEstado.seleccion;
 
         svMesa = rootView.findViewById(R.id.svMesa);
+        tlTipoMesas = rootView.findViewById(R.id.tlTipoMesas);
+        configuraTabs();
 
 
         View view  = View.inflate(context,R.layout.mesas_cardview,null);
@@ -209,12 +258,9 @@ public class FragmentMesas extends Fragment
         mesaSel = bundle.getInt("productoSel",1);
         listaMesas= (TreeMap<Integer, ClaseMesas>) bundle.getSerializable("mesas");
 
-        ArrayList<ClaseMesas>tmpListMesas = new ArrayList<>();
-        if (listaMesas != null) {
-            for (Map.Entry<Integer, ClaseMesas> entry : listaMesas.entrySet()) {
-                tmpListMesas.add(entry.getValue());
-            }
-        }
+        sincronizaTab(bundle.getString("tipoEstado", ClaseMesas.TIPO_ESTADO_MESAS));
+        ArrayList<ClaseMesas> tmpListMesas = mesasDelTipo(listaMesas);
+        ordenaMesas(tmpListMesas);
 
         adapterMesas = new RvAdapterMesas(context, tmpListMesas, this) ;
         rvMesas.setAdapter(adapterMesas);
@@ -265,7 +311,7 @@ public class FragmentMesas extends Fragment
         int min = ((LinearLayoutManager) layout).findFirstCompletelyVisibleItemPosition();
         int max = ((LinearLayoutManager) layout).findLastCompletelyVisibleItemPosition();
         if (listaMesas != null) {
-            if (min <= 0 && max >= listaMesas.size() - 1)
+            if (min <= 0 && max >= nMesasVisibles - 1)
                 svMesa.setVisibility(View.VISIBLE);
             else
                 svMesa.setVisibility(View.VISIBLE);
@@ -278,7 +324,7 @@ public class FragmentMesas extends Fragment
         int max = ((GridLayoutManager) layout).findLastCompletelyVisibleItemPosition();
 
         if (listaMesas != null) {
-            if ((min <= 0) && (max >= listaMesas.size()-1)) {
+            if ((min <= 0) && (max >= nMesasVisibles-1)) {
                 svMesa.setVisibility(View.GONE);
             }
             else{

@@ -54,7 +54,7 @@ public interface APIService {
 
 
     @POST("comanderoV3/recuperaEstadoMesas?")
-    Call<RespuestaEstadoMesasWS> recuperaEstadoMesas(@Query("codigoEmpresa") String codigoEmpresa, @Query("IDTablet") String idTablet, @Query("tpv") String tpv);
+    Call<RespuestaEstadoMesasWS> recuperaEstadoMesas(@Query("codigoEmpresa") String codigoEmpresa, @Query("IDTablet") String idTablet, @Query("tpv") String tpv, @Query("tipoestado") String tipoestado);
 
     @POST("comanderoV3/recuperaLineasMesa?")
     Call<RespuestaLineasMesaWS> recuperaLineasMesa(@Query("codigoEmpresa") String codigoEmpresa, @Query("IDTablet") String idTablet, @Query("tpv") String tpv, @Query("pmesa") String mesa, @Query("room") String room );

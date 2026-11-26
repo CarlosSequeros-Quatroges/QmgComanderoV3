@@ -40,6 +40,7 @@ import es.quatroges.qgestpv_v3.configuracion.ClaseCondicionesVenta;
 import es.quatroges.qgestpv_v3.configuracion.ClaseConfiguracion;
 import es.quatroges.qgestpv_v3.datos.ActualizaPax;
 import es.quatroges.qgestpv_v3.datos.EstadoMesas;
+import es.quatroges.qgestpv_v3.datos.listas.mesas.ClaseMesas;
 import es.quatroges.qgestpv_v3.datos.Facturas;
 import es.quatroges.qgestpv_v3.datos.GrabaLineasVenta;
 import es.quatroges.qgestpv_v3.datos.LineasVenta;
@@ -185,6 +186,7 @@ public class ServSincronizaBD extends IntentService {
     private static final String EXTRA_CODEMP = "es.quatroges.qgestpv_v1.extra.CODEMP";
     private static final String EXTRA_IDTABLET = "es.quatroges.qgestpv_v1.extra.IDTABLET";
     private static final String EXTRA_TPV = "es.quatroges.qgestpv_v1.extra.TPV";
+    private static final String EXTRA_TIPOESTADO = "es.quatroges.qgestpv_v1.extra.TIPOESTADO";
     private static final String EXTRA_MESA = "es.quatroges.qgestpv_v1.extra.MESA";
     private static final String EXTRA_SUBMESA = "es.quatroges.qgestpv_v1.extra.SUBMESA";
     private static final String EXTRA_ACTUALIZAPAX = "es.quatroges.qgestpv_v1.extra.ACTUALIZAPAX";
@@ -329,12 +331,14 @@ public class ServSincronizaBD extends IntentService {
     //region METODOS GENERALES Y ACCESO A API FUNCIONES ONLINE
 
 
-    public static void startActionGetEstadoMesas(Context context, String codemp, String idTablet, String tpv, Handler handler, Activity activity) {
+    /** @param tipoEstado "M" mesas del tpv (planning) o "P" pedidos (mesas >= 1000 no facturadas) */
+    public static void startActionGetEstadoMesas(Context context, String codemp, String idTablet, String tpv, String tipoEstado, Handler handler, Activity activity) {
         Intent intent = new Intent(context, ServSincronizaBD.class);
         intent.setAction(ACTION_GETESTADOMESAS);
         intent.putExtra(EXTRA_CODEMP, codemp);
         intent.putExtra(EXTRA_IDTABLET, idTablet);
         intent.putExtra(EXTRA_TPV, tpv);
+        intent.putExtra(EXTRA_TIPOESTADO, tipoEstado);
         context.startService(intent);
         ServSincronizaBD.handlerNotificaWS = handler;
         ServSincronizaBD.activity = activity;
@@ -604,7 +608,8 @@ public class ServSincronizaBD extends IntentService {
                 final String param1 = intent.getStringExtra(EXTRA_CODEMP);
                 final String param2 = intent.getStringExtra(EXTRA_IDTABLET);
                 final String param3 = intent.getStringExtra(EXTRA_TPV);
-                handleActionGetEstadoMesas(param1, param2, param3);
+                final String param4 = intent.getStringExtra(EXTRA_TIPOESTADO);
+                handleActionGetEstadoMesas(param1, param2, param3, param4);
             }
             if (ACTION_GETLINEASMESA.equals(action)) {
                 final String param1 = intent.getStringExtra(EXTRA_CODEMP);
@@ -761,8 +766,8 @@ public class ServSincronizaBD extends IntentService {
     }
 
 
-    private void handleActionGetEstadoMesas(String codemp, String idTablet,String tpv) {
-        recuperaEstadoMesas(codemp,idTablet, tpv);
+    private void handleActionGetEstadoMesas(String codemp, String idTablet,String tpv, String tipoEstado) {
+        recuperaEstadoMesas(codemp,idTablet, tpv, tipoEstado);
     }
 
     private void handleActionGetLineasMesa(String codemp, String idTablet,String tpv, String mesa, String room) {
@@ -1036,11 +1041,12 @@ public class ServSincronizaBD extends IntentService {
         });
     }
 
-    private void recuperaEstadoMesas(String codemp, String idTtablet, String tpv){
+    private void recuperaEstadoMesas(String codemp, String idTtablet, String tpv, String tipoEstado){
+        if (tipoEstado == null || tipoEstado.isEmpty()) tipoEstado = ClaseMesas.TIPO_ESTADO_MESAS;
         APIService apiService = ClaseServicioWeb.getAPIService(false, config.connectionTO, rwTO(config.rwTO2), rwTO(config.rwTO2), ActivityInicio.latenciaTest.getUltima());
 
         final Long timeini = Calendar.getInstance().getTimeInMillis();
-        apiService.recuperaEstadoMesas(codemp,idTtablet, tpv).enqueue(new Callback<RespuestaEstadoMesasWS>() {
+        apiService.recuperaEstadoMesas(codemp,idTtablet, tpv, tipoEstado).enqueue(new Callback<RespuestaEstadoMesasWS>() {
             @Override
             public void onResponse(Call<RespuestaEstadoMesasWS> call, Response<RespuestaEstadoMesasWS> response) {
 
