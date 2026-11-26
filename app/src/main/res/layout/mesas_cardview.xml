@@ -154,7 +154,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginLeft="3dp"
-                                android:gravity="left"
+                                android:gravity="center_horizontal"
                                 android:text="123.14€"
                                 android:textColor="@color/textoBlanco"
                                 android:textSize="@dimen/text_actionbar"
