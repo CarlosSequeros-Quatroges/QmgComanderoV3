@@ -118,12 +118,13 @@ public class RvAdapterPedidos extends RecyclerView.Adapter<RvAdapterPedidos.Pedi
         final ClaseMesas pedido = listaFiltrada.get(i);
 
         holder.numero.setText(String.valueOf(pedido.mesa));
+        holder.tvFechaHora.setText(pedido.fechaHoraPedidoCorta());
         holder.tvCodptoWeb.setText(pedido.codptoWeb == null || pedido.codptoWeb.trim().isEmpty() ? "" : context.getString(R.string.pedidos_strEntrega, pedido.codptoWeb.trim()));
         holder.tvFpagoWeb.setText(textoFormaPago(pedido.fpagoWeb));
         holder.importe.setText(ClaseUtils.double2string(pedido.importe, 2));
 
-        // un pedido solo existe si el servidor lo envia abierto o con cuenta pedida; libre no deberia darse
-        holder.fondo.setBackgroundResource(pedido.abiertas || pedido.tickets ? R.color.mesaOcupada : R.color.mesaLibre);
+        // verde si es un pedido nuevo que nadie ha visto (aviso_web = S), rojo si ya se ha visto
+        holder.fondo.setBackgroundResource(pedido.avisoWeb ? R.color.pedidoNuevo : R.color.mesaOcupada);
         holder.ivEstado.setVisibility(pedido.tickets ? View.VISIBLE : View.INVISIBLE);
         holder.laySel.setBackgroundResource(fragmentMesas.mesaSel == pedido.mesa ? R.color.elementoSel : R.color.cvBorde);
 
@@ -154,7 +155,7 @@ public class RvAdapterPedidos extends RecyclerView.Adapter<RvAdapterPedidos.Pedi
     public static class PedidoViewHolder extends RecyclerView.ViewHolder {
         CardView cv;
         LinearLayout fondo, laySel;
-        TextView numero, tvCodptoWeb, tvFpagoWeb, importe;
+        TextView numero, tvFechaHora, tvCodptoWeb, tvFpagoWeb, importe;
         AppCompatImageView ivMesa, ivEstado;
 
         PedidoViewHolder(View itemView) {
@@ -163,6 +164,7 @@ public class RvAdapterPedidos extends RecyclerView.Adapter<RvAdapterPedidos.Pedi
             fondo = itemView.findViewById(R.id.fondo);
             laySel = itemView.findViewById(R.id.laySel);
             numero = itemView.findViewById(R.id.numero);
+            tvFechaHora = itemView.findViewById(R.id.tvFechaHora);
             tvCodptoWeb = itemView.findViewById(R.id.tvCodptoWeb);
             tvFpagoWeb = itemView.findViewById(R.id.tvFpagoWeb);
             importe = itemView.findViewById(R.id.importe);

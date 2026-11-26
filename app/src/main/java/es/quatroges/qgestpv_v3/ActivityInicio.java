@@ -5127,6 +5127,8 @@ public class ActivityInicio extends AppCompatActivity
                 // solo se toman los valores informados: una fila sin ellos (p.ej. la de cuenta pedida) no borra los que ya trae otra fila del pedido
                 if (estadoMesa.getCodpto_web() != null && !estadoMesa.getCodpto_web().trim().isEmpty()) mesa.codptoWeb = estadoMesa.getCodpto_web().trim();
                 if (estadoMesa.getFpago_web() != null && !estadoMesa.getFpago_web().trim().isEmpty()) mesa.fpagoWeb = estadoMesa.getFpago_web().trim();
+                if (estadoMesa.getFechahora() != null && !estadoMesa.getFechahora().trim().isEmpty()) mesa.fechaHoraPedido = estadoMesa.getFechahora().trim();
+                if (estadoMesa.getAviso_web() != null && estadoMesa.getAviso_web().trim().equalsIgnoreCase("S")) mesa.avisoWeb = true;
             }
 
             importe = 0;

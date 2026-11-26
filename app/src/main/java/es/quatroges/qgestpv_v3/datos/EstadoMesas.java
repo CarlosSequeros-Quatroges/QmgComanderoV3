@@ -64,6 +64,15 @@ public class EstadoMesas  implements Parcelable {
     @Expose
     private String fpago_web = "";
 
+    /** pedidos: fecha y hora del pedido (yyyy-MM-ddTHH:mm:ss) y aviso_web S/N (S = pedido nuevo que nadie ha visto) */
+    @SerializedName("fechahora")
+    @Expose
+    private String fechahora = "";
+
+    @SerializedName("aviso_web")
+    @Expose
+    private String aviso_web = "";
+
 
     public EstadoMesas(){
 
@@ -187,6 +196,22 @@ public class EstadoMesas  implements Parcelable {
         this.fpago_web = fpago_web;
     }
 
+    public String getFechahora() {
+        return fechahora;
+    }
+
+    public void setFechahora(String fechahora) {
+        this.fechahora = fechahora;
+    }
+
+    public String getAviso_web() {
+        return aviso_web;
+    }
+
+    public void setAviso_web(String aviso_web) {
+        this.aviso_web = aviso_web;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -207,6 +232,8 @@ public class EstadoMesas  implements Parcelable {
         dest.writeString(aplicap);
         dest.writeString(codpto_web);
         dest.writeString(fpago_web);
+        dest.writeString(fechahora);
+        dest.writeString(aviso_web);
     }
 
     public void readFromParcel(Parcel in){
@@ -223,6 +250,8 @@ public class EstadoMesas  implements Parcelable {
         this.aplicap = in.readString();
         this.codpto_web = in.readString();
         this.fpago_web = in.readString();
+        this.fechahora = in.readString();
+        this.aviso_web = in.readString();
     }
 
     protected EstadoMesas(Parcel in){

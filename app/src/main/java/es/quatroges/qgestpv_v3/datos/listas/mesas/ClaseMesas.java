@@ -32,6 +32,9 @@ public class ClaseMesas implements Parcelable {
     /** solo pedidos: punto de venta web y forma de pago que envia el servidor en el estado */
     public String codptoWeb = "";
     public String fpagoWeb = "";
+    /** solo pedidos: fecha y hora del pedido (yyyy-MM-ddTHH:mm:ss) y si es nuevo (aviso_web = S, nadie lo ha visto) */
+    public String fechaHoraPedido = "";
+    public boolean avisoWeb = false;
 
     public ArrayList<ClaseSubMesas> submesas;
 
@@ -71,6 +74,8 @@ public class ClaseMesas implements Parcelable {
         dest.writeByte((byte) (this.actualizaPax ? 1 : 0));
         dest.writeString(this.codptoWeb);
         dest.writeString(this.fpagoWeb);
+        dest.writeString(this.fechaHoraPedido);
+        dest.writeByte((byte) (this.avisoWeb ? 1 : 0));
 
     }
     public void readFromParcel(Parcel in){
@@ -86,6 +91,8 @@ public class ClaseMesas implements Parcelable {
         this.actualizaPax= in.readByte() != 0;
         this.codptoWeb = in.readString();
         this.fpagoWeb = in.readString();
+        this.fechaHoraPedido = in.readString();
+        this.avisoWeb = in.readByte() != 0;
 
     }
 
@@ -107,6 +114,15 @@ public class ClaseMesas implements Parcelable {
     /** el tipo de estado contrario: cada ciclo pide los dos (primero el de la pestaña activa, luego este) */
     public static String otroTipoEstado(String tipo) {
         return TIPO_ESTADO_PEDIDOS.equals(tipo) ? TIPO_ESTADO_MESAS : TIPO_ESTADO_PEDIDOS;
+    }
+
+    /** Fecha y hora del pedido para la tarjeta ("dd/MM HH:mm") a partir de yyyy-MM-ddTHH:mm:ss; tal cual si no tiene ese formato. */
+    public String fechaHoraPedidoCorta() {
+        String f = fechaHoraPedido == null ? "" : fechaHoraPedido.trim();
+        if (f.length() >= 16 && f.charAt(4) == '-' && f.charAt(7) == '-') {
+            return f.substring(8, 10) + "/" + f.substring(5, 7) + " " + f.substring(11, 16);
+        }
+        return f;
     }
 
     public static boolean esNumeroPedido(int mesa) {

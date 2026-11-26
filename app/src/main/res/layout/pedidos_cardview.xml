@@ -56,6 +56,18 @@
                         android:textSize="@dimen/text_actionbar"
                         android:textStyle="bold" />
 
+                    <TextView
+                        android:id="@+id/tvFechaHora"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="5dp"
+                        android:gravity="center"
+                        android:text="26/11 12:35"
+                        android:textColor="@color/textoBlanco"
+                        android:textSize="@dimen/text_actionbar"
+                        android:textStyle="bold" />
+
                     <androidx.appcompat.widget.AppCompatImageView
                         android:id="@+id/ivEstado"
                         android:layout_width="@dimen/icon_small_size"

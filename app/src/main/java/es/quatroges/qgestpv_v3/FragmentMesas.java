@@ -89,7 +89,7 @@ public class FragmentMesas extends Fragment
 
             sincronizaTab(bundle.getString("tipoEstado", ClaseMesas.TIPO_ESTADO_MESAS));
             ArrayList<ClaseMesas> tmpListMesas = mesasDelTipo(listaMesas);
-            ordenaMesas(tmpListMesas);
+            ordenaLista(tmpListMesas);
 
             rvMesas.setAdapter(creaAdapter(tmpListMesas));
             estado = FragmentMesas.enEstado.seleccion;
@@ -110,6 +110,30 @@ public class FragmentMesas extends Fragment
     }
 
 
+
+    /** orden de la pestaña activa: pedidos nuevos primero y los mas recientes arriba; mesas por estado y numero */
+    private void ordenaLista(ArrayList<ClaseMesas> lista) {
+        if (ClaseMesas.TIPO_ESTADO_PEDIDOS.equals(tipoEstado)) {
+            ordenaPedidos(lista);
+        } else {
+            ordenaMesas(lista);
+        }
+    }
+
+    /** pedidos: aviso_web = S (nuevos sin ver) primero, despues por fecha y hora del pedido descendente y por numero */
+    private static void ordenaPedidos(ArrayList<ClaseMesas> pedidos) {
+        Collections.sort(pedidos, new Comparator<ClaseMesas>() {
+            @Override
+            public int compare(ClaseMesas a, ClaseMesas b) {
+                if (a.avisoWeb != b.avisoWeb) return a.avisoWeb ? -1 : 1;
+                String fa = a.fechaHoraPedido == null ? "" : a.fechaHoraPedido;
+                String fb = b.fechaHoraPedido == null ? "" : b.fechaHoraPedido;
+                int porFecha = fb.compareTo(fa);
+                if (porFecha != 0) return porFecha;
+                return Integer.compare(b.mesa, a.mesa);
+            }
+        });
+    }
 
     /** mesas con tiquet primero, luego abiertas, luego libres; dentro de cada grupo por numero */
     private static void ordenaMesas(ArrayList<ClaseMesas> mesas) {
@@ -137,7 +161,7 @@ public class FragmentMesas extends Fragment
         listaMesas = (TreeMap<Integer, ClaseMesas>) bundle.getSerializable("mesas");
         sincronizaTab(bundle.getString("tipoEstado", ClaseMesas.TIPO_ESTADO_MESAS));
         ArrayList<ClaseMesas> tmpListMesas = mesasDelTipo(listaMesas);
-        ordenaMesas(tmpListMesas);
+        ordenaLista(tmpListMesas);
 
         CharSequence filtro = svMesa != null ? svMesa.getQuery() : null;
         Parcelable scroll = rvMesas.getLayoutManager() != null ? rvMesas.getLayoutManager().onSaveInstanceState() : null;
@@ -307,7 +331,7 @@ public class FragmentMesas extends Fragment
 
         sincronizaTab(bundle.getString("tipoEstado", ClaseMesas.TIPO_ESTADO_MESAS));
         ArrayList<ClaseMesas> tmpListMesas = mesasDelTipo(listaMesas);
-        ordenaMesas(tmpListMesas);
+        ordenaLista(tmpListMesas);
 
         rvMesas.setAdapter(creaAdapter(tmpListMesas));
 
