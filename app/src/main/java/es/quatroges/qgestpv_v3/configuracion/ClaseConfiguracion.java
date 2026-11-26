@@ -17,6 +17,8 @@ public class ClaseConfiguracion {
     public int timerFragment;
     /** segundos entre refrescos automaticos del estado de las mesas mientras se muestra la lista (0 = sin refresco) */
     public int refrescoMesas;
+    /** vibrar el terminal (3 pulsos, cada minuto) mientras haya pedidos web nuevos sin ver */
+    public boolean vibrarPedidos;
     public boolean pagoEfectivo;
     public boolean pagoTarjeta;
     public boolean pagoCuentacasa;
@@ -68,6 +70,7 @@ public class ClaseConfiguracion {
         this.pax = false;
         this.timerFragment =10;
         this.refrescoMesas = 15;
+        this.vibrarPedidos = true;
         this.pagoEfectivo = true;
         this.pagoTarjeta = true;
         this.pagoCuentacasa = false;

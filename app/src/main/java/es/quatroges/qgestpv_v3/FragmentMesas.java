@@ -5,6 +5,8 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,6 +57,22 @@ public class FragmentMesas extends Fragment
     private TabLayout tlTipoMesas;
     /** icono vibrando mientras haya pedidos web nuevos sin ver */
     private View ivAvisoPedidos;
+    /** opcion "Vibrar con pedidos nuevos": tres pulsos de 200 ms con pausas de 200 ms, repetidos cada minuto mientras el icono este visible */
+    private boolean vibrarPedidos;
+    private final Handler hVibracion = new Handler();
+    private boolean vibracionProgramada;
+    private static final long[] PATRON_VIBRACION = {0, 200, 200, 200, 200, 200};
+    private static final long INTERVALO_VIBRACION_MS = 60000L;
+    private final Runnable rVibracion = new Runnable() {
+        @Override
+        public void run() {
+            vibracionProgramada = false;
+            // isShown: tambien se para si la lista de mesas no esta en pantalla (el usuario ha entrado en una mesa)
+            if (ivAvisoPedidos == null || !ivAvisoPedidos.isShown() || !vibrarPedidos) return;
+            vibra();
+            programaVibracion();
+        }
+    };
     private String tipoEstado = ClaseMesas.TIPO_ESTADO_MESAS;
     private boolean ajustandoTab;
     private int nMesasVisibles;
@@ -93,6 +111,7 @@ public class FragmentMesas extends Fragment
             pideRoom = bundle.getBoolean("pideRoom",false);
             rvMesas.setAdapter(null);
 
+            vibrarPedidos = bundle.getBoolean("vibrarPedidos", false);
             sincronizaTab(bundle.getString("tipoEstado", ClaseMesas.TIPO_ESTADO_MESAS));
             ArrayList<ClaseMesas> tmpListMesas = mesasDelTipo(listaMesas);
             ordenaLista(tmpListMesas);
@@ -165,6 +184,7 @@ public class FragmentMesas extends Fragment
         if (interfaceMesas == null || rvMesas == null || rvMesas.getAdapter() == null || estado != enEstado.seleccion) return;
         Bundle bundle = interfaceMesas.cargaMesas(true);
         listaMesas = (TreeMap<Integer, ClaseMesas>) bundle.getSerializable("mesas");
+        vibrarPedidos = bundle.getBoolean("vibrarPedidos", false);
         sincronizaTab(bundle.getString("tipoEstado", ClaseMesas.TIPO_ESTADO_MESAS));
         ArrayList<ClaseMesas> tmpListMesas = mesasDelTipo(listaMesas);
         ordenaLista(tmpListMesas);
@@ -202,19 +222,51 @@ public class FragmentMesas extends Fragment
         return lista;
     }
 
-    /** Icono de aviso vibrando mientras haya pedidos web nuevos (aviso_web = S); oculto y parado si no hay. */
+    /** Icono de aviso vibrando mientras haya pedidos web nuevos (aviso_web = S); oculto y parado si no hay.
+     *  Con la opcion de vibrar, al aparecer el icono vibra el terminal y se repite cada minuto mientras siga visible. */
     private void muestraAvisoPedidos(boolean hayNuevos) {
         if (ivAvisoPedidos == null || context == null) return;
         if (hayNuevos) {
-            if (ivAvisoPedidos.getVisibility() != View.VISIBLE || ivAvisoPedidos.getAnimation() == null) {
+            boolean aparece = ivAvisoPedidos.getVisibility() != View.VISIBLE;
+            if (aparece || ivAvisoPedidos.getAnimation() == null) {
                 ivAvisoPedidos.setVisibility(View.VISIBLE);
                 Animation vibracion = AnimationUtils.loadAnimation(context, R.anim.vibracion);
                 ivAvisoPedidos.startAnimation(vibracion);
             }
+            if (vibrarPedidos) {
+                if (aparece) vibra();
+                programaVibracion();
+            } else {
+                cancelaVibracion();
+            }
         } else {
             ivAvisoPedidos.clearAnimation();
             ivAvisoPedidos.setVisibility(View.GONE);
+            cancelaVibracion();
         }
+    }
+
+    /** tres ciclos de 200 ms de vibracion y 200 ms de pausa */
+    private void vibra() {
+        if (context == null) return;
+        try {
+            Vibrator vibrador = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+            if (vibrador == null || !vibrador.hasVibrator()) return;
+            vibrador.vibrate(VibrationEffect.createWaveform(PATRON_VIBRACION, -1));
+        } catch (Exception e) {
+            // sin vibrador o sin permiso: el icono animado sigue avisando
+        }
+    }
+
+    private void programaVibracion() {
+        if (vibracionProgramada) return;
+        vibracionProgramada = true;
+        hVibracion.postDelayed(rVibracion, INTERVALO_VIBRACION_MS);
+    }
+
+    private void cancelaVibracion() {
+        hVibracion.removeCallbacks(rVibracion);
+        vibracionProgramada = false;
     }
 
     private void actualizaTitulosTabs(int nAbiertas, int nPedidos) {
@@ -359,6 +411,7 @@ public class FragmentMesas extends Fragment
         mesaSel = bundle.getInt("productoSel",1);
         listaMesas= (TreeMap<Integer, ClaseMesas>) bundle.getSerializable("mesas");
 
+        vibrarPedidos = bundle.getBoolean("vibrarPedidos", false);
         sincronizaTab(bundle.getString("tipoEstado", ClaseMesas.TIPO_ESTADO_MESAS));
         ArrayList<ClaseMesas> tmpListMesas = mesasDelTipo(listaMesas);
         ordenaLista(tmpListMesas);
@@ -375,6 +428,12 @@ public class FragmentMesas extends Fragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+    }
+
+    @Override
+    public void onDestroyView() {
+        cancelaVibracion();
+        super.onDestroyView();
     }
 
     @Override

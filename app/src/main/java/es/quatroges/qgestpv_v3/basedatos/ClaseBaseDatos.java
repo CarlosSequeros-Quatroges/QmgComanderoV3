@@ -458,6 +458,7 @@ public abstract class ClaseBaseDatos extends RoomDatabase {
             INSTANCE.upsetConfiguracion(new Configuracion("compacto", String.valueOf(bDatosParametros.getBoolean("compacto", false))), 1, 1);
             INSTANCE.upsetConfiguracion(new Configuracion("timer_fragment", String.valueOf(bDatosParametros.getInt("timerFragment"))), 1, 1);
             INSTANCE.upsetConfiguracion(new Configuracion("refresco_mesas", String.valueOf(bDatosParametros.getInt("refrescoMesas", 15))), 1, 1);
+            INSTANCE.upsetConfiguracion(new Configuracion("vibrar_pedidos", String.valueOf(bDatosParametros.getBoolean("vibrarPedidos", true))), 1, 1);
         }
 
         if (bDatosWS != null) {

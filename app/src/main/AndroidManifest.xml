@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- aviso por vibracion de pedidos web nuevos (opcion "Vibrar con pedidos nuevos") -->
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <!-- Bluetooth en Android 8 a 11 (API 26-30) -->
     <uses-permission

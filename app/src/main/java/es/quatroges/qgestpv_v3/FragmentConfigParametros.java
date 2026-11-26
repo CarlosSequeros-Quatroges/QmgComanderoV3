@@ -33,7 +33,7 @@ public class FragmentConfigParametros extends Fragment {
     private static TextView  tvResolucion, tvLayout;
     private static CheckBox chkDemo,chkCargaLineasVenta, chkClaveCamareros, chkPax,
                             chkEfectivo,chkTarjeta,chkEfeTar,chkCuentacasa,chkCredito,chkPension, chkMantenerVenta,
-                            chkMostrarProductosAuto, chkMantenerProductos, chkCompacto;
+                            chkMostrarProductosAuto, chkMantenerProductos, chkCompacto, chkVibrarPedidos;
 
 
     private static Context context = null;
@@ -84,6 +84,7 @@ public class FragmentConfigParametros extends Fragment {
         }
         catch (NumberFormatException ne){}
         bundle.putInt("refrescoMesas", Math.max(0, refresco));
+        bundle.putBoolean("vibrarPedidos", chkVibrarPedidos.isChecked());
 
         return bundle;
     }
@@ -110,6 +111,7 @@ public class FragmentConfigParametros extends Fragment {
         etCodigo=rootView.findViewById(R.id.etCodigo);
         etTimerFragment=rootView.findViewById(R.id.etTimerFragment);
         etRefrescoMesas=rootView.findViewById(R.id.etRefrescoMesas);
+        chkVibrarPedidos = rootView.findViewById(R.id.chkVibrarPedidos);
 
         chkDemo = rootView.findViewById(R.id.chkDemo);
         chkCargaLineasVenta = rootView.findViewById(R.id.chkCargaLineasVenta);
@@ -143,6 +145,7 @@ public class FragmentConfigParametros extends Fragment {
         etCodigo.setText(bdatos.getString("codigo"));
         etTimerFragment.setText(String.valueOf(bdatos.getInt("timerFragment",5)));
         etRefrescoMesas.setText(String.valueOf(bdatos.getInt("refrescoMesas",15)));
+        chkVibrarPedidos.setChecked(bdatos.getBoolean("vibrarPedidos", true));
 
         chkDemo.setChecked(bdatos.getBoolean("demo"));
         chkCargaLineasVenta.setChecked(bdatos.getBoolean("cargaLineasVenta"));

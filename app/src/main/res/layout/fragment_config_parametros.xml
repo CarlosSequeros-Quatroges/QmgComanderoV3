@@ -354,6 +354,17 @@
             android:textColor="@color/colorAccent"
             android:hint="@string/config_strRefrescoMesas"/>
 
+        <CheckBox
+            android:id="@+id/chkVibrarPedidos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/config_strVibrarPedidos"
+            android:textStyle="bold"
+            android:textSize="@dimen/text_titulo"
+            android:textColor="@color/textoAzul"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp" />
+
 
         <LinearLayout
             android:layout_width="match_parent"

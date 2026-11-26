@@ -427,6 +427,7 @@ public class ActivityInicio extends AppCompatActivity
         bundle.putBoolean("pideRoom", configuracion.pax);
         bundle.putSerializable("mesas", listaMesas);
         bundle.putString("tipoEstado", tipoEstadoMesas);
+        bundle.putBoolean("vibrarPedidos", configuracion != null && configuracion.vibrarPedidos);
         return bundle;
     }
 
@@ -3987,6 +3988,9 @@ public class ActivityInicio extends AppCompatActivity
                             break;
                         case "refresco_mesas":
                             configuracion.refrescoMesas = Integer.valueOf(parametro.getValor().trim());
+                            break;
+                        case "vibrar_pedidos":
+                            configuracion.vibrarPedidos = Boolean.valueOf(parametro.getValor().toLowerCase());
                             break;
                         case "timer_fragment":
                             configuracion.timerFragment = Integer.valueOf(parametro.getValor());

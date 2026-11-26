@@ -69,6 +69,7 @@
 
     <string name="config_strTimerFragment">Tiempo ampliar listas (sg)</string>
     <string name="config_strRefrescoMesas">Refresco estado mesas (sg, 0 = no)</string>
+    <string name="config_strVibrarPedidos">Vibrar con pedidos nuevos</string>
     <string name="config_strServidorWeb">Servidor web</string>
     <string name="config_strAPI">Api</string>
     <string name="config_strTimeout">Timeout</string>
