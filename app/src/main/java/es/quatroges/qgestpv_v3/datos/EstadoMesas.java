@@ -55,6 +55,15 @@ public class EstadoMesas  implements Parcelable {
     @Expose
     private String aplicap = "";
 
+    /** pedidos (mesa >= 1000): punto de venta web y forma de pago; vacios en las mesas */
+    @SerializedName("codpto_web")
+    @Expose
+    private String codpto_web = "";
+
+    @SerializedName("fpago_web")
+    @Expose
+    private String fpago_web = "";
+
 
     public EstadoMesas(){
 
@@ -162,6 +171,22 @@ public class EstadoMesas  implements Parcelable {
         this.aplicap = aplicap;
     }
 
+    public String getCodpto_web() {
+        return codpto_web;
+    }
+
+    public void setCodpto_web(String codpto_web) {
+        this.codpto_web = codpto_web;
+    }
+
+    public String getFpago_web() {
+        return fpago_web;
+    }
+
+    public void setFpago_web(String fpago_web) {
+        this.fpago_web = fpago_web;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -180,6 +205,8 @@ public class EstadoMesas  implements Parcelable {
         dest.writeString(pension);
         dest.writeString(apertura);
         dest.writeString(aplicap);
+        dest.writeString(codpto_web);
+        dest.writeString(fpago_web);
     }
 
     public void readFromParcel(Parcel in){
@@ -194,6 +221,8 @@ public class EstadoMesas  implements Parcelable {
         this.pension= in.readString();
         this.apertura= in.readString();
         this.aplicap = in.readString();
+        this.codpto_web = in.readString();
+        this.fpago_web = in.readString();
     }
 
     protected EstadoMesas(Parcel in){

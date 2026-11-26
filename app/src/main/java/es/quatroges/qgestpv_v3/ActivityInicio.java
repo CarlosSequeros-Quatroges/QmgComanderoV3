@@ -5059,6 +5059,10 @@ public class ActivityInicio extends AppCompatActivity
             if (mesa == null) {
                 continue;
             }
+            if (mesa.esPedido()) {
+                if (estadoMesa.getCodpto_web() != null) mesa.codptoWeb = estadoMesa.getCodpto_web().trim();
+                if (estadoMesa.getFpago_web() != null) mesa.fpagoWeb = estadoMesa.getFpago_web().trim();
+            }
 
             importe = 0;
             pax = 0;

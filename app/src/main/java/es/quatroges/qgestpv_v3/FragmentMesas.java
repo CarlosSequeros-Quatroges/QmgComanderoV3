@@ -9,6 +9,7 @@ import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,6 +31,7 @@ import java.util.TreeMap;
 import es.quatroges.qgestpv_v3.datos.listas.mesas.ClaseMesas;
 import es.quatroges.qgestpv_v3.datos.listas.mesas.ClaseSubMesas;
 import es.quatroges.qgestpv_v3.datos.listas.mesas.RvAdapterMesas;
+import es.quatroges.qgestpv_v3.datos.listas.mesas.RvAdapterPedidos;
 
 public class FragmentMesas extends Fragment
         implements  SearchView.OnQueryTextListener  {
@@ -45,6 +47,7 @@ public class FragmentMesas extends Fragment
 
     private androidx.appcompat.widget.SearchView svMesa;
     private RvAdapterMesas adapterMesas;
+    private RvAdapterPedidos adapterPedidos;
 
     /** pestañas MESAS / PEDIDOS: tipo de estado que se muestra (ClaseMesas.TIPO_ESTADO_*) */
     private TabLayout tlTipoMesas;
@@ -62,13 +65,13 @@ public class FragmentMesas extends Fragment
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                adapterMesas.setQuitaFocoSvMesa(true);
-                adapterMesas.getFilter().filter(mesa);
+                quitaFocoAdapter();
+                filtra(mesa);
 
             }
         }, 50);
         //adapterMesas.setQuitaFocoSvMesa(true);
-        adapterMesas.getFilter().filter("");
+        filtra("");
 
     }
     public void swMesaClearFocus(){
@@ -88,8 +91,7 @@ public class FragmentMesas extends Fragment
             ArrayList<ClaseMesas> tmpListMesas = mesasDelTipo(listaMesas);
             ordenaMesas(tmpListMesas);
 
-            adapterMesas = new RvAdapterMesas(context, tmpListMesas, this) ;
-            rvMesas.setAdapter(adapterMesas);
+            rvMesas.setAdapter(creaAdapter(tmpListMesas));
             estado = FragmentMesas.enEstado.seleccion;
 
             svMesa.setQuery("",false);
@@ -130,7 +132,7 @@ public class FragmentMesas extends Fragment
      * conservando el filtro de busqueda y la posicion de scroll. No hace nada si hay una edicion de pax/habitacion abierta.
      */
     public void refrescaEstadoMesas() {
-        if (interfaceMesas == null || rvMesas == null || adapterMesas == null || estado != enEstado.seleccion) return;
+        if (interfaceMesas == null || rvMesas == null || rvMesas.getAdapter() == null || estado != enEstado.seleccion) return;
         Bundle bundle = interfaceMesas.cargaMesas(true);
         listaMesas = (TreeMap<Integer, ClaseMesas>) bundle.getSerializable("mesas");
         sincronizaTab(bundle.getString("tipoEstado", ClaseMesas.TIPO_ESTADO_MESAS));
@@ -139,9 +141,8 @@ public class FragmentMesas extends Fragment
 
         CharSequence filtro = svMesa != null ? svMesa.getQuery() : null;
         Parcelable scroll = rvMesas.getLayoutManager() != null ? rvMesas.getLayoutManager().onSaveInstanceState() : null;
-        adapterMesas = new RvAdapterMesas(context, tmpListMesas, this);
-        rvMesas.setAdapter(adapterMesas);
-        if (filtro != null && filtro.length() > 0) adapterMesas.getFilter().filter(filtro);
+        rvMesas.setAdapter(creaAdapter(tmpListMesas));
+        if (filtro != null && filtro.length() > 0) filtra(filtro);
         if (scroll != null && rvMesas.getLayoutManager() != null) rvMesas.getLayoutManager().onRestoreInstanceState(scroll);
     }
 
@@ -156,6 +157,34 @@ public class FragmentMesas extends Fragment
         }
         nMesasVisibles = lista.size();
         return lista;
+    }
+
+    /** Adaptador de la pestaña activa: tarjetas de mesa o tarjetas de pedido (numero, punto web, forma de pago, importe). */
+    private RecyclerView.Adapter<?> creaAdapter(ArrayList<ClaseMesas> lista) {
+        if (ClaseMesas.TIPO_ESTADO_PEDIDOS.equals(tipoEstado)) {
+            adapterMesas = null;
+            adapterPedidos = new RvAdapterPedidos(context, lista, this);
+            return adapterPedidos;
+        }
+        adapterPedidos = null;
+        adapterMesas = new RvAdapterMesas(context, lista, this);
+        return adapterMesas;
+    }
+
+    private Filter filtroAdapter() {
+        if (adapterPedidos != null) return adapterPedidos.getFilter();
+        if (adapterMesas != null) return adapterMesas.getFilter();
+        return null;
+    }
+
+    private void filtra(CharSequence texto) {
+        Filter filtro = filtroAdapter();
+        if (filtro != null) filtro.filter(texto);
+    }
+
+    private void quitaFocoAdapter() {
+        if (adapterPedidos != null) adapterPedidos.setQuitaFocoSvMesa(true);
+        if (adapterMesas != null) adapterMesas.setQuitaFocoSvMesa(true);
     }
 
     private void configuraTabs() {
@@ -262,8 +291,7 @@ public class FragmentMesas extends Fragment
         ArrayList<ClaseMesas> tmpListMesas = mesasDelTipo(listaMesas);
         ordenaMesas(tmpListMesas);
 
-        adapterMesas = new RvAdapterMesas(context, tmpListMesas, this) ;
-        rvMesas.setAdapter(adapterMesas);
+        rvMesas.setAdapter(creaAdapter(tmpListMesas));
 
         setupSearchView();
 
@@ -302,7 +330,7 @@ public class FragmentMesas extends Fragment
 
     @Override
     public boolean onQueryTextChange(String s) {
-        adapterMesas.getFilter().filter(s);
+        filtra(s);
         return false;
     }
 

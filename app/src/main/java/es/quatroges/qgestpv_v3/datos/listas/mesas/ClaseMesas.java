@@ -29,6 +29,9 @@ public class ClaseMesas implements Parcelable {
     public double coste;
     public int nSubmesas;
     public boolean actualizaPax;
+    /** solo pedidos: punto de venta web y forma de pago que envia el servidor en el estado */
+    public String codptoWeb = "";
+    public String fpagoWeb = "";
 
     public ArrayList<ClaseSubMesas> submesas;
 
@@ -66,6 +69,8 @@ public class ClaseMesas implements Parcelable {
         dest.writeDouble(this.coste );
         dest.writeList(this.submesas);
         dest.writeByte((byte) (this.actualizaPax ? 1 : 0));
+        dest.writeString(this.codptoWeb);
+        dest.writeString(this.fpagoWeb);
 
     }
     public void readFromParcel(Parcel in){
@@ -79,6 +84,8 @@ public class ClaseMesas implements Parcelable {
         this.coste= in.readDouble();
         this.submesas = in.readArrayList(Integer.class.getClassLoader());
         this.actualizaPax= in.readByte() != 0;
+        this.codptoWeb = in.readString();
+        this.fpagoWeb = in.readString();
 
     }
 
